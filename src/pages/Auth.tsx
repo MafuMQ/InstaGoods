@@ -61,7 +61,6 @@ const Auth = () => {
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/supplier/dashboard`,
       },
     });
 
@@ -74,7 +73,7 @@ const Auth = () => {
         toast.error(error.message);
       }
     } else {
-      toast.success("Account created successfully!");
+      toast.success("Account created successfully! You are now logged in.");
     }
   };
 
