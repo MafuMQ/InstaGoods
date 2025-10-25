@@ -52,6 +52,57 @@ export type Database = {
           },
         ]
       }
+      incomes: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          income_date: string
+          order_id: string | null
+          source: string
+          supplier_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          income_date?: string
+          order_id?: string | null
+          source: string
+          supplier_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          income_date?: string
+          order_id?: string | null
+          source?: string
+          supplier_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incomes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incomes_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           completed_date: string | null
@@ -126,6 +177,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_marketplace_visible: boolean | null
           main_category: string
           name: string
           price: number
@@ -140,6 +192,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_marketplace_visible?: boolean | null
           main_category: string
           name: string
           price: number
@@ -154,6 +207,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_marketplace_visible?: boolean | null
           main_category?: string
           name?: string
           price?: number
