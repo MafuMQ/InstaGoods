@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ interface Product {
   sub_category: string;
   stock_quantity: number;
   is_active: boolean;
+  is_marketplace_visible: boolean;
 }
 
 const SupplierProducts = () => {
@@ -38,6 +40,7 @@ const SupplierProducts = () => {
     main_category: "Physical Goods",
     sub_category: "Home & Living",
     stock_quantity: "0",
+    is_marketplace_visible: true,
   });
 
   useEffect(() => {
@@ -92,6 +95,7 @@ const SupplierProducts = () => {
       sub_category: formData.sub_category,
       stock_quantity: parseInt(formData.stock_quantity) || 0,
       is_active: true,
+      is_marketplace_visible: formData.is_marketplace_visible,
     };
 
     try {
@@ -157,6 +161,7 @@ const SupplierProducts = () => {
       main_category: "Physical Goods",
       sub_category: "Home & Living",
       stock_quantity: "0",
+      is_marketplace_visible: true,
     });
     setEditingProduct(null);
   };
@@ -170,6 +175,7 @@ const SupplierProducts = () => {
       main_category: product.main_category,
       sub_category: product.sub_category || "",
       stock_quantity: product.stock_quantity.toString(),
+      is_marketplace_visible: product.is_marketplace_visible ?? true,
     });
     setDialogOpen(true);
   };
@@ -275,6 +281,18 @@ const SupplierProducts = () => {
                     </Select>
                   </div>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="marketplace_visible"
+                    checked={formData.is_marketplace_visible}
+                    onCheckedChange={(checked) => 
+                      setFormData({ ...formData, is_marketplace_visible: checked === true })
+                    }
+                  />
+                  <Label htmlFor="marketplace_visible" className="text-sm font-normal">
+                    List this product on the main marketplace
+                  </Label>
+                </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting 
                     ? "Creating..." 
@@ -303,6 +321,12 @@ const SupplierProducts = () => {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Category:</span>
                   <span className="text-sm">{product.sub_category}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Marketplace:</span>
+                  <span className={`text-sm font-medium ${product.is_marketplace_visible ? 'text-green-600' : 'text-orange-600'}`}>
+                    {product.is_marketplace_visible ? 'Visible' : 'Hidden'}
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2">

@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import SupplierDashboard from "./pages/supplier/SupplierDashboard";
 import SupplierProducts from "./pages/supplier/SupplierProducts";
 import SupplierOrders from "./pages/supplier/SupplierOrders";
+import SupplierIncomes from "./pages/supplier/SupplierIncomes";
 import SupplierExpenses from "./pages/supplier/SupplierExpenses";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
           <Route path="/supplier/products" element={<SupplierProducts />} />
           <Route path="/supplier/orders" element={<SupplierOrders />} />
+          <Route path="/supplier/incomes" element={<SupplierIncomes />} />
           <Route path="/supplier/expenses" element={<SupplierExpenses />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
