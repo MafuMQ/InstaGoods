@@ -2,14 +2,19 @@ import { useState } from "react";
 import Header from "@/components/customer/Header";
 import GroceryCard from "@/components/customer/GroceryCard";
 import CategoryNav from "@/components/customer/CategoryNav";
-import { services } from "@/lib/data";
+import { groceries, suppliers } from "@/lib/data";
 
 const Grocery = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
 
-  const filteredGrocery = services.filter((p) => {
+  const filteredGrocery = groceries.filter((p) => {
     if (selectedMainCategory === "All") return true;
+    if (selectedMainCategory === "Shop by Store") {
+      if (selectedSubCategory === "All") return true;
+      const supplier = suppliers.find(s => s.id === p.supplierId);
+      return supplier?.name === selectedSubCategory;
+    }
     if (p.mainCategory !== selectedMainCategory) return false;
     if (selectedSubCategory === "All") return true;
     return p.subCategory === selectedSubCategory;

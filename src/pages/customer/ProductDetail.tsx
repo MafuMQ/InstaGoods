@@ -4,11 +4,31 @@ import Header from "@/components/customer/Header";
 import { products, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const supplier = product ? suppliers.find((s) => s.id === product.supplierId) : null;
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+    }
+  };
+
+  const handleToggleWishlist = () => {
+    if (product) {
+      if (isInWishlist(product.id)) {
+        removeFromWishlist(product.id);
+      } else {
+        addToWishlist(product);
+      }
+    }
+  };
 
   if (!product || !supplier) {
     return (
@@ -62,12 +82,17 @@ const ProductDetail = () => {
             </p>
 
             <div className="flex gap-3 mb-8">
-              <Button size="lg" className="flex-1">
+              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Add to Cart
               </Button>
-              <Button size="lg" variant="outline">
-                <Heart className="h-5 w-5" />
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleToggleWishlist}
+                className={isInWishlist(product?.id || '') ? 'text-red-500 border-red-300' : ''}
+              >
+                <Heart className={`h-5 w-5 ${isInWishlist(product?.id || '') ? 'fill-current' : ''}`} />
               </Button>
             </div>
 
