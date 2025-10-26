@@ -20,8 +20,8 @@ const CategoryNav = ({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-medium mb-2 text-muted-foreground">Main Categories</h3>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <h3 className="text-sm text-center font-medium mb-2 text-muted-foreground">Main Categories</h3>
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-center">
           {mainCategories.map((category) => (
             <Button
               key={category}
@@ -37,8 +37,8 @@ const CategoryNav = ({
 
       {showSubCategories && (
         <div>
-          <h3 className="text-sm font-medium mb-2 text-muted-foreground">Subcategories</h3>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <h3 className="text-sm text-center font-medium mb-2 text-muted-foreground">Subcategories</h3>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-center">
             {subCategories[selectedMainCategory].map((subCat) => (
               <Button
                 key={subCat}

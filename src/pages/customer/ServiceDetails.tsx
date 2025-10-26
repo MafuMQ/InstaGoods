@@ -1,21 +1,21 @@
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
-import Header from "@/components/Header";
-import { products, suppliers } from "@/lib/data";
+import Header from "@/components/customer/Header";
+import { services, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const ProductDetail = () => {
+const ServiceDetail = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === id);
-  const supplier = product ? suppliers.find((s) => s.id === product.supplierId) : null;
+  const service = services.find((p) => p.id === id);
+  const supplier = service ? suppliers.find((s) => s.id === service.supplierId) : null;
 
-  if (!product || !supplier) {
+  if (!service || !supplier) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Product not found</h1>
+          <h1 className="text-2xl font-bold mb-4">Service not found</h1>
           <Link to="/">
             <Button>Return to Home</Button>
           </Link>
@@ -30,41 +30,41 @@ const ProductDetail = () => {
       
       <div className="container py-8">
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Product Image */}
+          {/* Service Image */}
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
-              src={product.image}
-              alt={product.name}
+              src={service.image}
+              alt={service.name}
               className="h-full w-full object-cover"
             />
           </div>
 
-          {/* Product Info */}
+          {/* Service Info */}
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-3xl font-bold mb-2">{service.name}</h1>
             
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-accent text-accent" />
-                <span className="font-medium">{product.rating}</span>
+                <span className="font-medium">{service.rating}</span>
               </div>
               <span className="text-muted-foreground">
-                ({product.reviews} reviews)
+                ({service.reviews} reviews)
               </span>
             </div>
 
             <p className="text-3xl font-bold text-primary mb-6">
-              ${product.price}
+              R{service.price}
             </p>
 
             <p className="text-muted-foreground mb-8 leading-relaxed">
-              {product.description}
+              {service.description}
             </p>
 
             <div className="flex gap-3 mb-8">
               <Button size="lg" className="flex-1">
                 <ShoppingBag className="mr-2 h-5 w-5" />
-                Add to Cart
+                Request Service
               </Button>
               <Button size="lg" variant="outline">
                 <Heart className="h-5 w-5" />
@@ -94,7 +94,7 @@ const ProductDetail = () => {
                   <Link to={`/supplier/${supplier.id}`}>
                     <Button variant="outline" size="sm">
                       <Store className="mr-2 h-4 w-4" />
-                      Visit Shop
+                      Visit Business
                     </Button>
                   </Link>
                 </div>
@@ -107,4 +107,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default ServiceDetail;

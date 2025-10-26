@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "@/components/Header";
-import ProductCard from "@/components/ProductCard";
-import CategoryNav from "@/components/CategoryNav";
-import { products } from "@/lib/data";
+import Header from "@/components/customer/Header";
+import ProductCard from "@/components/customer/ProductCard";
+import ServiceCard from "@/components/customer/ServiceCard";
+import GroceryCard from "@/components/customer/GroceryCard";
+import FreelanceCard from "@/components/customer/FreelanceCard";
+import CategoryNav from "@/components/customer/CategoryNav";
+import { freelance, products, services, groceries} from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import heroBanner from "@/assets/hero-banner.jpg";
 
@@ -11,12 +14,39 @@ const Index = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
 
+//   Products
   const filteredProducts = products.filter((p) => {
     if (selectedMainCategory === "All") return true;
     if (p.mainCategory !== selectedMainCategory) return false;
     if (selectedSubCategory === "All") return true;
     return p.subCategory === selectedSubCategory;
   });
+
+// Services
+   const filteredServices = services.filter((p) => {
+    if (selectedMainCategory === "All") return true;
+    if (p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory === "All") return true;
+    return p.subCategory === selectedSubCategory;
+  });
+
+  // Groceries
+   const filteredGrocery = groceries.filter((p) => {
+    if (selectedMainCategory === "All") return true;
+    if (p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory === "All") return true;
+    return p.subCategory === selectedSubCategory;
+  });
+
+  // Freelancing
+   const filteredFreelance = freelance.filter((p) => {
+    if (selectedMainCategory === "All") return true;
+    if (p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory === "All") return true;
+    return p.subCategory === selectedSubCategory;
+  });
+
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,12 +81,12 @@ const Index = () => {
 
       {/* Featured Products */}
       <section className="container py-12">
-        <div className="flex items-center justify-between mb-6">
+        {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold">Featured Items</h2>
           <Link to="/products">
             <Button variant="ghost">View All</Button>
           </Link>
-        </div>
+        </div> */}
 
         <div className="mb-8">
           <CategoryNav
@@ -75,6 +105,33 @@ const Index = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        
+        {/* Services */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredServices.slice(0, 8).map((service) => (
+            <ServiceCard key={service.id} service={service} />
+          ))}
+        </div>
+
+        {/* Groceries */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredGrocery.slice(0, 8).map((grocery) => (
+            <GroceryCard key={grocery.id} grocery={grocery} />
+          ))}
+        </div>
+
+        {/* Freelancing */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredFreelance.slice(0, 8).map((freelance) => (
+            <FreelanceCard key={freelance.id} freelance={freelance} />
+          ))}    
+        </div>
+        {/*<div className="p-8 text-center">
+            <Button size="lg" variant="secondary">
+                View More
+            </Button>
+        </div> */}
+
       </section>
 
       {/* Footer */}
@@ -103,14 +160,14 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4">Artisan Market</h3>
+              <h3 className="font-bold text-lg mb-4">InstaGoods</h3>
               <p className="text-muted-foreground text-sm">
                 Connecting artisans with people who appreciate handcrafted quality.
               </p>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center text-muted-foreground text-sm">
-            © 2024 Artisan Market. All rights reserved.
+            © 2025 InstaGoods. All rights reserved.
           </div>
         </div>
       </footer>
