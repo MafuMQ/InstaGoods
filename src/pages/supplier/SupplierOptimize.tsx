@@ -162,12 +162,11 @@ const SupplierOptimize = () => {
     setResult(null);
 
     try {
-      // Use proxy in development, direct API in production
-      const apiUrl = import.meta.env.DEV ? "/api/optimize" : "https://ex2-lo.vercel.app/api/optimize";
+      // Always use the backend proxy to avoid CORS issues in all environments
+      const apiUrl = "/api/optimize-proxy";
       
       console.log("Sending optimization request:", requestBody);
       console.log("Using API endpoint:", apiUrl);
-      console.log("Environment:", import.meta.env.DEV ? "development" : "production");
       
       const response = await fetch(apiUrl, {
         method: "POST",
