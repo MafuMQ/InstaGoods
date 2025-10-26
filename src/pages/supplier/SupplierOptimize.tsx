@@ -156,19 +156,22 @@ const SupplierOptimize = () => {
       budget: parseFloat(budget)
     };
 
-    console.log("Sending optimization request:", requestBody);
+  // Debug: log all upperBounds being sent
+  console.log('DEBUG: variables sent to API:', variableArray.map(v => ({ name: v.name, upperBound: v.upperBound })));
+  console.log("Sending optimization request:", JSON.stringify(requestBody, null, 2));
 
     setOptimizing(true);
     setResult(null);
 
     try {
-      // Always use the backend proxy to avoid CORS issues in all environments
-      const apiUrl = "/api/optimize-proxy";
-      
-      console.log("Sending optimization request:", requestBody);
-      console.log("Using API endpoint:", apiUrl);
-      
-      const response = await fetch(apiUrl, {
+  // Use /api/optimize for local dev (Vite proxy), /api/optimize-proxy for production (Vercel)
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const apiUrl = isLocal ? "/api/optimize" : "/api/optimize-proxy";
+
+  console.log("Sending optimization request:", requestBody);
+  console.log("Using API endpoint:", apiUrl);
+
+  const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -370,7 +373,6 @@ const SupplierOptimize = () => {
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                        
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <Label className="text-xs">Min Quantity</Label>
@@ -385,8 +387,13 @@ const SupplierOptimize = () => {
                             <Label className="text-xs">Max Quantity</Label>
                             <Input
                               type="number"
-                              value={variable.upperBound || ''}
-                              onChange={(e) => updateVariable(productId, 'upperBound', e.target.value ? parseInt(e.target.value) : null)}
+                              value={variable.upperBound === null || variable.upperBound === undefined ? '' : variable.upperBound}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                const parsed = val === '' ? null : parseInt(val);
+                                updateVariable(productId, 'upperBound', parsed);
+                                console.log('DEBUG: Set upperBound for', product.name, 'to', parsed);
+                              }}
                               placeholder="No limit"
                               className="text-sm"
                             />
