@@ -135,7 +135,7 @@ export const suppliers: Supplier[] = [
   {
     id: "6",
     name: "Easy Fix Plumber",
-    description: "All in one Plumbing Soluttions",
+    description: "All in one Plumbing Solutions",
     location: "Austin, Texas",
     rating: 4.8,
     totalSales: 892,
@@ -175,7 +175,7 @@ export const suppliers: Supplier[] = [
   {
     id: "11",
     name: "DisChem",
-    description: "DisChem Pharmarcy",
+    description: "DisChem Pharmacy",
     location: "Seattle, Washington",
     rating: 5.0,
     totalSales: 567,
@@ -183,7 +183,7 @@ export const suppliers: Supplier[] = [
   {
     id: "12",
     name: "Clicks",
-    description: "Clicks Pharmarcy",
+    description: "Clicks Pharmacy",
     location: "Denver, Colorado",
     rating: 4.7,
     totalSales: 1089,
