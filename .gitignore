@@ -23,9 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-<<<<<<< HEAD
-node_modules
-=======
 # Logs
 logs
 *.log
@@ -50,4 +47,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
->>>>>>> fabf22e04f2467484d2b99a7cb1cae8cf79d9a5f
