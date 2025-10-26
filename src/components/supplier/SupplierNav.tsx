@@ -7,6 +7,7 @@ import {
   DollarSign,
   LogOut,
   Home,
+  MessageSquare,
 } from "lucide-react";
 
 interface SupplierNavProps {
@@ -20,6 +21,7 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
     { to: "/supplier/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/supplier/products", icon: Package, label: "Products" },
     { to: "/supplier/orders", icon: ShoppingCart, label: "Orders" },
+    { to: "/supplier/service-requests", icon: MessageSquare, label: "Service Requests" },
     { to: "/supplier/expenses", icon: DollarSign, label: "Expenses" },
   ];
 

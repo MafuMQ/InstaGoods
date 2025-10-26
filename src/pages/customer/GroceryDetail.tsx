@@ -4,11 +4,31 @@ import Header from "@/components/customer/Header";
 import { groceries, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const GroceryDetail = () => {
   const { id } = useParams();
   const grocery = groceries.find((p) => p.id === id);
   const supplier = grocery ? suppliers.find((s) => s.id === grocery.supplierId) : null;
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const handleAddToCart = () => {
+    if (grocery) {
+      addToCart(grocery);
+    }
+  };
+
+  const handleToggleWishlist = () => {
+    if (grocery) {
+      if (isInWishlist(grocery.id)) {
+        removeFromWishlist(grocery.id);
+      } else {
+        addToWishlist(grocery);
+      }
+    }
+  };
 
   if (!grocery || !supplier) {
     return (
@@ -62,12 +82,17 @@ const GroceryDetail = () => {
             </p>
 
             <div className="flex gap-3 mb-8">
-              <Button size="lg" className="flex-1">
+              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Add to Cart
               </Button>
-              <Button size="lg" variant="outline">
-                <Heart className="h-5 w-5" />
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleToggleWishlist}
+                className={isInWishlist(grocery?.id || '') ? 'text-red-500 border-red-300' : ''}
+              >
+                <Heart className={`h-5 w-5 ${isInWishlist(grocery?.id || '') ? 'fill-current' : ''}`} />
               </Button>
             </div>
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Header from "@/components/customer/Header";
 import ProductCard from "@/components/customer/ProductCard";
 import CategoryNav from "@/components/customer/CategoryNav";
-import { products } from "@/lib/data";
+import { products, suppliers } from "@/lib/data";
 
 const Products = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
@@ -10,6 +10,11 @@ const Products = () => {
 
   const filteredProducts = products.filter((p) => {
     if (selectedMainCategory === "All") return true;
+    if (selectedMainCategory === "Shop by Store") {
+      if (selectedSubCategory === "All") return true;
+      const supplier = suppliers.find(s => s.id === p.supplierId);
+      return supplier?.name === selectedSubCategory;
+    }
     if (p.mainCategory !== selectedMainCategory) return false;
     if (selectedSubCategory === "All") return true;
     return p.subCategory === selectedSubCategory;

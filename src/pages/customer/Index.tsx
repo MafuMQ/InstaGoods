@@ -8,7 +8,13 @@ import FreelanceCard from "@/components/customer/FreelanceCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { freelance, products, services, groceries} from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import heroBanner from "@/assets/hero-banner.jpg";
+import product1 from "@/assets/product-1.jpg";
+import service1 from "@/assets/service-1.jpg";
+import grocery1 from "@/assets/grocery-1.jpg";
+import freelance1 from "@/assets/grocery-1.jpg";
 
 const Index = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
@@ -46,38 +52,73 @@ const Index = () => {
     return p.subCategory === selectedSubCategory;
   });
 
-
+  const categories = [
+    {
+      title: "Discover Unique Handcrafted Treasures",
+      description: "Support independent artisans and find one-of-a-kind pieces for your home",
+      image: product1,
+      link: "/products"
+    },
+    {
+      title: "Professional Services at Your Fingertips",
+      description: "Connect with skilled professionals for all your service needs",
+      image: service1,
+      link: "/services"
+    },
+    {
+      title: "Fresh Groceries Delivered",
+      description: "Shop for fresh produce and essentials from local suppliers",
+      image: grocery1,
+      link: "/grocery"
+    },
+    {
+      title: "Freelance Expertise",
+      description: "Hire talented freelancers for creative and technical projects",
+      image: freelance1,
+      link: "/freelance"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative h-[400px] overflow-hidden">
-        <img
-          src={heroBanner}
-          alt="Artisan crafts workspace"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 to-foreground/40" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="container">
-            <div className="max-w-2xl text-background">
-              <h1 className="text-5xl font-bold mb-4">
-                Discover Unique Handcrafted Treasures
-              </h1>
-              <p className="text-xl mb-6 text-background/90">
-                Support independent artisans and find one-of-a-kind pieces for your home
-              </p>
-              <Link to="/products">
-                <Button size="lg" variant="secondary">
-                  Shop Now
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Categories Carousel */}
+      <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
+        <CarouselContent>
+          {categories.map((category, index) => (
+            <CarouselItem key={index}>
+              <section className="relative h-[400px] overflow-hidden">
+                <img
+                  src={category.image}
+                  alt={category.title}
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 to-foreground/40" />
+                <div className="absolute inset-0 flex items-center">
+                  <div className="container">
+                    <div className="max-w-2xl text-background">
+                      <h1 className="text-5xl font-bold mb-4">
+                        {category.title}
+                      </h1>
+                      <p className="text-xl mb-6 text-background/90">
+                        {category.description}
+                      </p>
+                      <Link to={category.link}>
+                        <Button size="lg" variant="secondary">
+                          Shop Now
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
 
       {/* Featured Products */}
       <section className="container py-12">
@@ -148,8 +189,8 @@ const Index = () => {
             <div>
               <h3 className="font-bold text-lg mb-4">About</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#">Our Story</a></li>
-                <li><a href="#">Artisans</a></li>
+                <li><Link to="/about">Our Story</Link></li>
+                <li><Link to="/about">Artisans</Link></li>
               </ul>
             </div>
             <div>

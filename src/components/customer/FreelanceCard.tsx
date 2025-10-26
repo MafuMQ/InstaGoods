@@ -3,6 +3,8 @@ import { Heart, Star } from "lucide-react";
 import { Freelance, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface FreelanceCardProps {
   freelance: Freelance;
@@ -10,6 +12,22 @@ interface FreelanceCardProps {
 
 const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
   const supplier = suppliers.find((s) => s.id === freelance.supplierId);
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(freelance);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isInWishlist(freelance.id)) {
+      removeFromWishlist(freelance.id);
+    } else {
+      addToWishlist(freelance);
+    }
+  };
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-hover)]">
@@ -23,10 +41,12 @@ const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-2 top-2 bg-card/80 backdrop-blur hover:bg-card"
-            onClick={(e) => e.preventDefault()}
+            className={`absolute right-2 top-2 bg-card/80 backdrop-blur hover:bg-card ${
+              isInWishlist(freelance.id) ? 'text-red-500' : ''
+            }`}
+            onClick={handleToggleWishlist}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={`h-4 w-4 ${isInWishlist(freelance.id) ? 'fill-current' : ''}`} />
           </Button>
         </div>
         <div className="p-4">
@@ -43,7 +63,12 @@ const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
               ({freelance.reviews})
             </span>
           </div>
-          <p className="text-lg font-bold text-primary">R{freelance.price}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-lg font-bold text-primary">R{freelance.price}</p>
+            <Button size="sm" onClick={handleAddToCart}>
+              Add to Cart
+            </Button>
+          </div>
         </div>
       </Link>
     </Card>

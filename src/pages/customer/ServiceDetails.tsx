@@ -1,14 +1,37 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
 import { services, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import ServiceRequestForm from "@/components/customer/ServiceRequestForm";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const ServiceDetail = () => {
   const { id } = useParams();
   const service = services.find((p) => p.id === id);
   const supplier = service ? suppliers.find((s) => s.id === service.supplierId) : null;
+  const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const handleAddToCart = () => {
+    if (service) {
+      addToCart(service);
+    }
+  };
+
+  const handleToggleWishlist = () => {
+    if (service) {
+      if (isInWishlist(service.id)) {
+        removeFromWishlist(service.id);
+      } else {
+        addToWishlist(service);
+      }
+    }
+  };
 
   if (!service || !supplier) {
     return (
@@ -62,12 +85,29 @@ const ServiceDetail = () => {
             </p>
 
             <div className="flex gap-3 mb-8">
-              <Button size="lg" className="flex-1">
+              <Button
+                size="lg"
+                className="flex-1"
+                onClick={() => setIsRequestFormOpen(true)}
+              >
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Request Service
               </Button>
-              <Button size="lg" variant="outline">
-                <Heart className="h-5 w-5" />
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleAddToCart}
+              >
+                <ShoppingBag className="mr-2 h-5 w-5" />
+                Add to Cart
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleToggleWishlist}
+                className={isInWishlist(service?.id || '') ? 'text-red-500 border-red-300' : ''}
+              >
+                <Heart className={`h-5 w-5 ${isInWishlist(service?.id || '') ? 'fill-current' : ''}`} />
               </Button>
             </div>
 
@@ -103,6 +143,18 @@ const ServiceDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Service Request Form Modal */}
+      {service && supplier && (
+        <ServiceRequestForm
+          isOpen={isRequestFormOpen}
+          onClose={() => setIsRequestFormOpen(false)}
+          serviceId={service.id}
+          serviceName={service.name}
+          supplierId={supplier.id}
+          supplierName={supplier.name}
+        />
+      )}
     </div>
   );
 };
