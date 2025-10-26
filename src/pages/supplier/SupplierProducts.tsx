@@ -190,6 +190,7 @@ const SupplierProducts = () => {
       sub_category: "Home & Living",
       stock_quantity: "0",
       is_marketplace_visible: true,
+      delivery_option: "custom", // 'no_delivery', 'custom', 'everywhere'
       available_everywhere: false,
       delivery_location: "",
       delivery_lat: "",
@@ -197,8 +198,6 @@ const SupplierProducts = () => {
       delivery_radius_km: "",
       delivery_fee: "",
       collection_available: false,
-      collection_only: false,
-      no_delivery: false,
     });
     setEditingProduct(null);
   };

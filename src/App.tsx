@@ -27,6 +27,7 @@ import SupplierOrders from "./pages/supplier/SupplierOrders";
 import SupplierIncomes from "./pages/supplier/SupplierIncomes";
 import SupplierExpenses from "./pages/supplier/SupplierExpenses";
 import SupplierServiceRequests from "./pages/supplier/SupplierServiceRequests";
+import SupplierOptimize from "./pages/supplier/SupplierOptimize";
 import NotFound from "./pages/customer/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
                   <Route path="/supplier/incomes" element={<SupplierIncomes />} />
                   <Route path="/supplier/expenses" element={<SupplierExpenses />} />
                   <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
+                  <Route path="/supplier/optimize" element={<SupplierOptimize />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
