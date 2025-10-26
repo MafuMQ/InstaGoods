@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { DollarSign } from "lucide-react";
 
 interface Order {
   id: string;
@@ -18,6 +19,7 @@ interface Order {
   status: string;
   order_date: string;
   notes: string;
+  hasIncome?: boolean;
 }
 
 const SupplierOrders = () => {
@@ -33,17 +35,37 @@ const SupplierOrders = () => {
   const fetchOrders = async () => {
     if (!supplierId) return;
 
-    const { data, error } = await supabase
+    const { data: ordersData, error: ordersError } = await supabase
       .from("orders")
       .select("*")
       .eq("supplier_id", supplierId)
       .order("order_date", { ascending: false });
 
-    if (error) {
+    if (ordersError) {
       toast.error("Error fetching orders");
-    } else {
-      setOrders(data || []);
+      return;
     }
+
+    // Check which orders already have income records
+    const { data: incomesData, error: incomesError } = await supabase
+      .from("incomes")
+      .select("order_id")
+      .eq("supplier_id", supplierId)
+      .not("order_id", "is", null);
+
+    if (incomesError) {
+      toast.error("Error fetching income records");
+      return;
+    }
+
+    const orderIdsWithIncomes = new Set(incomesData?.map(income => income.order_id) || []);
+    
+    const ordersWithIncomeStatus = ordersData?.map(order => ({
+      ...order,
+      hasIncome: orderIdsWithIncomes.has(order.id)
+    })) || [];
+
+    setOrders(ordersWithIncomeStatus);
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -59,6 +81,42 @@ const SupplierOrders = () => {
       toast.error("Error updating order status");
     } else {
       toast.success("Order status updated");
+      fetchOrders();
+    }
+  };
+
+  const handleAddOrderToIncomes = async (order: Order) => {
+    if (!supplierId) return;
+
+    const { error } = await supabase
+      .from("incomes")
+      .insert({
+        supplier_id: supplierId,
+        source: `Order: ${order.product_name}`,
+        amount: order.total_amount,
+        description: `Income from completed order #${order.id.slice(0, 8)}`,
+        income_date: format(new Date(), "yyyy-MM-dd"),
+        order_id: order.id,
+      });
+
+    if (error) {
+      toast.error("Error adding order to incomes");
+    } else {
+      toast.success("Order added to incomes");
+      fetchOrders();
+    }
+  };
+
+  const handleRemoveOrderFromIncomes = async (orderId: string) => {
+    const { error } = await supabase
+      .from("incomes")
+      .delete()
+      .eq("order_id", orderId);
+
+    if (error) {
+      toast.error("Error removing order from incomes");
+    } else {
+      toast.success("Order removed from incomes");
       fetchOrders();
     }
   };
@@ -140,6 +198,34 @@ const SupplierOrders = () => {
                 <div className="mt-4 p-3 bg-muted rounded-md">
                   <p className="text-sm text-muted-foreground mb-1">Notes:</p>
                   <p className="text-sm">{order.notes}</p>
+                </div>
+              )}
+
+              {order.status === "completed" && (
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">
+                      Income Tracking:
+                    </span>
+                    {order.hasIncome ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleRemoveOrderFromIncomes(order.id)}
+                      >
+                        Remove from Incomes
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => handleAddOrderToIncomes(order)}
+                      >
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Add to Incomes
+                      </Button>
+                    )}
+                  </div>
                 </div>
               )}
             </Card>

@@ -24,6 +24,7 @@ import Wishlist from "./pages/customer/Wishlist";
 import SupplierDashboard from "./pages/supplier/SupplierDashboard";
 import SupplierProducts from "./pages/supplier/SupplierProducts";
 import SupplierOrders from "./pages/supplier/SupplierOrders";
+import SupplierIncomes from "./pages/supplier/SupplierIncomes";
 import SupplierExpenses from "./pages/supplier/SupplierExpenses";
 import SupplierServiceRequests from "./pages/supplier/SupplierServiceRequests";
 import NotFound from "./pages/customer/NotFound";
@@ -55,6 +56,7 @@ const App = () => (
                   <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
                   <Route path="/supplier/products" element={<SupplierProducts />} />
                   <Route path="/supplier/orders" element={<SupplierOrders />} />
+                  <Route path="/supplier/incomes" element={<SupplierIncomes />} />
                   <Route path="/supplier/expenses" element={<SupplierExpenses />} />
                   <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
                   <Route path="/about" element={<About />} />

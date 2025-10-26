@@ -23,10 +23,10 @@ const SupplierDashboard = () => {
   const fetchDashboardStats = async () => {
     if (!supplierId) return;
 
-    const [ordersRes, productsRes, expensesRes] = await Promise.all([
+    const [ordersRes, productsRes, expensesRes, incomesRes] = await Promise.all([
       supabase
         .from("orders")
-        .select("total_amount")
+        .select("id")
         .eq("supplier_id", supplierId),
       supabase
         .from("products")
@@ -36,9 +36,13 @@ const SupplierDashboard = () => {
         .from("expenses")
         .select("amount")
         .eq("supplier_id", supplierId),
+      supabase
+        .from("incomes")
+        .select("amount")
+        .eq("supplier_id", supplierId),
     ]);
 
-    const totalRevenue = ordersRes.data?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+    const totalRevenue = incomesRes.data?.reduce((sum, income) => sum + Number(income.amount), 0) || 0;
     const totalExpenses = expensesRes.data?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
 
     setStats({

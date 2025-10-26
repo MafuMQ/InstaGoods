@@ -1,31 +1,81 @@
 import { Link } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
 import { Product, suppliers } from "@/lib/data";
+import { MarketplaceProduct } from "@/hooks/useMarketplaceProducts";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | MarketplaceProduct;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const supplier = suppliers.find((s) => s.id === product.supplierId);
+  // Check if it's a marketplace product (from database) or static product
+  const isMarketplaceProduct = 'supplier_id' in product;
+  
+  const productImage = isMarketplaceProduct 
+    ? (product as MarketplaceProduct).image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&auto=format&fit=crop"
+    : (product as Product).image;
+
+  const productRating = isMarketplaceProduct ? 4.5 : (product as Product).rating;
+  const productReviews = isMarketplaceProduct ? 0 : (product as Product).reviews;
+  
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addToCart(product);
+    
+    // Convert MarketplaceProduct to Product format if needed
+    if (isMarketplaceProduct) {
+      const marketplaceProduct = product as MarketplaceProduct;
+      const productForCart: Product = {
+        id: marketplaceProduct.id,
+        name: marketplaceProduct.name,
+        price: marketplaceProduct.price,
+        image: marketplaceProduct.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&auto=format&fit=crop",
+        mainCategory: marketplaceProduct.main_category,
+        subCategory: marketplaceProduct.sub_category || "",
+        rating: 4.5,
+        reviews: 0,
+        supplierId: marketplaceProduct.supplier_id,
+        description: marketplaceProduct.description || ""
+      };
+      addToCart(productForCart);
+    } else {
+      addToCart(product as Product);
+    }
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
+    
+    // Convert MarketplaceProduct to Product format if needed for wishlist
+    let itemForWishlist: Product;
+    if (isMarketplaceProduct) {
+      const marketplaceProduct = product as MarketplaceProduct;
+      itemForWishlist = {
+        id: marketplaceProduct.id,
+        name: marketplaceProduct.name,
+        price: marketplaceProduct.price,
+        image: marketplaceProduct.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&auto=format&fit=crop",
+        mainCategory: marketplaceProduct.main_category,
+        subCategory: marketplaceProduct.sub_category || "",
+        rating: 4.5,
+        reviews: 0,
+        supplierId: marketplaceProduct.supplier_id,
+        description: marketplaceProduct.description || ""
+      };
+    } else {
+      itemForWishlist = product as Product;
+    }
+    
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
     } else {
-      addToWishlist(product);
+      addToWishlist(itemForWishlist);
     }
   };
 
@@ -34,7 +84,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <Link to={`/product/${product.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
-            src={product.image}
+            src={productImage}
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -54,13 +104,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {product.name}
           </h3>
           <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
-            {supplier?.name}
+            {isMarketplaceProduct ? "Artisan Seller" : "Local Artisan"}
           </p>
           <div className="flex items-center gap-1 mb-3">
             <Star className="h-3 w-3 fill-accent text-accent" />
-            <span className="text-sm font-medium">{product.rating}</span>
+            <span className="text-sm font-medium">{productRating}</span>
             <span className="text-sm text-muted-foreground">
-              ({product.reviews})
+              ({productReviews})
             </span>
           </div>
           <div className="flex items-center justify-between">
