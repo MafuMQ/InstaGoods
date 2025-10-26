@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart();
 
   if (cartItems.length === 0) {
     return (
@@ -94,6 +94,7 @@ const Cart = () => {
                   Continue Shopping
                 </Button>
               </Link>
+              <Button className="flex-1" onClick={clearCart} variant="destructive">Clear Cart</Button>
               <Button className="flex-1">Checkout</Button>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
 import { products, suppliers } from "@/lib/data";
+import { useLocation } from "@/context/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
@@ -11,11 +12,23 @@ const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const supplier = product ? suppliers.find((s) => s.id === product.supplierId) : null;
+
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { address: userAddress } = useLocation();
+
+  // Helper: check if product is available everywhere
+  const isAvailableEverywhere = product?.availableEverywhere;
+  // Helper: check if product is in user's selected region (simple string match)
+  const isInRegion = userAddress && product?.region && userAddress.toLowerCase().includes(product.region.toLowerCase());
+  // Helper: show delivery radius if not everywhere
+  const deliveryRadius = product?.deliveryRadiusKm;
+
+
+  const canAddToCart = !product?.no_delivery && (isAvailableEverywhere || isInRegion);
 
   const handleAddToCart = () => {
-    if (product) {
+    if (product && canAddToCart) {
       addToCart(product);
     }
   };
@@ -47,7 +60,6 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <div className="container py-8">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Product Image */}
@@ -62,7 +74,7 @@ const ProductDetail = () => {
           {/* Product Info */}
           <div className="flex flex-col">
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-            
+
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-accent text-accent" />
@@ -77,12 +89,53 @@ const ProductDetail = () => {
               R{product.price}
             </p>
 
-            <p className="text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-muted-foreground mb-4 leading-relaxed">
               {product.description}
             </p>
 
+            {/* Delivery/Availability Info */}
+            <div className="mb-4">
+              {product.no_delivery ? (
+                <span className="inline-block px-3 py-1 rounded bg-orange-100 text-orange-800 text-xs font-medium">
+                  No delivery available (collection only)
+                </span>
+              ) : isAvailableEverywhere ? (
+                <span className="inline-block px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                  Delivers everywhere
+                </span>
+              ) : userAddress ? (
+                isInRegion ? (
+                  <span className="inline-block px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                    Available at <span className="font-semibold">{userAddress}</span>
+                    {deliveryRadius && (
+                      <span> (within {deliveryRadius} km)</span>
+                    )}
+                  </span>
+                ) : (
+                  <span className="inline-block px-3 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
+                    Not available in your location
+                  </span>
+                )
+              ) : (
+                <span className="inline-block px-3 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
+                  Set your region to check availability
+                </span>
+              )}
+            </div>
+            {product.delivery_fee && !product.no_delivery && (
+              <div className="mb-2 text-sm text-muted-foreground">
+                Delivery Fee: <span className="font-semibold">R{product.delivery_fee}</span>
+              </div>
+            )}
+
             <div className="flex gap-3 mb-8">
-              <Button size="lg" className="flex-1" onClick={handleAddToCart}>
+              <Button
+                size="lg"
+                className="flex-1"
+                onClick={handleAddToCart}
+                disabled={!canAddToCart}
+                title={!canAddToCart ? 'Not available in your location' : ''}
+              >
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Add to Cart
               </Button>

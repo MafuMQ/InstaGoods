@@ -50,6 +50,17 @@ export interface Product {
   supplierId: string;
   rating: number;
   reviews: number;
+  region?: string; // e.g. "Cape Town", "Online", etc.
+  location?: { lat: number; lng: number }; // coordinates for distance calculation
+  deliveryRadiusKm?: number; // max delivery distance in km (if applicable)
+  availableEverywhere?: boolean; // true for online/remote/anywhere
+  delivery_location?: string;
+  delivery_lat?: number;
+  delivery_lng?: number;
+  delivery_fee?: number;
+  collection_available?: boolean;
+  collection_only?: boolean;
+  no_delivery?: boolean;
 }
 
 export interface Service {
@@ -63,6 +74,10 @@ export interface Service {
   supplierId: string;
   rating: number;
   reviews: number;
+  region?: string;
+  location?: { lat: number; lng: number };
+  deliveryRadiusKm?: number;
+  availableEverywhere?: boolean;
 }
 
 export interface Grocery {
@@ -76,6 +91,10 @@ export interface Grocery {
   supplierId: string;
   rating: number;
   reviews: number;
+  region?: string;
+  location?: { lat: number; lng: number };
+  deliveryRadiusKm?: number;
+  availableEverywhere?: boolean;
 }
 
 export interface Freelance {
@@ -89,6 +108,10 @@ export interface Freelance {
   supplierId: string;
   rating: number;
   reviews: number;
+  region?: string;
+  location?: { lat: number; lng: number };
+  deliveryRadiusKm?: number;
+  availableEverywhere?: boolean;
 }
 
 export const suppliers: Supplier[] = [
@@ -250,6 +273,10 @@ export const products: Product[] = [
     supplierId: "9",
     rating: 4.9,
     reviews: 127,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 10,
+    availableEverywhere: false,
   },
   {
     id: "2",
@@ -262,6 +289,10 @@ export const products: Product[] = [
     supplierId: "10",
     rating: 4.8,
     reviews: 93,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 15,
+    availableEverywhere: false,
   },
   {
     id: "3",
@@ -274,6 +305,10 @@ export const products: Product[] = [
     supplierId: "11",
     rating: 5.0,
     reviews: 156,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 100,
+    availableEverywhere: true,
   },
   {
     id: "4",
@@ -286,6 +321,10 @@ export const products: Product[] = [
     supplierId: "12",
     rating: 4.7,
     reviews: 84,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 8,
+    availableEverywhere: false,
   },
   {
     id: "5",
@@ -298,6 +337,10 @@ export const products: Product[] = [
     supplierId: "13",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 20,
+    availableEverywhere: false,
   },
   {
     id: "6",
@@ -310,6 +353,10 @@ export const products: Product[] = [
     supplierId: "9",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 12,
+    availableEverywhere: false,
   },
   {
     id: "7",
@@ -322,6 +369,10 @@ export const products: Product[] = [
     supplierId: "10",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 18,
+    availableEverywhere: false,
   },
   {
     id: "8",
@@ -334,6 +385,10 @@ export const products: Product[] = [
     supplierId: "11",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
 ];
 
@@ -341,62 +396,82 @@ export const services: Service[] = [
   {
     id: "1",
     name: "Electrical installation",
-    description: "Hand-thrown ceramic mug with unique glaze pattern. Each piece is one-of-a-kind.",
-    price: 38,
+    description: "Professional electrical installation for homes and offices.",
+    price: 380,
     image: service1,
     mainCategory: "Services",
     subCategory: "Electrical",
     supplierId: "5",
     rating: 4.9,
     reviews: 127,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
   {
     id: "2",
     name: "Electrical Fault Finding",
-    description: "Handwoven macrame wall art made from 100% natural cotton cord.",
-    price: 65,
+    description: "Expert fault finding and repair for electrical systems.",
+    price: 650,
     image: service1,
     mainCategory: "Services",
     subCategory: "Electrical",
     supplierId: "5",
     rating: 4.8,
     reviews: 93,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 20,
+    availableEverywhere: false,
   },
   {
     id: "3",
     name: "Plumbing",
-    description: "Premium leather-bound journal with hand-embossed decorative pattern.",
-    price: 52,
+    description: "Residential and commercial plumbing services.",
+    price: 520,
     image: service2,
     mainCategory: "Services",
     subCategory: "Plumbing",
     supplierId: "6",
     rating: 5.0,
     reviews: 156,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 15,
+    availableEverywhere: false,
   },
   {
     id: "4",
     name: "Tow Truck",
-    description: "Handcrafted cutting and serving board made from sustainable hardwood.",
-    price: 45,
+    description: "24/7 tow truck and roadside assistance.",
+    price: 450,
     image: service3,
     mainCategory: "Services",
     subCategory: "Road Side",
     supplierId: "7",
     rating: 4.7,
     reviews: 84,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 50,
+    availableEverywhere: false,
   },
   {
     id: "5",
     name: "Painter ",
-    description: "Ceramic vase with delicate hand-painted botanical design.",
-    price: 42,
+    description: "Professional painting for homes and offices.",
+    price: 420,
     image:service5,
     mainCategory: "Services",
     subCategory: "Home Repairs",
     supplierId: "8",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 30,
+    availableEverywhere: false,
   },
   {
     id: "6",
@@ -448,6 +523,10 @@ export const groceries: Grocery[] = [
     supplierId: "9",
     rating: 4.9,
     reviews: 127,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 10,
+    availableEverywhere: false,
   },
   {
     id: "2",
@@ -460,6 +539,10 @@ export const groceries: Grocery[] = [
     supplierId: "10",
     rating: 4.8,
     reviews: 93,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 15,
+    availableEverywhere: false,
   },
   {
     id: "3",
@@ -472,6 +555,10 @@ export const groceries: Grocery[] = [
     supplierId: "11",
     rating: 5.0,
     reviews: 156,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 100,
+    availableEverywhere: true,
   },
   {
     id: "4",
@@ -484,6 +571,10 @@ export const groceries: Grocery[] = [
     supplierId: "13",
     rating: 4.7,
     reviews: 84,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 8,
+    availableEverywhere: false,
   },
   {
     id: "5",
@@ -496,6 +587,10 @@ export const groceries: Grocery[] = [
     supplierId: "12",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 20,
+    availableEverywhere: false,
   },
   {
     id: "6",
@@ -508,6 +603,10 @@ export const groceries: Grocery[] = [
     supplierId: "11",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
   {
     id: "7",
@@ -520,6 +619,10 @@ export const groceries: Grocery[] = [
     supplierId: "12",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 18,
+    availableEverywhere: false,
   },
   {
     id: "8",
@@ -532,6 +635,10 @@ export const groceries: Grocery[] = [
     supplierId: "11",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
 ];
 
@@ -547,6 +654,10 @@ export const freelance: Freelance[] = [
     supplierId: "14",
     rating: 4.9,
     reviews: 127,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 100,
+    availableEverywhere: true,
   },
   {
     id: "2",
@@ -559,6 +670,10 @@ export const freelance: Freelance[] = [
     supplierId: "15",
     rating: 4.8,
     reviews: 93,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 50,
+    availableEverywhere: false,
   },
   {
     id: "3",
@@ -571,6 +686,10 @@ export const freelance: Freelance[] = [
     supplierId: "16",
     rating: 5.0,
     reviews: 156,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 30,
+    availableEverywhere: false,
   },
   {
     id: "4",
@@ -583,6 +702,10 @@ export const freelance: Freelance[] = [
     supplierId: "16",
     rating: 4.7,
     reviews: 84,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 20,
+    availableEverywhere: false,
   },
   {
     id: "5",
@@ -595,6 +718,10 @@ export const freelance: Freelance[] = [
     supplierId: "17",
     rating: 4.9,
     reviews: 102,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 40,
+    availableEverywhere: false,
   },
   {
     id: "6",
@@ -607,6 +734,10 @@ export const freelance: Freelance[] = [
     supplierId: "17",
     rating: 4.8,
     reviews: 78,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
   {
     id: "7",
@@ -619,6 +750,10 @@ export const freelance: Freelance[] = [
     supplierId: "18",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 100,
+    availableEverywhere: true,
   },
   {
     id: "8",
@@ -631,6 +766,10 @@ export const freelance: Freelance[] = [
     supplierId: "18",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 100,
+    availableEverywhere: true,
   },
 ];
 

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLocation } from "@/context/LocationContext";
 
 interface GroceryCardProps {
   grocery: Grocery;
@@ -12,12 +13,21 @@ interface GroceryCardProps {
 
 const GroceryCard = ({ grocery }: GroceryCardProps) => {
   const supplier = suppliers.find((s) => s.id === grocery.supplierId);
+
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { address: userAddress } = useLocation();
+
+  // Location-based availability logic
+  const isAvailableEverywhere = grocery.availableEverywhere;
+  const isInRegion = userAddress && grocery.region && userAddress.toLowerCase().includes(grocery.region.toLowerCase());
+  const canAddToCart = isAvailableEverywhere || isInRegion;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    addToCart(grocery);
+    if (canAddToCart) {
+      addToCart(grocery);
+    }
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -63,9 +73,30 @@ const GroceryCard = ({ grocery }: GroceryCardProps) => {
               ({grocery.reviews})
             </span>
           </div>
+          <div className="flex flex-col gap-1 mb-2">
+            {grocery.availableEverywhere ? (
+              <span className="text-xs text-muted-foreground">Available everywhere</span>
+            ) : (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  Region: {grocery.region || 'N/A'}
+                </span>
+                {grocery.deliveryRadiusKm && (
+                  <span className="text-xs text-muted-foreground">
+                    Delivery radius: {grocery.deliveryRadiusKm} km
+                  </span>
+                )}
+              </>
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold text-primary">R{grocery.price}</p>
-            <Button size="sm" onClick={handleAddToCart}>
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={!canAddToCart}
+              title={!canAddToCart ? 'Not available in your location' : ''}
+            >
               Add to Cart
             </Button>
           </div>

@@ -2,10 +2,22 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
+
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { addToCart } = useCart();
+
+  const handleAddAllToCart = () => {
+    wishlistItems.forEach((item) => {
+      // Only add items that have price (i.e., are products/services/groceries/freelance)
+      if (typeof item.price === "number") {
+        addToCart(item);
+      }
+    });
+  };
 
   if (wishlistItems.length === 0) {
     return (
@@ -67,7 +79,7 @@ const Wishlist = () => {
                 Continue Shopping
               </Button>
             </Link>
-            <Button className="flex-1">Add All to Cart</Button>
+            <Button className="flex-1" onClick={handleAddAllToCart}>Add All to Cart</Button>
           </div>
         </div>
       </div>

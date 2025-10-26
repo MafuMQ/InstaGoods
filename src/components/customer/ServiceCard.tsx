@@ -3,7 +3,6 @@ import { Heart, Star } from "lucide-react";
 import { Service, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
 interface ServiceCardProps {
@@ -12,13 +11,7 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
   const supplier = suppliers.find((s) => s.id === service.supplierId);
-  const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    addToCart(service);
-  };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,11 +56,18 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
               ({service.reviews})
             </span>
           </div>
+          <div className="flex flex-col gap-1 mb-2">
+            <span className="text-xs text-muted-foreground">
+              {service.availableEverywhere ? "Available everywhere" : `Region: ${service.region || 'N/A'}`}
+            </span>
+            {!service.availableEverywhere && service.deliveryRadiusKm && (
+              <span className="text-xs text-muted-foreground">
+                Service radius: {service.deliveryRadiusKm} km
+              </span>
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold text-primary">R{service.price}</p>
-            <Button size="sm" onClick={handleAddToCart}>
-              Add to Cart
-            </Button>
           </div>
         </div>
       </Link>

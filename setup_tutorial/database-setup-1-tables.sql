@@ -66,6 +66,18 @@ CREATE TABLE public.products (
   sub_category TEXT,
   stock_quantity INTEGER DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
+  -- Delivery/Collection logic:
+  -- If no_delivery = true, product cannot be delivered (must be collected or arranged separately)
+  -- If available_everywhere = true, product can be delivered anywhere
+  -- If neither, use delivery_location, delivery_lat, delivery_lng, delivery_radius_km, delivery_fee for custom delivery area
+  available_everywhere BOOLEAN DEFAULT false,
+  no_delivery BOOLEAN DEFAULT false,
+  delivery_location TEXT,
+  delivery_lat DOUBLE PRECISION,
+  delivery_lng DOUBLE PRECISION,
+  delivery_radius_km INTEGER,
+  delivery_fee DECIMAL(10,2),
+  collection_available BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );

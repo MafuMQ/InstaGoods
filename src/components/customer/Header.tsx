@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useOnlyAvailable } from "@/context/OnlyAvailableContext";
 import { Search, ShoppingBag, Heart, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LocationPicker from "@/components/ui/LocationPicker";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -13,6 +15,9 @@ const Header = () => {
   const wishlistCount = getWishlistCount();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const { onlyAvailable, setOnlyAvailable } = useOnlyAvailable();
+
+  // Expose this state globally if needed, or lift to context if filtering is done outside Header
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -23,7 +28,7 @@ const Header = () => {
           </span>
         </Link>
         
-        <div className="hidden md:flex flex-1 max-w-md mx-8">
+        <div className="hidden md:flex flex-1 max-w-2xl mx-8 gap-4 items-center">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -37,6 +42,17 @@ const Header = () => {
                 }
               }}
             />
+          </div>
+          <div className="w-56 flex items-center gap-2">
+            <LocationPicker />
+            <Button
+              variant={onlyAvailable ? "default" : "outline"}
+              size="sm"
+              className="ml-2 whitespace-nowrap"
+              onClick={() => setOnlyAvailable(!onlyAvailable)}
+            >
+              {onlyAvailable ? "Showing Available" : "Only Available"}
+            </Button>
           </div>
         </div>
         

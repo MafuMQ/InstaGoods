@@ -7,6 +7,11 @@ import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { freelance, products, services, groceries} from "@/lib/data";
+import { useOnlyAvailable } from "@/context/OnlyAvailableContext";
+import { useLocation } from "@/context/LocationContext";
+import { haversineDistance } from "@/lib/distance";
+import { useEffect, useState as useReactState } from "react";
+import { geocodeAddress } from "@/lib/geocode";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
@@ -19,37 +24,80 @@ import freelance1 from "@/assets/grocery-1.jpg";
 const Index = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
+  const { onlyAvailable } = useOnlyAvailable();
+  const [deliveryOnly, setDeliveryOnly] = useState(false);
+  const { address: userAddress } = useLocation();
+  const [userLatLng, setUserLatLng] = useReactState<{ lat: number; lng: number } | null>(null);
+
+  // Geocode user address to lat/lng
+  useEffect(() => {
+    if (userAddress) {
+      geocodeAddress(userAddress).then(setUserLatLng);
+    } else {
+      setUserLatLng(null);
+    }
+  }, [userAddress]);
 
 //   Products
   const filteredProducts = products.filter((p) => {
-    if (selectedMainCategory === "All") return true;
-    if (p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory === "All") return true;
-    return p.subCategory === selectedSubCategory;
+    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+    // Delivery Only toggle: show only products that can be delivered (not no_delivery)
+    if (deliveryOnly && p.no_delivery) return false;
+    if (onlyAvailable && userLatLng) {
+      if (p.availableEverywhere) return true;
+      if (p.location && typeof p.deliveryRadiusKm === 'number') {
+        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+        return dist <= p.deliveryRadiusKm;
+      }
+      return false;
+    }
+    return true;
   });
 
 // Services
    const filteredServices = services.filter((p) => {
-    if (selectedMainCategory === "All") return true;
-    if (p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory === "All") return true;
-    return p.subCategory === selectedSubCategory;
+    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+    if (onlyAvailable && userLatLng) {
+      if (p.availableEverywhere) return true;
+      if (p.location && typeof p.deliveryRadiusKm === 'number') {
+        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+        return dist <= p.deliveryRadiusKm;
+      }
+      return false;
+    }
+    return true;
   });
 
   // Groceries
    const filteredGrocery = groceries.filter((p) => {
-    if (selectedMainCategory === "All") return true;
-    if (p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory === "All") return true;
-    return p.subCategory === selectedSubCategory;
+    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+    if (onlyAvailable && userLatLng) {
+      if (p.availableEverywhere) return true;
+      if (p.location && typeof p.deliveryRadiusKm === 'number') {
+        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+        return dist <= p.deliveryRadiusKm;
+      }
+      return false;
+    }
+    return true;
   });
 
   // Freelancing
    const filteredFreelance = freelance.filter((p) => {
-    if (selectedMainCategory === "All") return true;
-    if (p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory === "All") return true;
-    return p.subCategory === selectedSubCategory;
+    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+    if (onlyAvailable && userLatLng) {
+      if (p.availableEverywhere) return true;
+      if (p.location && typeof p.deliveryRadiusKm === 'number') {
+        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+        return dist <= p.deliveryRadiusKm;
+      }
+      return false;
+    }
+    return true;
   });
 
   const categories = [
@@ -122,6 +170,16 @@ const Index = () => {
 
       {/* Featured Products */}
       <section className="container py-12">
+        <div className="flex items-center gap-4 mb-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={deliveryOnly}
+              onChange={e => setDeliveryOnly(e.target.checked)}
+            />
+            Delivery Only
+          </label>
+        </div>
         {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold">Featured Items</h2>
           <Link to="/products">

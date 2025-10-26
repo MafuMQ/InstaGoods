@@ -6,7 +6,6 @@ import { services, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ServiceRequestForm from "@/components/customer/ServiceRequestForm";
-import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
 const ServiceDetail = () => {
@@ -14,14 +13,7 @@ const ServiceDetail = () => {
   const service = services.find((p) => p.id === id);
   const supplier = service ? suppliers.find((s) => s.id === service.supplierId) : null;
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
-  const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-
-  const handleAddToCart = () => {
-    if (service) {
-      addToCart(service);
-    }
-  };
 
   const handleToggleWishlist = () => {
     if (service) {
@@ -92,14 +84,6 @@ const ServiceDetail = () => {
               >
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Request Service
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={handleAddToCart}
-              >
-                <ShoppingBag className="mr-2 h-5 w-5" />
-                Add to Cart
               </Button>
               <Button
                 size="lg"

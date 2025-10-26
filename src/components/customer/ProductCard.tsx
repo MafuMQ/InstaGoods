@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useLocation } from "@/context/LocationContext";
 
 interface ProductCardProps {
   product: Product | MarketplaceProduct;
@@ -22,12 +23,27 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const productRating = isMarketplaceProduct ? 4.5 : (product as Product).rating;
   const productReviews = isMarketplaceProduct ? 0 : (product as Product).reviews;
   
+
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { address: userAddress } = useLocation();
+
+  // Location-based availability logic (only for static products)
+  let canAddToCart = true;
+  if (!isMarketplaceProduct) {
+    const p = product as Product;
+    if (p.no_delivery) {
+      canAddToCart = false;
+    } else {
+      const isAvailableEverywhere = p.availableEverywhere;
+      const isInRegion = userAddress && p.region && userAddress.toLowerCase().includes(p.region.toLowerCase());
+      canAddToCart = isAvailableEverywhere || isInRegion;
+    }
+  }
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+    if (!canAddToCart) return;
     // Convert MarketplaceProduct to Product format if needed
     if (isMarketplaceProduct) {
       const marketplaceProduct = product as MarketplaceProduct;
@@ -113,9 +129,30 @@ const ProductCard = ({ product }: ProductCardProps) => {
               ({productReviews})
             </span>
           </div>
+          <div className="flex flex-col gap-1 mb-2">
+            {isMarketplaceProduct ? (
+              <span className="text-xs text-muted-foreground">Region: N/A</span>
+            ) : (
+              <>
+                <span className="text-xs text-muted-foreground">
+                  {(product as Product).availableEverywhere ? "Available everywhere" : `Region: ${(product as Product).region || 'N/A'}`}
+                </span>
+                {!(product as Product).availableEverywhere && (product as Product).deliveryRadiusKm && (
+                  <span className="text-xs text-muted-foreground">
+                    Delivery radius: {(product as Product).deliveryRadiusKm} km
+                  </span>
+                )}
+              </>
+            )}
+          </div>
           <div className="flex items-center justify-between">
             <p className="text-lg font-bold text-primary">R{product.price}</p>
-            <Button size="sm" onClick={handleAddToCart}>
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={!canAddToCart}
+              title={!canAddToCart ? 'Not available in your location' : ''}
+            >
               Add to Cart
             </Button>
           </div>

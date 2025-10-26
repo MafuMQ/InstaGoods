@@ -5,10 +5,12 @@ import SupplierNav from "@/components/supplier/SupplierNav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LocationAutocomplete from "@/components/ui/LocationAutocomplete";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -24,6 +26,15 @@ interface Product {
   stock_quantity: number;
   is_active: boolean;
   is_marketplace_visible: boolean;
+  available_everywhere?: boolean;
+  delivery_location?: string;
+  delivery_lat?: number;
+  delivery_lng?: number;
+  delivery_radius_km?: number;
+  delivery_fee?: number;
+  collection_available?: boolean;
+  collection_only?: boolean;
+  no_delivery?: boolean;
 }
 
 const SupplierProducts = () => {
@@ -41,6 +52,14 @@ const SupplierProducts = () => {
     sub_category: "Home & Living",
     stock_quantity: "0",
     is_marketplace_visible: true,
+  delivery_option: "custom", // 'no_delivery', 'custom', 'everywhere'
+  available_everywhere: false,
+  delivery_location: "",
+  delivery_lat: "",
+  delivery_lng: "",
+  delivery_radius_km: "",
+  delivery_fee: "",
+  collection_available: false,
   });
 
   useEffect(() => {
@@ -86,7 +105,7 @@ const SupplierProducts = () => {
 
     setSubmitting(true);
 
-    const productData = {
+    const productData: any = {
       supplier_id: supplierId,
       name: formData.name.trim(),
       description: formData.description.trim(),
@@ -96,6 +115,15 @@ const SupplierProducts = () => {
       stock_quantity: parseInt(formData.stock_quantity) || 0,
       is_active: true,
       is_marketplace_visible: formData.is_marketplace_visible,
+  available_everywhere: formData.delivery_option === 'everywhere',
+  no_delivery: formData.delivery_option === 'no_delivery',
+  collection_only: false, // deprecated, handled by delivery_option
+  delivery_location: formData.delivery_option === 'custom' ? formData.delivery_location : null,
+  delivery_lat: formData.delivery_option === 'custom' ? (formData.delivery_lat ? parseFloat(formData.delivery_lat) : null) : null,
+  delivery_lng: formData.delivery_option === 'custom' ? (formData.delivery_lng ? parseFloat(formData.delivery_lng) : null) : null,
+  delivery_radius_km: formData.delivery_option === 'custom' ? (formData.delivery_radius_km ? parseInt(formData.delivery_radius_km) : null) : null,
+  delivery_fee: formData.delivery_option === 'custom' ? (formData.delivery_fee ? parseFloat(formData.delivery_fee) : null) : null,
+  collection_available: formData.collection_available,
     };
 
     try {
@@ -162,6 +190,15 @@ const SupplierProducts = () => {
       sub_category: "Home & Living",
       stock_quantity: "0",
       is_marketplace_visible: true,
+      available_everywhere: false,
+      delivery_location: "",
+      delivery_lat: "",
+      delivery_lng: "",
+      delivery_radius_km: "",
+      delivery_fee: "",
+      collection_available: false,
+      collection_only: false,
+      no_delivery: false,
     });
     setEditingProduct(null);
   };
@@ -176,6 +213,14 @@ const SupplierProducts = () => {
       sub_category: product.sub_category || "",
       stock_quantity: product.stock_quantity.toString(),
       is_marketplace_visible: product.is_marketplace_visible ?? true,
+  delivery_option: product.no_delivery ? 'no_delivery' : (product.available_everywhere ? 'everywhere' : 'custom'),
+  available_everywhere: product.available_everywhere ?? false,
+  delivery_location: product.delivery_location || "",
+  delivery_lat: product.delivery_lat?.toString() || "",
+  delivery_lng: product.delivery_lng?.toString() || "",
+  delivery_radius_km: product.delivery_radius_km?.toString() || "",
+  delivery_fee: product.delivery_fee?.toString() || "",
+  collection_available: product.collection_available ?? false,
     });
     setDialogOpen(true);
   };
@@ -292,6 +337,83 @@ const SupplierProducts = () => {
                   <Label htmlFor="marketplace_visible" className="text-sm font-normal">
                     List this product on the main marketplace
                   </Label>
+                </div>
+                <div className="space-y-2 border-t pt-4 mt-4">
+                  <div className="mb-2">
+                    <span className="font-semibold">Delivery & Collection Options</span>
+                  </div>
+                  <RadioGroup
+                    value={formData.delivery_option}
+                    onValueChange={(val) => setFormData({ ...formData, delivery_option: val })}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="no_delivery" id="no_delivery" />
+                      <Label htmlFor="no_delivery" className="text-sm font-normal">
+                        No delivery
+                        <span className="block text-xs text-muted-foreground">Product must be collected or arranged separately.</span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="custom" id="custom" />
+                      <Label htmlFor="custom" className="text-sm font-normal">
+                        Custom delivery area
+                        <span className="block text-xs text-muted-foreground">Set delivery location, radius, and fee.</span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="everywhere" id="everywhere" />
+                      <Label htmlFor="everywhere" className="text-sm font-normal">
+                        Deliver everywhere
+                        <span className="block text-xs text-muted-foreground">No delivery limits, available everywhere.</span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                  {formData.delivery_option === 'custom' && (
+                    <>
+                      <div>
+                        <Label htmlFor="delivery_location">Delivery Location (address/area)</Label>
+                        <LocationAutocomplete
+                          value={formData.delivery_location}
+                          onChange={(val) => setFormData({ ...formData, delivery_location: val })}
+                          onSelectAddress={(address, lat, lng) => setFormData({ ...formData, delivery_location: address, delivery_lat: lat.toString(), delivery_lng: lng.toString() })}
+                          placeholder="Enter address or area..."
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="delivery_radius_km">Max Delivery Radius (km)</Label>
+                          <Input
+                            id="delivery_radius_km"
+                            type="number"
+                            value={formData.delivery_radius_km}
+                            onChange={(e) => setFormData({ ...formData, delivery_radius_km: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="delivery_fee">Delivery/Transport Fee</Label>
+                          <Input
+                            id="delivery_fee"
+                            type="number"
+                            step="0.01"
+                            value={formData.delivery_fee}
+                            onChange={(e) => setFormData({ ...formData, delivery_fee: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Checkbox
+                      id="collection_available"
+                      checked={formData.collection_available}
+                      onCheckedChange={(checked) => setFormData({ ...formData, collection_available: checked === true })}
+                    />
+                    <Label htmlFor="collection_available" className="text-sm font-normal">
+                      Collection available
+                      <span className="block text-xs text-muted-foreground">Allow customers to collect at your site.</span>
+                    </Label>
+                  </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting 

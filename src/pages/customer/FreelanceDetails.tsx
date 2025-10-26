@@ -3,10 +3,10 @@ import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
 import { freelance, suppliers } from "@/lib/data";
+import { useLocation } from "@/context/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import ServiceRequestForm from "@/components/customer/ServiceRequestForm";
-import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
 const FreelanceDetail = () => {
@@ -14,14 +14,15 @@ const FreelanceDetail = () => {
   const freelancing = freelance.find((p) => p.id === id);
   const supplier = freelancing ? suppliers.find((s) => s.id === freelancing.supplierId) : null;
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
-  const { addToCart } = useCart();
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { address: userAddress } = useLocation();
 
-  const handleAddToCart = () => {
-    if (freelancing) {
-      addToCart(freelancing);
-    }
-  };
+  // Helper: check if service is available everywhere
+  const isAvailableEverywhere = freelancing?.availableEverywhere;
+  // Helper: check if service is in user's selected region (simple string match)
+  const isInRegion = userAddress && freelancing?.region && userAddress.toLowerCase().includes(freelancing.region.toLowerCase());
+  // Helper: show delivery radius if not everywhere
+  const deliveryRadius = freelancing?.deliveryRadiusKm;
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleToggleWishlist = () => {
     if (freelancing) {
@@ -50,7 +51,6 @@ const FreelanceDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <div className="container py-8">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Service Image */}
@@ -65,7 +65,7 @@ const FreelanceDetail = () => {
           {/* Service Info */}
           <div className="flex flex-col">
             <h1 className="text-3xl font-bold mb-2">{freelancing.name}</h1>
-            
+
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-accent text-accent" />
@@ -80,9 +80,35 @@ const FreelanceDetail = () => {
               R{freelancing.price}
             </p>
 
-            <p className="text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-muted-foreground mb-4 leading-relaxed">
               {freelancing.description}
             </p>
+
+            {/* Delivery/Availability Info */}
+            <div className="mb-4">
+              {isAvailableEverywhere ? (
+                <span className="inline-block px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                  Available everywhere
+                </span>
+              ) : userAddress ? (
+                isInRegion ? (
+                  <span className="inline-block px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                    Available at <span className="font-semibold">{userAddress}</span>
+                    {deliveryRadius && (
+                      <span> (within {deliveryRadius} km)</span>
+                    )}
+                  </span>
+                ) : (
+                  <span className="inline-block px-3 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
+                    Not available in your location
+                  </span>
+                )
+              ) : (
+                <span className="inline-block px-3 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium">
+                  Set your region to check availability
+                </span>
+              )}
+            </div>
 
             <div className="flex gap-3 mb-8">
               <Button
@@ -92,14 +118,6 @@ const FreelanceDetail = () => {
               >
                 <ShoppingBag className="mr-2 h-5 w-5" />
                 Request Service
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={handleAddToCart}
-              >
-                <ShoppingBag className="mr-2 h-5 w-5" />
-                Add to Cart
               </Button>
               <Button
                 size="lg"
