@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { Star, MapPin } from "lucide-react";
-import Header from "@/components/Header";
-import ProductCard from "@/components/ProductCard";
+import Header from "@/components/customer/Header";
+import ProductCard from "@/components/customer/ProductCard";
 import { products, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 

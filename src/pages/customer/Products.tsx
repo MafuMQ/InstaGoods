@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Header from "@/components/Header";
-import ProductCard from "@/components/ProductCard";
-import CategoryNav from "@/components/CategoryNav";
+import Header from "@/components/customer/Header";
+import ProductCard from "@/components/customer/ProductCard";
+import CategoryNav from "@/components/customer/CategoryNav";
 import { products } from "@/lib/data";
 
 const Products = () => {
