@@ -33,7 +33,6 @@ interface Product {
   delivery_radius_km?: number;
   delivery_fee?: number;
   collection_available?: boolean;
-  collection_only?: boolean;
   no_delivery?: boolean;
 }
 
@@ -115,15 +114,14 @@ const SupplierProducts = () => {
       stock_quantity: parseInt(formData.stock_quantity) || 0,
       is_active: true,
       is_marketplace_visible: formData.is_marketplace_visible,
-  available_everywhere: formData.delivery_option === 'everywhere',
-  no_delivery: formData.delivery_option === 'no_delivery',
-  collection_only: false, // deprecated, handled by delivery_option
-  delivery_location: formData.delivery_option === 'custom' ? formData.delivery_location : null,
-  delivery_lat: formData.delivery_option === 'custom' ? (formData.delivery_lat ? parseFloat(formData.delivery_lat) : null) : null,
-  delivery_lng: formData.delivery_option === 'custom' ? (formData.delivery_lng ? parseFloat(formData.delivery_lng) : null) : null,
-  delivery_radius_km: formData.delivery_option === 'custom' ? (formData.delivery_radius_km ? parseInt(formData.delivery_radius_km) : null) : null,
-  delivery_fee: formData.delivery_option === 'custom' ? (formData.delivery_fee ? parseFloat(formData.delivery_fee) : null) : null,
-  collection_available: formData.collection_available,
+      available_everywhere: formData.delivery_option === 'everywhere',
+      no_delivery: formData.delivery_option === 'no_delivery',
+      delivery_location: formData.delivery_option === 'custom' ? formData.delivery_location : null,
+      delivery_lat: formData.delivery_option === 'custom' ? (formData.delivery_lat ? parseFloat(formData.delivery_lat) : null) : null,
+      delivery_lng: formData.delivery_option === 'custom' ? (formData.delivery_lng ? parseFloat(formData.delivery_lng) : null) : null,
+      delivery_radius_km: formData.delivery_option === 'custom' ? (formData.delivery_radius_km ? parseInt(formData.delivery_radius_km) : null) : null,
+      delivery_fee: formData.delivery_option === 'custom' ? (formData.delivery_fee ? parseFloat(formData.delivery_fee) : null) : null,
+      collection_available: formData.collection_available,
     };
 
     try {

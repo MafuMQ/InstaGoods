@@ -10,6 +10,13 @@ export interface MarketplaceProduct {
   main_category: string;
   sub_category: string | null;
   supplier_id: string;
+  available_everywhere: boolean | null;
+  no_delivery: boolean | null;
+  delivery_location: string | null;
+  delivery_lat: number | null;
+  delivery_lng: number | null;
+  delivery_radius_km: number | null;
+  collection_available: boolean | null;
 }
 
 export const useMarketplaceProducts = () => {
@@ -28,7 +35,7 @@ export const useMarketplaceProducts = () => {
     try {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, description, price, image_url, main_category, sub_category, supplier_id")
+        .select("id, name, description, price, image_url, main_category, sub_category, supplier_id, available_everywhere, no_delivery, delivery_location, delivery_lat, delivery_lng, delivery_radius_km, collection_available")
         .eq("is_active", true)
         .eq("is_marketplace_visible", true)
         .order("created_at", { ascending: false });

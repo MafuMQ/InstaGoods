@@ -172,7 +172,14 @@ export type Database = {
       }
       products: {
         Row: {
+          available_everywhere: boolean | null
+          collection_available: boolean | null
           created_at: string | null
+          delivery_fee: number | null
+          delivery_lat: number | null
+          delivery_lng: number | null
+          delivery_location: string | null
+          delivery_radius_km: number | null
           description: string | null
           id: string
           image_url: string | null
@@ -180,6 +187,7 @@ export type Database = {
           is_marketplace_visible: boolean | null
           main_category: string
           name: string
+          no_delivery: boolean | null
           price: number
           stock_quantity: number | null
           sub_category: string | null
@@ -187,7 +195,14 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          available_everywhere?: boolean | null
+          collection_available?: boolean | null
           created_at?: string | null
+          delivery_fee?: number | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          delivery_location?: string | null
+          delivery_radius_km?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -195,6 +210,7 @@ export type Database = {
           is_marketplace_visible?: boolean | null
           main_category: string
           name: string
+          no_delivery?: boolean | null
           price: number
           stock_quantity?: number | null
           sub_category?: string | null
@@ -202,7 +218,14 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          available_everywhere?: boolean | null
+          collection_available?: boolean | null
           created_at?: string | null
+          delivery_fee?: number | null
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          delivery_location?: string | null
+          delivery_radius_km?: number | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -210,6 +233,7 @@ export type Database = {
           is_marketplace_visible?: boolean | null
           main_category?: string
           name?: string
+          no_delivery?: boolean | null
           price?: number
           stock_quantity?: number | null
           sub_category?: string | null
@@ -255,29 +279,35 @@ export type Database = {
       }
       suppliers: {
         Row: {
+          banner_url: string | null
           business_name: string
           created_at: string | null
           description: string | null
           id: string
           location: string | null
+          logo_url: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          banner_url?: string | null
           business_name: string
           created_at?: string | null
           description?: string | null
           id?: string
           location?: string | null
+          logo_url?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          banner_url?: string | null
           business_name?: string
           created_at?: string | null
           description?: string | null
           id?: string
           location?: string | null
+          logo_url?: string | null
           updated_at?: string | null
           user_id?: string
         }

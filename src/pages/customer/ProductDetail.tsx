@@ -1,35 +1,57 @@
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
-import { products, suppliers } from "@/lib/data";
+import { useProduct } from "@/hooks/useProduct";
 import { useLocation } from "@/context/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { haversineDistance } from "@/lib/distance";
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const product = products.find((p) => p.id === id);
-  const supplier = product ? suppliers.find((s) => s.id === product.supplierId) : null;
+  const { product, loading, error } = useProduct(id);
+  const supplier = product?.supplier || null;
 
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { address: userAddress } = useLocation();
 
   // Helper: check if product is available everywhere
-  const isAvailableEverywhere = product?.availableEverywhere;
-  // Helper: check if product is in user's selected region (simple string match)
-  const isInRegion = userAddress && product?.region && userAddress.toLowerCase().includes(product.region.toLowerCase());
-  // Helper: show delivery radius if not everywhere
-  const deliveryRadius = product?.deliveryRadiusKm;
+  const isAvailableEverywhere = product?.available_everywhere;
+  
+  // Helper: check if product is in user's delivery range (simplified for now)
+  const isInDeliveryRange = userAddress && product?.delivery_location && 
+    userAddress.toLowerCase().includes(product.delivery_location.toLowerCase());
 
-
-  const canAddToCart = !product?.no_delivery && (isAvailableEverywhere || isInRegion);
+  const canAddToCart = !product?.no_delivery && (isAvailableEverywhere || isInDeliveryRange);
 
   const handleAddToCart = () => {
     if (product && canAddToCart) {
-      addToCart(product);
+      // Convert product to expected cart format
+      const cartProduct = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image_url || '',
+        supplierId: product.supplier_id,
+        mainCategory: product.main_category,
+        subCategory: product.sub_category || '',
+        description: product.description || '',
+        rating: 4.5, // Default rating since not in database
+        reviews: 10, // Default reviews since not in database
+        no_delivery: product.no_delivery || false,
+        delivery_fee: product.delivery_fee || 0,
+        availableEverywhere: product.available_everywhere || false,
+        deliveryRadiusKm: product.delivery_radius_km || 0,
+        region: product.delivery_location || '',
+        location: product.delivery_lat && product.delivery_lng ? {
+          lat: product.delivery_lat,
+          lng: product.delivery_lng
+        } : undefined
+      };
+      addToCart(cartProduct);
     }
   };
 
@@ -38,12 +60,45 @@ const ProductDetail = () => {
       if (isInWishlist(product.id)) {
         removeFromWishlist(product.id);
       } else {
-        addToWishlist(product);
+        // Convert product to expected wishlist format
+        const wishlistProduct = {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image_url || '',
+          supplierId: product.supplier_id,
+          mainCategory: product.main_category,
+          subCategory: product.sub_category || '',
+          description: product.description || '',
+          rating: 4.5, // Default rating since not in database
+          reviews: 10, // Default reviews since not in database
+          no_delivery: product.no_delivery || false,
+          delivery_fee: product.delivery_fee || 0,
+          availableEverywhere: product.available_everywhere || false,
+          deliveryRadiusKm: product.delivery_radius_km || 0,
+          region: product.delivery_location || '',
+          location: product.delivery_lat && product.delivery_lng ? {
+            lat: product.delivery_lat,
+            lng: product.delivery_lng
+          } : undefined
+        };
+        addToWishlist(wishlistProduct);
       }
     }
   };
 
-  if (!product || !supplier) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product || !supplier) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -65,7 +120,7 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
-              src={product.image}
+              src={product.image_url || '/placeholder-product.jpg'}
               alt={product.name}
               className="h-full w-full object-cover"
             />
@@ -78,10 +133,10 @@ const ProductDetail = () => {
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 fill-accent text-accent" />
-                <span className="font-medium">{product.rating}</span>
+                <span className="font-medium">4.5</span>
               </div>
               <span className="text-muted-foreground">
-                ({product.reviews} reviews)
+                (15 reviews)
               </span>
             </div>
 
@@ -104,11 +159,11 @@ const ProductDetail = () => {
                   Delivers everywhere
                 </span>
               ) : userAddress ? (
-                isInRegion ? (
+                isInDeliveryRange ? (
                   <span className="inline-block px-3 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
                     Available at <span className="font-semibold">{userAddress}</span>
-                    {deliveryRadius && (
-                      <span> (within {deliveryRadius} km)</span>
+                    {product.delivery_radius_km && (
+                      <span> (within {product.delivery_radius_km} km)</span>
                     )}
                   </span>
                 ) : (
@@ -153,20 +208,20 @@ const ProductDetail = () => {
             <Card className="p-6">
               <div className="flex items-start gap-4">
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold text-xl">
-                  {supplier.name.charAt(0)}
+                  {supplier.business_name.charAt(0)}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-lg mb-1">{supplier.name}</h3>
+                  <h3 className="font-bold text-lg mb-1">{supplier.business_name}</h3>
                   <p className="text-sm text-muted-foreground mb-2">
                     {supplier.location}
                   </p>
                   <div className="flex items-center gap-4 text-sm mb-3">
                     <div className="flex items-center gap-1">
                       <Star className="h-3 w-3 fill-accent text-accent" />
-                      <span className="font-medium">{supplier.rating}</span>
+                      <span className="font-medium">4.5</span>
                     </div>
                     <span className="text-muted-foreground">
-                      {supplier.totalSales} sales
+                      15+ sales
                     </span>
                   </div>
                   <Link to={`/supplier/${supplier.id}`}>

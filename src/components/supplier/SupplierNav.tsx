@@ -27,6 +27,7 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
     { to: "/supplier/expenses", icon: DollarSign, label: "Expenses" },
     { to: "/supplier/service-requests", icon: MessageSquare, label: "Service Requests" },
     { to: "/supplier/optimize", icon: Target, label: "Optimize" },
+    { to: "/supplier/shop-settings", icon: Home, label: "Shop Settings" },
   ];
 
   return (

@@ -6,7 +6,8 @@ import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import CategoryNav from "@/components/customer/CategoryNav";
-import { freelance, products, services, groceries} from "@/lib/data";
+import { freelance, services, groceries} from "@/lib/data";
+import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useLocation } from "@/context/LocationContext";
 import { haversineDistance } from "@/lib/distance";
 import { useEffect, useState as useReactState } from "react";
@@ -29,6 +30,10 @@ const Index = () => {
   const { address: userAddress } = useLocation();
   const [userLatLng, setUserLatLng] = useReactState<{ lat: number; lng: number } | null>(null);
   const { onlyAvailable, deliveryOnly } = useDeliveryAndAvailable();
+  
+  // Fetch products from Supabase
+  const { products, loading: productsLoading, error: productsError } = useMarketplaceProducts();
+  
   // Geocode user address to lat/lng
   useEffect(() => {
     if (userAddress) {
@@ -45,14 +50,14 @@ const Index = () => {
 
 //   Products
   const filteredProducts = products.filter((p) => {
-    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+    if (selectedMainCategory !== "All" && p.main_category !== selectedMainCategory) return false;
+    if (selectedSubCategory !== "All" && p.sub_category !== selectedSubCategory) return false;
     if (deliveryOnly && p.no_delivery) return false;
     if (onlyAvailable && userLatLng) {
-      if (p.availableEverywhere) return true;
-      if (p.location && typeof p.deliveryRadiusKm === 'number') {
-        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
-        return dist <= p.deliveryRadiusKm;
+      if (p.available_everywhere) return true;
+      if (p.delivery_lat && p.delivery_lng && typeof p.delivery_radius_km === 'number') {
+        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
+        return dist <= p.delivery_radius_km;
       }
       return false;
     }

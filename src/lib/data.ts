@@ -59,7 +59,6 @@ export interface Product {
   delivery_lng?: number;
   delivery_fee?: number;
   collection_available?: boolean;
-  collection_only?: boolean;
   no_delivery?: boolean;
 }
 
