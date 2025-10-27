@@ -202,11 +202,11 @@ const SupplierIncomes = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Incomes</h1>
-            <p className="text-2xl text-muted-foreground">Total: ${totalIncomes.toFixed(2)}</p>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2">Incomes</h1>
+            <p className="text-xl sm:text-2xl text-muted-foreground">Total: ${totalIncomes.toFixed(2)}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
@@ -273,15 +273,15 @@ const SupplierIncomes = () => {
 
         {/* Completed Orders Section */}
         {orders.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Completed Orders</h2>
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4">Completed Orders</h2>
             <p className="text-muted-foreground mb-4">
               You can add completed orders to your income records. Orders can only be added once.
             </p>
             <div className="space-y-4">
               {orders.map((order) => (
                 <Card key={order.id} className="p-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                     <div>
                       <h3 className="font-semibold">{order.product_name}</h3>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -289,7 +289,7 @@ const SupplierIncomes = () => {
                         <Badge variant="secondary">{order.status}</Badge>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <span className="text-lg font-bold text-primary">
                         ${order.total_amount.toFixed(2)}
                       </span>
@@ -321,15 +321,15 @@ const SupplierIncomes = () => {
 
         {/* Income Records Section */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Income Records</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">Income Records</h2>
           <div className="space-y-4">
             {incomes.map((income) => (
-              <Card key={income.id} className="p-6">
-                <div className="flex justify-between items-start">
+              <Card key={income.id} className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                   <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                       <div>
-                        <h3 className="text-xl font-bold">{income.source}</h3>
+                        <h3 className="text-lg sm:text-xl font-bold">{income.source}</h3>
                         <p className="text-sm text-muted-foreground">
                           {format(new Date(income.income_date), "PPP")}
                         </p>
@@ -339,7 +339,7 @@ const SupplierIncomes = () => {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-2xl font-bold text-primary">
+                      <p className="text-xl sm:text-2xl font-bold text-primary">
                         ${income.amount.toFixed(2)}
                       </p>
                     </div>

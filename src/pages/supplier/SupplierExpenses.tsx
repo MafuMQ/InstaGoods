@@ -111,11 +111,11 @@ const SupplierExpenses = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Expenses</h1>
-            <p className="text-2xl text-muted-foreground">Total: ${totalExpenses.toFixed(2)}</p>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-2">Expenses</h1>
+            <p className="text-xl sm:text-2xl text-muted-foreground">Total: ${totalExpenses.toFixed(2)}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
@@ -182,17 +182,17 @@ const SupplierExpenses = () => {
 
         <div className="space-y-4">
           {expenses.map((expense) => (
-            <Card key={expense.id} className="p-6">
-              <div className="flex justify-between items-start">
+            <Card key={expense.id} className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div className="flex-1">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                     <div>
-                      <h3 className="text-xl font-bold">{expense.category}</h3>
+                      <h3 className="text-lg sm:text-xl font-bold">{expense.category}</h3>
                       <p className="text-sm text-muted-foreground">
                         {format(new Date(expense.expense_date), "PPP")}
                       </p>
                     </div>
-                    <p className="text-2xl font-bold text-destructive">
+                    <p className="text-xl sm:text-2xl font-bold text-destructive">
                       ${expense.amount}
                     </p>
                   </div>

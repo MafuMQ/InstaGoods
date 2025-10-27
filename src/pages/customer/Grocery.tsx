@@ -10,7 +10,7 @@ const Grocery = () => {
 
   const filteredGrocery = groceries.filter((p) => {
     if (selectedMainCategory === "All") return true;
-    if (selectedMainCategory === "Shop by Store") {
+  if (selectedMainCategory === "Shop by Business") {
       if (selectedSubCategory === "All") return true;
       const supplier = suppliers.find(s => s.id === p.supplierId);
       return supplier?.name === selectedSubCategory;

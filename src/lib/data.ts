@@ -128,7 +128,7 @@ export const suppliers: Supplier[] = [
     id: "1",
     name: "Earthen Crafts Studio",
     description: "Handcrafted ceramics and pottery made with love and traditional techniques.",
-    location: "Portland, Oregon",
+  location: "Johannesburg, Gauteng, South Africa",
     rating: 4.9,
     totalSales: 1243,
   },
@@ -136,7 +136,7 @@ export const suppliers: Supplier[] = [
     id: "2",
     name: "Fiber & Thread Co.",
     description: "Artisan textiles and macrame wall hangings for mindful living spaces.",
-    location: "Austin, Texas",
+  location: "Pretoria, Gauteng, South Africa",
     rating: 4.8,
     totalSales: 892,
   },
@@ -144,7 +144,7 @@ export const suppliers: Supplier[] = [
     id: "3",
     name: "Leather & Lore",
     description: "Premium leather goods handcrafted with traditional bookbinding methods.",
-    location: "Seattle, Washington",
+  location: "Sandton, Gauteng, South Africa",
     rating: 5.0,
     totalSales: 567,
   },
@@ -152,7 +152,7 @@ export const suppliers: Supplier[] = [
     id: "4",
     name: "Woodwork Collective",
     description: "Sustainable wooden home goods crafted from locally sourced timber.",
-    location: "Denver, Colorado",
+  location: "Midrand, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -160,7 +160,7 @@ export const suppliers: Supplier[] = [
     id: "5",
     name: "Electrical",
     description: "Electrical Technician",
-    location: "Portland, Oregon",
+  location: "Soweto, Gauteng, South Africa",
     rating: 4.9,
     totalSales: 1243,
   },
@@ -168,7 +168,7 @@ export const suppliers: Supplier[] = [
     id: "6",
     name: "Easy Fix Plumber",
     description: "All in one Plumbing Solutions",
-    location: "Austin, Texas",
+  location: "Centurion, Gauteng, South Africa",
     rating: 4.8,
     totalSales: 892,
   },
@@ -176,7 +176,7 @@ export const suppliers: Supplier[] = [
     id: "7",
     name: "Road Side Assistance",
     description: "Road side assistance 24/7",
-    location: "Seattle, Washington",
+  location: "Benoni, Gauteng, South Africa",
     rating: 5.0,
     totalSales: 567,
   },
@@ -184,7 +184,7 @@ export const suppliers: Supplier[] = [
     id: "8",
     name: "Construction",
     description: "Sustainable wooden home goods crafted from locally sourced timber.",
-    location: "Denver, Colorado",
+  location: "Boksburg, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -192,7 +192,7 @@ export const suppliers: Supplier[] = [
     id: "9",
     name: "Pick n' Pay",
     description: "PnP",
-    location: "Portland, Oregon",
+  location: "Alberton, Gauteng, South Africa",
     rating: 4.9,
     totalSales: 1243,
   },
@@ -200,7 +200,7 @@ export const suppliers: Supplier[] = [
     id: "10",
     name: "Spar",
     description: "Spar Stores",
-    location: "Austin, Texas",
+  location: "Germiston, Gauteng, South Africa",
     rating: 4.8,
     totalSales: 892,
   },
@@ -208,7 +208,7 @@ export const suppliers: Supplier[] = [
     id: "11",
     name: "DisChem",
     description: "DisChem Pharmacy",
-    location: "Seattle, Washington",
+  location: "Randburg, Gauteng, South Africa",
     rating: 5.0,
     totalSales: 567,
   },
@@ -216,7 +216,7 @@ export const suppliers: Supplier[] = [
     id: "12",
     name: "Clicks",
     description: "Clicks Pharmacy",
-    location: "Denver, Colorado",
+  location: "Roodepoort, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -224,7 +224,7 @@ export const suppliers: Supplier[] = [
     id: "13",
     name: "Woolworths",
     description: "Woolies",
-    location: "Denver, Colorado",
+  location: "Kempton Park, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -232,7 +232,7 @@ export const suppliers: Supplier[] = [
     id: "14",
     name: "Canva",
     description: "Canva Creator",
-    location: "Austin, Texas",
+  location: "Tembisa, Gauteng, South Africa",
     rating: 4.8,
     totalSales: 892,
   },
@@ -240,7 +240,7 @@ export const suppliers: Supplier[] = [
     id: "15",
     name: "Sky_",
     description: "Ghostwriter",
-    location: "Seattle, Washington",
+  location: "Vereeniging, Gauteng, South Africa",
     rating: 5.0,
     totalSales: 567,
   },
@@ -248,7 +248,7 @@ export const suppliers: Supplier[] = [
     id: "16",
     name: "Jesper",
     description: "Web Developer",
-    location: "Seattle, Washington",
+  location: "Brakpan, Gauteng, South Africa",
     rating: 5.0,
     totalSales: 567,
   },
@@ -256,7 +256,7 @@ export const suppliers: Supplier[] = [
     id: "17",
     name: "PowerBI",
     description: "Microsoft Expert",
-    location: "Denver, Colorado",
+  location: "Krugersdorp, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -264,7 +264,7 @@ export const suppliers: Supplier[] = [
     id: "18",
     name: "Data Tech",
     description: "Data Analyst",
-    location: "Denver, Colorado",
+  location: "Springs, Gauteng, South Africa",
     rating: 4.7,
     totalSales: 1089,
   },
@@ -272,7 +272,7 @@ export const suppliers: Supplier[] = [
 
 export const products: Product[] = [
   {
-    id: "1",
+    id: "product-1",
     name: "Artisan Ceramic Mug",
     description: "Hand-thrown ceramic mug with unique glaze pattern. Each piece is one-of-a-kind.",
     price: 38,
@@ -288,7 +288,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "2",
+    id: "product-2",
     name: "Macrame Wall Hanging",
     description: "Handwoven macrame wall art made from 100% natural cotton cord.",
     price: 65,
@@ -304,7 +304,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "3",
+    id: "product-3",
     name: "Embossed Leather Journal",
     description: "Premium leather-bound journal with hand-embossed decorative pattern.",
     price: 52,
@@ -320,7 +320,7 @@ export const products: Product[] = [
     availableEverywhere: true,
   },
   {
-    id: "4",
+    id: "product-4",
     name: "Wooden Serving Board",
     description: "Handcrafted cutting and serving board made from sustainable hardwood.",
     price: 45,
@@ -336,7 +336,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "5",
+    id: "product-5",
     name: "Hand-Painted Vase",
     description: "Ceramic vase with delicate hand-painted botanical design.",
     price: 42,
@@ -352,7 +352,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "6",
+    id: "product-6",
     name: "Brass Geometric Necklace",
     description: "Handmade brass pendant with intricate geometric pattern.",
     price: 34,
@@ -368,7 +368,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "7",
+    id: "product-7",
     name: "Spiro wood layered wall art",
     description: "600mm diameter wood layered wall art in a Spirograph insprired pattern",
     price: 1690,
@@ -384,7 +384,7 @@ export const products: Product[] = [
     availableEverywhere: false,
   },
   {
-    id: "8",
+    id: "product-8",
     name: "Macrame Shopper Bag",
     description: "The perfect boho-chic bag to hold all your things! ",
     price: 352,
@@ -403,7 +403,7 @@ export const products: Product[] = [
 
 export const services: Service[] = [
   {
-    id: "1",
+    id: "service-1",
     name: "Electrical installation",
     description: "Professional electrical installation for homes and offices.",
     price: 380,
@@ -419,7 +419,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "2",
+    id: "service-2",
     name: "Roadside Assistance",
     description: "24/7 Raodside Assintance",
     price: 450,
@@ -435,7 +435,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "3",
+    id: "service-3",
     name: "Plumbing",
     description: "Residential and commercial plumbing services.",
     price: 520,
@@ -451,7 +451,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "4",
+    id: "service-4",
     name: "Carpenter",
     description: "Builds and repairs wooden structures, frameworks, and fixtures",
     price: 450,
@@ -467,7 +467,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "5",
+    id: "service-5",
     name: "Painter ",
     description: "Professional painting for homes and offices.",
     price: 420,
@@ -483,7 +483,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "6",
+    id: "service-6",
     name: "Auto Machanic",
     description: "Auto Machanic",
     price: 340,
@@ -499,7 +499,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "7",
+    id: "service-7",
     name: "Locksmith",
     description: "Locksmith - For all your House and Vehicle",
     price: 200,
@@ -515,7 +515,7 @@ export const services: Service[] = [
     availableEverywhere: false,
   },
   {
-    id: "8",
+    id: "service-8",
     name: "House & Car Cleaning",
     description: "House and car cleaning services",
     price: 340,
@@ -534,7 +534,7 @@ export const services: Service[] = [
 
 export const groceries: Grocery[] = [
   {
-    id: "1",
+    id: "grocery-1",
     name: "Full Cream Milk 6x 1L",
     description: "Hand-thrown ceramic mug with unique glaze pattern. Each piece is one-of-a-kind.",
     price: 100,
@@ -550,7 +550,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "2",
+    id: "grocery-2",
     name: "100g Minced Meat",
     description: "Handwoven macrame wall art made from 100% natural cotton cord.",
     price: 65,
@@ -566,7 +566,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "3",
+    id: "grocery-3",
     name: "Aquafresh Toothpaste",
     description: "Premium leather-bound journal with hand-embossed decorative pattern.",
     price: 32,
@@ -582,7 +582,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: true,
   },
   {
-    id: "4",
+    id: "grocery-4",
     name: "Granny Smith Apples",
     description: "Granny Smith Apples",
     price: 25,
@@ -598,7 +598,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "5",
+    id: "grocery-5",
     name: "Nivea Men Deep Anti-Perspirant Roll On",
     description: "Nivea Men Deep Anti-Perspirant Roll On",
     price: 32,
@@ -614,7 +614,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "6",
+    id: "grocery-6",
     name: "Pampers Diapers ",
     description: "Handmade brass pendant with intricate geometric pattern.",
     price: 200,
@@ -630,7 +630,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "7",
+    id: "grocery-7",
     name: "Hake Medallions",
     description: "Freshly Frozen Hake Medallions 450 g",
     price: 42,
@@ -646,7 +646,7 @@ export const groceries: Grocery[] = [
     availableEverywhere: false,
   },
   {
-    id: "8",
+    id: "grocery-8",
     name: "Sinutab",
     description: "Nasal Spray 10ml",
     price: 34,
@@ -665,7 +665,7 @@ export const groceries: Grocery[] = [
 
 export const freelance: Freelance[] = [
   {
-    id: "1",
+    id: "freelance-1",
     name: "Graphic Design",
     description: "Visual content for branding, advertisements, and websites",
     price: 100,
@@ -681,7 +681,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: true,
   },
   {
-    id: "2",
+    id: "freelance-2",
     name: "Writing and Editing",
     description: "Copywriting, blogging, technical writing, and ghostwriting",
     price: 65,
@@ -697,7 +697,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: false,
   },
   {
-    id: "3",
+    id: "freelance-3",
     name: "Software Development",
     description: "Creating applications or software solutions tailored to client needs.",
     price: 32,
@@ -713,7 +713,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: false,
   },
   {
-    id: "4",
+    id: "freelance-4",
     name: "Web Development",
     description: "Building and maintaining websites, including front-end and back-end development.",
     price: 25,
@@ -729,7 +729,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: false,
   },
   {
-    id: "5",
+    id: "freelance-5",
     name: "Business Consulting",
     description: "Advising companies on improving operations, marketing strategies, or financial management.",
     price: 32,
@@ -745,7 +745,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: false,
   },
   {
-    id: "6",
+    id: "freelance-6",
     name: "Financial Consulting",
     description: "Offering expertise in budgeting, investments, and financial planning.",
     price: 200,
@@ -761,7 +761,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: false,
   },
   {
-    id: "7",
+    id: "freelance-7",
     name: "Virtual Assistance",
     description: "Providing administrative support remotely, such as managing emails and scheduling.",
     price: 200,
@@ -777,7 +777,7 @@ export const freelance: Freelance[] = [
     availableEverywhere: true,
   },
   {
-    id: "8",
+    id: "freelance-8",
     name: "Data Entry",
     description: "Handling data input tasks for various businesses, requiring minimal skills.",
     price: 200,
@@ -800,7 +800,7 @@ export const mainCategories = [
   "Physical Goods",
   "Services",
   "Freelancing",
-  "Shop by Store",
+  "Shop by Business",
 ];
 
 export const subCategories: Record<string, string[]> = {
@@ -808,7 +808,7 @@ export const subCategories: Record<string, string[]> = {
   "Physical Goods": ["All", "Home & Living", "Kitchen & Dining", "Jewelry", "Stationery", "Baby"],
   "Services": ["All", "Electrical", "Plumbing", "Road Side","Home Repairs", "Moving", "Cleaning"],
   "Freelancing": ["All", "Creative", "Technical", "Consulting", "Administrative"],
-  "Shop by Store": ["All", "Pick n' Pay", "Spar", "DisChem", "Clicks", "Woolworths"],
+  "Shop by Business": ["All", "Pick n' Pay", "Spar", "DisChem", "Clicks", "Woolworths"],
 };
 
 

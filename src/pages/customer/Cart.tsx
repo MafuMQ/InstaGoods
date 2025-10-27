@@ -11,9 +11,9 @@ const Cart = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container py-12">
+        <div className="container px-4 sm:px-6 py-6 sm:py-12">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Your Cart</h1>
             <div className="text-center py-12">
               <p className="text-lg mb-4">Your cart is empty</p>
               <Link to="/">
@@ -29,21 +29,21 @@ const Cart = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container py-12">
+      <div className="container px-4 sm:px-6 py-6 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Your Cart ({getCartCount()})</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Your Cart ({getCartCount()})</h1>
           
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {cartItems.map((item) => (
-              <Card key={item.id} className="p-6">
-                <div className="flex items-center gap-6">
+              <Card key={item.id} className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-24 h-24 object-cover rounded-md"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md"
                   />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
+                    <h3 className="font-semibold text-base sm:text-lg">{item.name}</h3>
                     <p className="text-muted-foreground">R{item.price}</p>
                     
                     <div className="flex items-center gap-4 mt-4">
@@ -75,7 +75,7 @@ const Cart = () => {
                     </div>
                   </div>
                   
-                  <div className="font-semibold">
+                  <div className="font-semibold text-lg sm:text-base sm:ml-auto">
                     R{item.price * item.quantity}
                   </div>
                 </div>
@@ -83,12 +83,12 @@ const Cart = () => {
             ))}
           </div>
           
-          <div className="mt-8 p-6 bg-card rounded-lg border">
+          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card rounded-lg border">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold">Total:</span>
-              <span className="text-2xl font-bold">R{getCartTotal()}</span>
+              <span className="text-base sm:text-lg font-semibold">Total:</span>
+              <span className="text-xl sm:text-2xl font-bold">R{getCartTotal()}</span>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full">
                   Continue Shopping

@@ -87,8 +87,8 @@ const SupplierShopSettings = () => {
 	return (
 		<div className="min-h-screen bg-background">
 			<SupplierNav onSignOut={signOut} />
-			<div className="container py-10 max-w-xl">
-				<h1 className="text-2xl font-bold mb-6">Shop Settings</h1>
+			<div className="container px-4 sm:px-6 py-6 sm:py-10 max-w-xl">
+				<h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop Settings</h1>
 				<form onSubmit={handleSubmit} className="space-y-5">
 					<div>
 						<label className="block mb-1 font-medium">Shop Name</label>

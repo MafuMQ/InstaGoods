@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { Star, MapPin } from "lucide-react";
 import Header from "@/components/customer/Header";
 import ProductCard from "@/components/customer/ProductCard";
-// import { products } from "@/lib/data";
+import ServiceCard from "@/components/customer/ServiceCard";
+import GroceryCard from "@/components/customer/GroceryCard";
+import FreelanceCard from "@/components/customer/FreelanceCard";
+import { products, services, groceries, freelance, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,21 +21,53 @@ const Supplier = () => {
   useEffect(() => {
     const fetchSupplier = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("suppliers")
-        .select("id, business_name, description, location, logo_url, banner_url")
-        .eq("id", id)
-        .single();
-      setSupplier(data);
-      setLoading(false);
+      
+      // First check if it's a static supplier
+      const staticSupplier = suppliers.find(s => s.id === id);
+      if (staticSupplier) {
+        // Convert static supplier format to match database format
+        setSupplier({
+          id: staticSupplier.id,
+          business_name: staticSupplier.name,
+          description: staticSupplier.description,
+          location: staticSupplier.location,
+          logo_url: null,
+          banner_url: null,
+          rating: staticSupplier.rating,
+          totalSales: staticSupplier.totalSales
+        });
+        setLoading(false);
+      } else {
+        // If not static, fetch from database
+        const { data, error } = await supabase
+          .from("suppliers")
+          .select("id, business_name, description, location, logo_url, banner_url")
+          .eq("id", id)
+          .single();
+        setSupplier(data);
+        setLoading(false);
+      }
     };
+    
     const fetchProducts = async () => {
+      // First check static data for products with this supplier ID
+      const staticProducts = [
+        ...products.filter(p => p.supplierId === id),
+        ...services.filter(s => s.supplierId === id),
+        ...groceries.filter(g => g.supplierId === id),
+        ...freelance.filter(f => f.supplierId === id)
+      ];
+      
+      // Then fetch from database
       const { data } = await supabase
         .from("products")
         .select("*")
         .eq("supplier_id", id);
-      setSupplierProducts(data || []);
+      
+      // Combine both, with static products shown first
+      setSupplierProducts([...staticProducts, ...(data || [])]);
     };
+    
     if (id) {
       fetchSupplier();
       fetchProducts();
@@ -88,16 +123,17 @@ const Supplier = () => {
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{supplier.location}</span>
                 </div>
-                {/* Rating and sales data not available in current schema */}
-                {/*
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 fill-accent text-accent" />
-                  <span className="font-medium">{supplier.rating}</span>
-                </div>
-                <span className="text-muted-foreground">
-                  {supplier.totalSales} sales
-                </span>
-                */}
+                {supplier.rating && (
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-accent text-accent" />
+                    <span className="font-medium">{supplier.rating}</span>
+                  </div>
+                )}
+                {supplier.totalSales && (
+                  <span className="text-muted-foreground">
+                    {supplier.totalSales} sales
+                  </span>
+                )}
               </div>
               <p className="text-muted-foreground max-w-2xl">
                 {supplier.description}
@@ -113,9 +149,19 @@ const Supplier = () => {
           Products from {supplier.business_name}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {supplierProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {supplierProducts.map((product) => {
+            // Determine which card component to use based on mainCategory
+            if (product.mainCategory === "Services") {
+              return <ServiceCard key={product.id} service={product} />;
+            } else if (product.mainCategory === "Groceries") {
+              return <GroceryCard key={product.id} grocery={product} />;
+            } else if (product.mainCategory === "Freelancing") {
+              return <FreelanceCard key={product.id} freelance={product} />;
+            } else {
+              // For database products or Physical Goods
+              return <ProductCard key={product.id} product={product} />;
+            }
+          })}
         </div>
       </div>
     </div>

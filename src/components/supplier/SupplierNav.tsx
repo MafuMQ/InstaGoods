@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -10,6 +12,7 @@ import {
   MessageSquare,
   TrendingUp,
   Target,
+  Menu,
 } from "lucide-react";
 
 interface SupplierNavProps {
@@ -18,6 +21,7 @@ interface SupplierNavProps {
 
 const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
   const location = useLocation();
+  const [open, setOpen] = useState(false);
 
   const navItems = [
     { to: "/supplier/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -34,11 +38,14 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
     <nav className="border-b bg-card">
       <div className="container py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2 text-lg font-bold">
-              <Home className="h-5 w-5" />
-              InstaGoods
-            </Link>
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold">
+            <Home className="h-5 w-5" />
+            <span className="hidden sm:inline">InstaGoods</span>
+          </Link>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.to;
@@ -50,16 +57,51 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
                     className="flex items-center gap-2"
                   >
                     <Icon className="h-4 w-4" />
-                    {item.label}
+                    <span className="hidden xl:inline">{item.label}</span>
                   </Button>
                 </Link>
               );
             })}
           </div>
-          <Button onClick={onSignOut} variant="outline" size="sm">
+
+          {/* Desktop Sign Out */}
+          <Button onClick={onSignOut} variant="outline" size="sm" className="hidden lg:flex">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
+
+          {/* Mobile Navigation */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="outline" size="sm">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <div className="flex flex-col gap-4 mt-8">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.to;
+                  return (
+                    <Link key={item.to} to={item.to} onClick={() => setOpen(false)}>
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        size="sm"
+                        className="w-full justify-start gap-2"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    </Link>
+                  );
+                })}
+                <Button onClick={() => { onSignOut(); setOpen(false); }} variant="outline" size="sm" className="justify-start gap-2">
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>

@@ -14,7 +14,9 @@ const CategoryNav = ({
   onMainCategoryChange,
   onSubCategoryChange
 }: CategoryNavProps) => {
+  // Don't show subcategories for "Shop by Business" since we'll display business cards instead
   const showSubCategories = selectedMainCategory !== "All" &&
+  selectedMainCategory !== "Shop by Business" &&
     subCategories[selectedMainCategory]?.length > 0;
 
   return (
@@ -34,7 +36,7 @@ const CategoryNav = ({
            ))}
          </div>
        </div>
-
+       
        {showSubCategories && (
          <div>
            <h3 className="text-sm text-center font-medium mb-2 text-muted-foreground">Subcategories</h3>
@@ -55,6 +57,4 @@ const CategoryNav = ({
        )}
     </div>
   );
-};
-
-export default CategoryNav;
+};export default CategoryNav;

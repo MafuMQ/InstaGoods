@@ -230,22 +230,22 @@ const SupplierProducts = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">My Products</h1>
+      <div className="container py-4 md:py-8 px-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
+          <h1 className="text-2xl md:text-4xl font-bold">My Products</h1>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
             </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
               <DialogHeader>
-                <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+                <DialogTitle className="text-lg md:text-xl">{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -266,7 +266,7 @@ const SupplierProducts = () => {
                     rows={3}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="price">Price ($)</Label>
                     <Input
@@ -423,12 +423,12 @@ const SupplierProducts = () => {
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {products.map((product) => (
-            <Card key={product.id} className="p-6">
-              <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-              <p className="text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
-              <div className="space-y-2 mb-4">
+            <Card key={product.id} className="p-4 md:p-6">
+              <h3 className="text-lg md:text-xl font-bold mb-2 line-clamp-1">{product.name}</h3>
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
+              <div className="space-y-2 mb-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price:</span>
                   <span className="font-semibold">${product.price}</span>
@@ -439,11 +439,11 @@ const SupplierProducts = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Category:</span>
-                  <span className="text-sm">{product.sub_category}</span>
+                  <span className="text-xs md:text-sm truncate ml-2">{product.sub_category}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Marketplace:</span>
-                  <span className={`text-sm font-medium ${product.is_marketplace_visible ? 'text-green-600' : 'text-orange-600'}`}>
+                  <span className={`text-xs md:text-sm font-medium ${product.is_marketplace_visible ? 'text-green-600' : 'text-orange-600'}`}>
                     {product.is_marketplace_visible ? 'Visible' : 'Hidden'}
                   </span>
                 </div>
@@ -453,17 +453,18 @@ const SupplierProducts = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => openEditDialog(product)}
-                  className="flex-1"
+                  className="flex-1 text-xs md:text-sm"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                   Edit
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => handleDelete(product.id)}
+                  className="text-xs md:text-sm"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
                 </Button>
               </div>
             </Card>

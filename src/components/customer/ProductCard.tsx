@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
 import { Product, suppliers } from "@/lib/data";
 import { MarketplaceProduct } from "@/hooks/useMarketplaceProducts";
@@ -13,6 +13,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const routerLocation = useRouterLocation();
+  
   // Check if it's a marketplace product (from database) or static product
   const isMarketplaceProduct = 'supplier_id' in product;
   
@@ -95,9 +97,27 @@ const ProductCard = ({ product }: ProductCardProps) => {
     }
   };
 
+  // Prepare state to pass when navigating
+  const getLinkState = () => {
+    const savedState = sessionStorage.getItem('indexPageState');
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        return {
+          selectedMainCategory: state.mainCategory,
+          selectedSubCategory: state.subCategory,
+          scrollPosition: window.scrollY
+        };
+      } catch (e) {
+        return undefined;
+      }
+    }
+    return undefined;
+  };
+
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-hover)]">
-      <Link to={`/product/${product.id}`} className="block">
+      <Link to={`/product/${product.id}`} state={getLinkState()} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={productImage}

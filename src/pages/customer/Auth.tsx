@@ -106,9 +106,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md p-6">
-        <h1 className="text-3xl font-bold text-center mb-6">Supplier Portal</h1>
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 sm:p-4">
+      <Card className="w-full max-w-md p-4 sm:p-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">Supplier Portal</h1>
         
         <Tabs defaultValue="signin" className="w-full">
           <TabsList className="grid w-full grid-cols-2">

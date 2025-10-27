@@ -63,65 +63,65 @@ const SupplierDashboard = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <h1 className="text-4xl font-bold mb-8">Supplier Dashboard</h1>
+      <div className="container py-4 md:py-8 px-4">
+        <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">Supplier Dashboard</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-3xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Total Revenue</p>
+                <p className="text-xl md:text-3xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
               </div>
-              <DollarSign className="h-10 w-10 text-primary" />
+              <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Net Income</p>
-                <p className="text-3xl font-bold">${netIncome.toFixed(2)}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Net Income</p>
+                <p className="text-xl md:text-3xl font-bold">${netIncome.toFixed(2)}</p>
               </div>
-              <TrendingUp className="h-10 w-10 text-primary" />
+              <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Orders</p>
-                <p className="text-3xl font-bold">{stats.totalOrders}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Total Orders</p>
+                <p className="text-xl md:text-3xl font-bold">{stats.totalOrders}</p>
               </div>
-              <ShoppingCart className="h-10 w-10 text-primary" />
+              <ShoppingCart className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Active Products</p>
-                <p className="text-3xl font-bold">{stats.totalProducts}</p>
+                <p className="text-xs md:text-sm text-muted-foreground">Active Products</p>
+                <p className="text-xl md:text-3xl font-bold">{stats.totalProducts}</p>
               </div>
-              <Package className="h-10 w-10 text-primary" />
+              <Package className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
           </Card>
         </div>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-bold mb-4">Financial Summary</h2>
+        <Card className="p-4 md:p-6">
+          <h2 className="text-xl md:text-2xl font-bold mb-4">Financial Summary</h2>
           <div className="space-y-4">
             <div className="flex justify-between py-3 border-b">
-              <span className="text-muted-foreground">Total Revenue</span>
-              <span className="font-semibold">${stats.totalRevenue.toFixed(2)}</span>
+              <span className="text-sm md:text-base text-muted-foreground">Total Revenue</span>
+              <span className="text-sm md:text-base font-semibold">${stats.totalRevenue.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 border-b">
-              <span className="text-muted-foreground">Total Expenses</span>
-              <span className="font-semibold text-destructive">-${stats.totalExpenses.toFixed(2)}</span>
+              <span className="text-sm md:text-base text-muted-foreground">Total Expenses</span>
+              <span className="text-sm md:text-base font-semibold text-destructive">-${stats.totalExpenses.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 pt-4 border-t-2">
-              <span className="text-lg font-bold">Net Income</span>
-              <span className="text-lg font-bold text-primary">${netIncome.toFixed(2)}</span>
+              <span className="text-base md:text-lg font-bold">Net Income</span>
+              <span className="text-base md:text-lg font-bold text-primary">${netIncome.toFixed(2)}</span>
             </div>
           </div>
         </Card>

@@ -91,9 +91,9 @@ const SupplierServiceRequests = () => {
     <div className="min-h-screen bg-background">
       <Header onSignOut={handleSignOut} />
 
-      <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Service Requests</h1>
+      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Service Requests</h1>
           <p className="text-muted-foreground">
             Manage incoming service requests from customers
           </p>
@@ -114,12 +114,12 @@ const SupplierServiceRequests = () => {
             {requests.map((request) => (
               <Card key={request.id} className="overflow-hidden">
                 <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                     <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">
+                      <CardTitle className="text-lg sm:text-xl mb-2">
                         {request.serviceName}
                       </CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <User className="h-4 w-4" />
                           {request.customerName}
@@ -141,7 +141,7 @@ const SupplierServiceRequests = () => {
                 </CardHeader>
 
                 <CardContent className="pt-0">
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-semibold mb-2">Service Details</h4>
@@ -183,7 +183,7 @@ const SupplierServiceRequests = () => {
 
                       <div>
                         <h4 className="font-semibold mb-2">Actions</h4>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {request.status === "pending" && (
                             <>
                               <Button

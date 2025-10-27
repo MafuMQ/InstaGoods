@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import Header from "@/components/customer/Header";
 import ProductCard from "@/components/customer/ProductCard";
 import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
+import SupplierCard from "@/components/customer/SupplierCard";
 import CategoryNav from "@/components/customer/CategoryNav";
-import { freelance, services, groceries} from "@/lib/data";
+import { freelance, services, groceries, suppliers } from "@/lib/data";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useLocation } from "@/context/LocationContext";
 import { haversineDistance } from "@/lib/distance";
-import { useEffect, useState as useReactState } from "react";
+import { useEffect, useState as useReactState, useRef } from "react";
 import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -21,10 +22,41 @@ import service1 from "@/assets/Plumber-bg.jpg";
 import grocery1 from "@/assets/Grocery-bg.jpg";
 import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const [selectedMainCategory, setSelectedMainCategory] = useState("All");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("All");
+  const routerLocation = useRouterLocation();
+  const scrollPositionRef = useRef<number>(0);
+  
+  // Try to restore state from history or sessionStorage
+  const getInitialState = () => {
+    const historyState = routerLocation.state as any;
+    if (historyState?.selectedMainCategory) {
+      return {
+        mainCategory: historyState.selectedMainCategory,
+        subCategory: historyState.selectedSubCategory || "All",
+        scrollPosition: historyState.scrollPosition || 0
+      };
+    }
+    
+    // Fallback to sessionStorage
+    const savedState = sessionStorage.getItem('indexPageState');
+    if (savedState) {
+      try {
+        return JSON.parse(savedState);
+      } catch (e) {
+        return { mainCategory: "All", subCategory: "All", scrollPosition: 0 };
+      }
+    }
+    
+    return { mainCategory: "All", subCategory: "All", scrollPosition: 0 };
+  };
+  
+  const initialState = getInitialState();
+  const [selectedMainCategory, setSelectedMainCategory] = useState(initialState.mainCategory);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(initialState.subCategory);
+  const [dbSuppliers, setDbSuppliers] = useReactState<any[]>([]);
+  const [suppliersLoading, setSuppliersLoading] = useReactState(false);
   // deliveryOnly and onlyAvailable state moved to context
   const { address: userAddress } = useLocation();
   const [userLatLng, setUserLatLng] = useReactState<{ lat: number; lng: number } | null>(null);
@@ -46,6 +78,62 @@ const Index = () => {
   useEffect(() => {
     console.log('DEBUG: onlyAvailable =', onlyAvailable, 'userLatLng =', userLatLng, 'userAddress =', userAddress);
   }, [onlyAvailable, userLatLng, userAddress]);
+
+  // Save state to sessionStorage whenever filters change
+  useEffect(() => {
+    const state = {
+      mainCategory: selectedMainCategory,
+      subCategory: selectedSubCategory,
+      scrollPosition: scrollPositionRef.current
+    };
+    sessionStorage.setItem('indexPageState', JSON.stringify(state));
+  }, [selectedMainCategory, selectedSubCategory]);
+
+  // Restore scroll position after component mounts
+  useEffect(() => {
+    if (initialState.scrollPosition > 0) {
+      // Use setTimeout to ensure DOM is fully rendered
+      setTimeout(() => {
+        window.scrollTo({
+          top: initialState.scrollPosition,
+          behavior: 'instant' as ScrollBehavior
+        });
+      }, 100);
+    }
+  }, []);
+
+  // Track scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      scrollPositionRef.current = window.scrollY;
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fetch database suppliers when "Shop by Business" is selected
+  useEffect(() => {
+  if (selectedMainCategory === "Shop by Business") {
+      fetchSuppliers();
+    }
+  }, [selectedMainCategory]);
+
+  const fetchSuppliers = async () => {
+    setSuppliersLoading(true);
+    const { data, error } = await supabase
+      .from("suppliers")
+      .select("id, business_name, description, location, logo_url")
+      .order("business_name");
+    
+    if (!error && data) {
+      setDbSuppliers(data);
+    }
+    setSuppliersLoading(false);
+  };
+
+  // Combine static and database suppliers
+  const allSuppliers = [...suppliers, ...dbSuppliers];
 
 //   Products
   const filteredProducts = products.filter((p) => {
@@ -163,32 +251,55 @@ const Index = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.slice(0, 8).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-        
-        {/* Services */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredServices.slice(0, 8).map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
+  {/* Shop by Business - Display Supplier Cards */}
+  {selectedMainCategory === "Shop by Business" && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6 text-center">Browse Businesses</h2>
+            {suppliersLoading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading businesses...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {allSuppliers.map((supplier) => (
+                  <SupplierCard key={supplier.id} supplier={supplier} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Groceries */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredGrocery.slice(0, 8).map((grocery) => (
-            <GroceryCard key={grocery.id} grocery={grocery} />
-          ))}
-        </div>
+        {/* Products */}
+  {selectedMainCategory !== "Shop by Business" && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.slice(0, 8).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            
+            {/* Services */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredServices.slice(0, 8).map((service) => (
+                <ServiceCard key={service.id} service={service} />
+              ))}
+            </div>
 
-        {/* Freelancing */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredFreelance.slice(0, 8).map((freelance) => (
-            <FreelanceCard key={freelance.id} freelance={freelance} />
-          ))}    
-        </div>
+            {/* Groceries */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredGrocery.slice(0, 8).map((grocery) => (
+                <GroceryCard key={grocery.id} grocery={grocery} />
+              ))}
+            </div>
+
+            {/* Freelancing */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredFreelance.slice(0, 8).map((freelance) => (
+                <FreelanceCard key={freelance.id} freelance={freelance} />
+              ))}
+            </div>
+          </>
+        )}
         {/*<div className="p-8 text-center">
             <Button size="lg" variant="secondary">
                 View More

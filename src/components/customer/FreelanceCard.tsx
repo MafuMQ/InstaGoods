@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import { Heart, Star } from "lucide-react";
 import { Freelance, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ interface FreelanceCardProps {
 }
 
 const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
+  const routerLocation = useRouterLocation();
   const supplier = suppliers.find((s) => s.id === freelance.supplierId);
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
@@ -22,9 +23,27 @@ const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
     }
   };
 
+  // Prepare state to pass when navigating
+  const getLinkState = () => {
+    const savedState = sessionStorage.getItem('indexPageState');
+    if (savedState) {
+      try {
+        const state = JSON.parse(savedState);
+        return {
+          selectedMainCategory: state.mainCategory,
+          selectedSubCategory: state.subCategory,
+          scrollPosition: window.scrollY
+        };
+      } catch (e) {
+        return undefined;
+      }
+    }
+    return undefined;
+  };
+
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-hover)]">
-      <Link to={`/freelance/${freelance.id}`} className="block">
+      <Link to={`/freelance/${freelance.id}`} state={getLinkState()} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={freelance.image}

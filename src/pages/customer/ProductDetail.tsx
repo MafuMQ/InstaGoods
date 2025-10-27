@@ -115,8 +115,8 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container py-8">
-        <div className="grid md:grid-cols-2 gap-8">
+      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {/* Product Image */}
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
             <img
@@ -128,7 +128,7 @@ const ProductDetail = () => {
 
           {/* Product Info */}
           <div className="flex flex-col">
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">{product.name}</h1>
 
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-1">
@@ -140,7 +140,7 @@ const ProductDetail = () => {
               </span>
             </div>
 
-            <p className="text-3xl font-bold text-primary mb-6">
+            <p className="text-2xl sm:text-3xl font-bold text-primary mb-4 sm:mb-6">
               R{product.price}
             </p>
 

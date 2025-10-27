@@ -250,30 +250,30 @@ const SupplierOptimize = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+        <div className="flex flex-col gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-4xl font-bold flex items-center gap-2">
-              <Target className="h-8 w-8" />
+            <h1 className="text-2xl sm:text-4xl font-bold flex items-center gap-2">
+              <Target className="h-6 w-6 sm:h-8 sm:w-8" />
               Product Optimization
             </h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-sm sm:text-base text-muted-foreground mt-2">
               Find the optimal product mix to maximize profit within your budget. 
               Set production costs, selling prices, and quantity limits, then let the optimizer determine 
               how many units of each product to produce for maximum profitability.
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="secondary" onClick={loadExample}>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="secondary" onClick={loadExample} className="w-full sm:w-auto">
               Load Example
             </Button>
-            <Button variant="outline" onClick={clearAll}>
+            <Button variant="outline" onClick={clearAll} className="w-full sm:w-auto">
               Clear All
             </Button>
             <Button 
               onClick={handleOptimize} 
               disabled={optimizing || selectedProducts.size === 0}
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Calculator className="h-4 w-4" />
               {optimizing ? "Optimizing..." : "Optimize"}

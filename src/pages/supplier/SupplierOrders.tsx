@@ -144,16 +144,16 @@ const SupplierOrders = () => {
     <div className="min-h-screen bg-background">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-8">
-        <h1 className="text-4xl font-bold mb-8">Orders</h1>
+      <div className="container py-4 md:py-8 px-4">
+        <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">Orders</h1>
 
         <div className="space-y-4">
           {orders.map((order) => (
-            <Card key={order.id} className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bold mb-1">{order.product_name}</h3>
-                  <p className="text-muted-foreground text-sm">
+            <Card key={order.id} className="p-4 md:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start mb-4 gap-2">
+                <div className="flex-1">
+                  <h3 className="text-lg md:text-xl font-bold mb-1 line-clamp-1">{order.product_name}</h3>
+                  <p className="text-muted-foreground text-xs md:text-sm">
                     {format(new Date(order.order_date), "PPP")}
                   </p>
                 </div>
@@ -162,26 +162,26 @@ const SupplierOrders = () => {
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Quantity</p>
-                  <p className="font-semibold">{order.quantity}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Quantity</p>
+                  <p className="font-semibold text-sm md:text-base">{order.quantity}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Unit Price</p>
-                  <p className="font-semibold">${order.unit_price}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Unit Price</p>
+                  <p className="font-semibold text-sm md:text-base">${order.unit_price}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Amount</p>
-                  <p className="font-semibold text-primary">${order.total_amount}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">Total Amount</p>
+                  <p className="font-semibold text-sm md:text-base text-primary">${order.total_amount}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Update Status</p>
+                <div className="col-span-2 md:col-span-1">
+                  <p className="text-xs md:text-sm text-muted-foreground mb-1">Update Status</p>
                   <Select
                     value={order.status}
                     onValueChange={(value) => updateOrderStatus(order.id, value)}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full text-xs md:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -196,21 +196,22 @@ const SupplierOrders = () => {
 
               {order.notes && (
                 <div className="mt-4 p-3 bg-muted rounded-md">
-                  <p className="text-sm text-muted-foreground mb-1">Notes:</p>
-                  <p className="text-sm">{order.notes}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mb-1">Notes:</p>
+                  <p className="text-xs md:text-sm">{order.notes}</p>
                 </div>
               )}
 
               {order.status === "completed" && (
                 <div className="mt-4 pt-4 border-t">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <span className="text-xs md:text-sm text-muted-foreground">
                       Income Tracking:
                     </span>
                     {order.hasIncome ? (
                       <Button
                         variant="destructive"
                         size="sm"
+                        className="w-full sm:w-auto text-xs md:text-sm"
                         onClick={() => handleRemoveOrderFromIncomes(order.id)}
                       >
                         Remove from Incomes
@@ -219,6 +220,7 @@ const SupplierOrders = () => {
                       <Button
                         variant="default"
                         size="sm"
+                        className="w-full sm:w-auto text-xs md:text-sm"
                         onClick={() => handleAddOrderToIncomes(order)}
                       >
                         <DollarSign className="h-4 w-4 mr-2" />
