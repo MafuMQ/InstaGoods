@@ -1,82 +1,74 @@
 # 🛒 InstaGoods
 
-Follow these steps:
-
 **A modern multi-vendor marketplace platform for groceries, products, services, and freelancing.**
 
-```sh
+InstaGoods is a comprehensive e-commerce solution that connects suppliers with customers, enabling businesses to sell physical products, offer services, and manage their operations efficiently. Built with modern web technologies and designed to be fully responsive across all devices.
 
-InstaGoods is a comprehensive e-commerce solution that connects suppliers with customers, enabling businesses to sell physical products, offer services, and manage their operations efficiently. Built with modern web technologies and designed to be fully responsive across all devices.# Step 1: Clone the repository using the project's Git URL.
+### For Customers
+**Browse Products & Services**: Explore a wide range of offerings from multiple suppliers
 
-git clone <YOUR_GIT_URL>
-
----
-
-# Step 2: Navigate to the project directory.
-
-## ✨ Featurescd <YOUR_PROJECT_NAME>
-
-
-
-### For Customers# Step 3: Install the necessary dependencies.
-
-- **Multi-Category Shopping**: Browse groceries, products, services, and freelancing opportunitiesnpm i
+- **Multi-Category Shopping**: Browse groceries, products, services, and freelancing opportunities
 
 - **Location-Based Filtering**: See only items available in your delivery area
 
-- **Smart Search**: Find products by name, category, or business# Step 4: Start the development server with auto-reloading and an instant preview.
+- **Smart Search**: Find products by name, category, or business
 
 - **Shopping Cart & Wishlist**: Save items for later or checkout instantlynpm run dev
 
-- **Service Requests**: Request quotes from service providers```
+- **Service Requests**: Request quotes from service providers
 
 - **Business Discovery**: Browse and filter by individual businesses
 
-- **Delivery Options**: Support for delivery, collection-only, and nationwide shipping**Edit a file directly in GitHub**
+- **Delivery Options**: Support for delivery, collection-only, and nationwide shipping
 
 
+### For Suppliers (Business Owners)
 
-### For Suppliers (Business Owners)- Navigate to the desired file(s).
+- **Product Management**: Add, edit, and manage your product catalog
 
-- **Product Management**: Add, edit, and manage your product catalog- Click the "Edit" button (pencil icon) at the top right of the file view.
-
-- **Order Tracking**: Monitor and update order statuses in real-time- Make your changes and commit the changes.
+- **Order Tracking**: Monitor and update order statuses in real-time
 
 - **Financial Management**: Track income and expenses with detailed reports
 
-- **Service Request Handling**: Accept and manage customer service requests**Use GitHub Codespaces**
+- **Service Request Handling**: Accept and manage customer service requests
 
 - **Inventory Control**: Set stock levels, delivery radius, and pricing
 
-- **Business Optimization**: Built-in optimization tool to maximize profit within budget constraints- Navigate to the main page of your repository.
+- **Business Optimization**: Built-in optimization tool to maximize profit within budget constraints
 
-- **Business Profile**: Customize your shop with logo, banner, and description- Click on the "Code" button (green button) near the top right.
+- **Business Profile**: Customize your shop with logo, banner, and description
 
-- **Dashboard Analytics**: View key metrics and performance indicators- Select the "Codespaces" tab.
+- **Dashboard Analytics**: View key metrics and performance indicators
 
 - Click on "New codespace" to launch a new Codespace environment.
 
-### Technical Features- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Technical Features
 
 - **Responsive Design**: Fully optimized for mobile, tablet, and desktop
 
-- **Real-time Updates**: Live data synchronization with Supabase## What technologies are used for this project?
+- **Real-time Updates**: Live data synchronization with Supabase
 
 - **Secure Authentication**: Row-level security and role-based access control
 
-- **Geographic Services**: Location-based product filtering and delivery radius calculationThis project is built with:
+- **Geographic Services**: Location-based product filtering and delivery radius calculation
+
+This project is built with:
 
 - **State Preservation**: Smart navigation that remembers your scroll position and filters
 
-- **Modern UI/UX**: Built with shadcn/ui components and Tailwind CSS- Vite
+- **Modern UI/UX**: Built with shadcn/ui components and Tailwind CSS
+
+- **Vite**: Fast development and build tool
 
 - TypeScript
 
----- React
+- React
 
 - shadcn-ui
 
-## 🚀 Quick Start- Tailwind CSS
+- Tailwind CSS
+
+## 🚀 Quick Start For Development
 
 
 ### Prerequisites
@@ -89,7 +81,9 @@ git clone <YOUR_GIT_URL>
 
 ```bash
 # Clone the repository
-git clone <YOUR_GIT_URL>
+git clone https://github.com/MafuMQ/InstaGoods.git
+or
+git clone git@github.com:MafuMQ/InstaGoods.git
 cd InstaGoods
 
 # Install dependencies
@@ -103,7 +97,7 @@ cp .env.template .env
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at a given link, e.g. `http://localhost:8080`
 
 ### Database Setup
 
