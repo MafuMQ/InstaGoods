@@ -113,7 +113,7 @@ const Index = () => {
       title: "Discover Unique Handcrafted Treasures",
       description: "Support independent artisans and find one-of-a-kind pieces for your home",
       image: product1,
-      link: "/products"
+      link: "/"
     },
     {
       title: "Professional Services at Your Fingertips",
@@ -200,32 +200,24 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t mt-16">
         <div className="container py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Shop</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link to="/products">All Products</Link></li>
-                <li><Link to="/products">Categories</Link></li>
-              </ul>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h3 className="font-bold text-lg mb-4">About</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li><Link to="/about">Our Story</Link></li>
-                <li><Link to="/about">Artisans</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Support</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#">Help Center</a></li>
-                <li><a href="#">Contact Us</a></li>
+                <li><Link to="/help-center">Help Center</Link></li>
+                <li><Link to="/contact">Contact Us</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">InstaGoods</h3>
               <p className="text-muted-foreground text-sm">
-                Connecting artisans with people who appreciate handcrafted quality.
+                Empowering local creators. Discover, shop, and support unique businesses near you.
               </p>
             </div>
           </div>

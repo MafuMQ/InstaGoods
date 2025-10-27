@@ -7,7 +7,6 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ServiceRequestProvider } from "@/context/ServiceRequestContext";
 import Index from "./pages/customer/Index";
-import Products from "./pages/customer/Products";
 import ProductDetail from "./pages/customer/ProductDetail";
 import Services from "./pages/customer/Services";
 import ServiceDetail from "./pages/customer/ServiceDetails";
@@ -19,6 +18,8 @@ import SearchResults from "./pages/customer/SearchResults";
 import Supplier from "./pages/customer/Supplier";
 import Auth from "./pages/customer/Auth";
 import About from "./pages/customer/About";
+import HelpCenter from "./pages/customer/HelpCenter";
+import ContactUs from "./pages/customer/ContactUs";
 import Cart from "./pages/customer/Cart";
 import Wishlist from "./pages/customer/Wishlist";
 import SupplierDashboard from "./pages/supplier/SupplierDashboard";
@@ -44,7 +45,6 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/products" element={<Products />} />
                   <Route path="/product/:id" element={<ProductDetail />} />
                   <Route path="/services" element={<Services/>}/>
                   <Route path="/service/:id" element={<ServiceDetail />} />
@@ -64,6 +64,8 @@ const App = () => (
                   <Route path="/supplier/optimize" element={<SupplierOptimize />} />
                   <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/help-center" element={<HelpCenter />} />
+                  <Route path="/contact" element={<ContactUs />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -16,7 +16,7 @@ const Cart = () => {
             <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
             <div className="text-center py-12">
               <p className="text-lg mb-4">Your cart is empty</p>
-              <Link to="/products">
+              <Link to="/">
                 <Button>Continue Shopping</Button>
               </Link>
             </div>
@@ -89,7 +89,7 @@ const Cart = () => {
               <span className="text-2xl font-bold">R{getCartTotal()}</span>
             </div>
             <div className="flex gap-4">
-              <Link to="/products" className="flex-1">
+              <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full">
                   Continue Shopping
                 </Button>
