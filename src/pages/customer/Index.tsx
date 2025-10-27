@@ -16,11 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import CarouselWithDots from "./CarouselWithDots";
-import heroBanner from "@/assets/hero-banner.jpg";
-import product1 from "@/assets/product-1.jpg";
-import service1 from "@/assets/service-1.jpg";
-import grocery1 from "@/assets/grocery-1.jpg";
-import freelance1 from "@/assets/grocery-1.jpg";
+import product1 from "@/assets/hero-banner.jpg";
+import service1 from "@/assets/Plumber-bg.jpg";
+import grocery1 from "@/assets/Grocery-bg.jpg";
+import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
 
 const Index = () => {

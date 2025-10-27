@@ -5,29 +5,39 @@ import product3 from "@/assets/product-3.jpg";
 import product4 from "@/assets/product-4.jpg";
 import product5 from "@/assets/product-5.jpg";
 import product6 from "@/assets/product-6.jpg";
+import product7 from "@/assets/Wall.jpg";
+import product8 from "@/assets/Bag.jpg";
 
 // Services 
-import service1 from "@/assets/service-1.jpg";
-import service2 from "@/assets/service-2.jpg";
-import service3 from "@/assets/service-3.jpg";
-import service4 from "@/assets/service-4.jpg";
-import service5 from "@/assets/service-5.jpg";
+import service1 from "@/assets/Electrical.jpg";
+import service2 from "@/assets/Road.jpg";
+import service3 from "@/assets/Plumbing.jpg";
+import service4 from "@/assets/Carpenter.jpg";
+import service5 from "@/assets/Painter.jpg";
+import service6 from "@/assets/Mechanic.jpg";
+import service7 from "@/assets/Locksmith.jpg";
+import service8 from "@/assets/Cleaning.jpg";
+
 
 // Groceries
-import grocery1 from "@/assets/grocery-1.jpg";
-import grocery2 from "@/assets/grocery-2.jpg";
-import grocery3 from "@/assets/grocery-3.jpg";
-import grocery4 from "@/assets/grocery-4.jpg";
-import grocery5 from "@/assets/grocery-5.jpg";
-import grocery6 from "@/assets/grocery-6.jpg";
+import grocery1 from "@/assets/Milk.jpg";
+import grocery2 from "@/assets/Mince.jpg";
+import grocery3 from "@/assets/Toothpaste.jpg";
+import grocery4 from "@/assets/Apples.jpg";
+import grocery5 from "@/assets/Nivea.jpg";
+import grocery6 from "@/assets/Diapers.jpg";
+import grocery7 from "@/assets/Fish.jpg";
+import grocery8 from "@/assets/Sinutab.jpg";
 
 // Freelance
-import freelance1 from "@/assets/grocery-1.jpg";
-import freelance2 from "@/assets/grocery-2.jpg";
-import freelance3 from "@/assets/grocery-3.jpg";
-import freelance4 from "@/assets/grocery-4.jpg";
-import freelance5 from "@/assets/grocery-5.jpg";
-import freelance6 from "@/assets/grocery-6.jpg";
+import freelance1 from "@/assets/Design.jpg";
+import freelance2 from "@/assets/Writing.jpg";
+import freelance3 from "@/assets/Software.jpg";
+import freelance4 from "@/assets/Webdev.jpg";
+import freelance5 from "@/assets/Business.jpg";
+import freelance6 from "@/assets/Financial.jpg";
+import freelance7 from "@/assets/Virtual.jpg";
+import freelance8 from "@/assets/Data.jpg";
 
 
 export interface Supplier {
@@ -359,10 +369,10 @@ export const products: Product[] = [
   },
   {
     id: "7",
-    name: "Hand-Painted Vase",
-    description: "Ceramic vase with delicate hand-painted botanical design.",
-    price: 42,
-    image: product5,
+    name: "Spiro wood layered wall art",
+    description: "600mm diameter wood layered wall art in a Spirograph insprired pattern",
+    price: 1690,
+    image: product7,
     mainCategory: "Physical Goods",
     subCategory: "Home & Living",
     supplierId: "10",
@@ -375,10 +385,10 @@ export const products: Product[] = [
   },
   {
     id: "8",
-    name: "Brass Geometric Necklace",
-    description: "Handmade brass pendant with intricate geometric pattern.",
-    price: 34,
-    image: product6,
+    name: "Macrame Shopper Bag",
+    description: "The perfect boho-chic bag to hold all your things! ",
+    price: 352,
+    image: product8,
     mainCategory: "Physical Goods",
     subCategory: "Jewelry",
     supplierId: "11",
@@ -410,12 +420,12 @@ export const services: Service[] = [
   },
   {
     id: "2",
-    name: "Electrical Fault Finding",
-    description: "Expert fault finding and repair for electrical systems.",
-    price: 650,
-    image: service1,
+    name: "Roadside Assistance",
+    description: "24/7 Raodside Assintance",
+    price: 450,
+    image: service2,
     mainCategory: "Services",
-    subCategory: "Electrical",
+    subCategory: "Road Side",
     supplierId: "5",
     rating: 4.8,
     reviews: 93,
@@ -429,7 +439,7 @@ export const services: Service[] = [
     name: "Plumbing",
     description: "Residential and commercial plumbing services.",
     price: 520,
-    image: service2,
+    image: service3,
     mainCategory: "Services",
     subCategory: "Plumbing",
     supplierId: "6",
@@ -442,12 +452,12 @@ export const services: Service[] = [
   },
   {
     id: "4",
-    name: "Tow Truck",
-    description: "24/7 tow truck and roadside assistance.",
+    name: "Carpenter",
+    description: "Builds and repairs wooden structures, frameworks, and fixtures",
     price: 450,
-    image: service3,
+    image: service4,
     mainCategory: "Services",
-    subCategory: "Road Side",
+    subCategory: "Home Repairs",
     supplierId: "7",
     rating: 4.7,
     reviews: 84,
@@ -474,39 +484,51 @@ export const services: Service[] = [
   },
   {
     id: "6",
-    name: "Brick Layer",
-    description: "Handmade brass pendant with intricate geometric pattern.",
-    price: 34,
-    image: service4,
+    name: "Auto Machanic",
+    description: "Auto Machanic",
+    price: 340,
+    image: service6,
     mainCategory: "Services",
-    subCategory: "Home Repairs",
+    subCategory: "Road Side",
     supplierId: "8",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 30,
+    availableEverywhere: false,
   },
   {
     id: "7",
-    name: "Hand-Painted Vase",
-    description: "Ceramic vase with delicate hand-painted botanical design.",
-    price: 42,
-    image: service5,
+    name: "Locksmith",
+    description: "Locksmith - For all your House and Vehicle",
+    price: 200,
+    image: service7,
     mainCategory: "Services",
-    subCategory: "Road Side",
+    subCategory: "Home Repairs",
     supplierId: "7",
     rating: 4.9,
     reviews: 102,
+    region: "Sandton",
+    location: { lat: -26.1076, lng: 28.0567 },
+    deliveryRadiusKm: 15,
+    availableEverywhere: false,
   },
   {
     id: "8",
-    name: "Brass Geometric Necklace",
-    description: "Handmade brass pendant with intricate geometric pattern.",
-    price: 34,
-    image: service4,
+    name: "House & Car Cleaning",
+    description: "House and car cleaning services",
+    price: 340,
+    image: service8,
     mainCategory: "Services",
     subCategory: "Cleaning",
     supplierId: "6",
     rating: 4.8,
     reviews: 78,
+    region: "Johannesburg",
+    location: { lat: -26.2041, lng: 28.0473 },
+    deliveryRadiusKm: 25,
+    availableEverywhere: false,
   },
 ];
 
@@ -545,10 +567,10 @@ export const groceries: Grocery[] = [
   },
   {
     id: "3",
-    name: "Aqua Fresh Toothpaste",
+    name: "Aquafresh Toothpaste",
     description: "Premium leather-bound journal with hand-embossed decorative pattern.",
     price: 32,
-    image: grocery2,
+    image: grocery3,
     mainCategory: "Groceries",
     subCategory: "Self Care",
     supplierId: "11",
@@ -561,8 +583,8 @@ export const groceries: Grocery[] = [
   },
   {
     id: "4",
-    name: "Granny Smith Green Apples",
-    description: "Handcrafted cutting and serving board made from sustainable hardwood.",
+    name: "Granny Smith Apples",
+    description: "Granny Smith Apples",
     price: 25,
     image: grocery4,
     mainCategory: "Groceries",
@@ -577,10 +599,10 @@ export const groceries: Grocery[] = [
   },
   {
     id: "5",
-    name: "Shield RollOn",
-    description: "Ceramic vase with delicate hand-painted botanical design.",
+    name: "Nivea Men Deep Anti-Perspirant Roll On",
+    description: "Nivea Men Deep Anti-Perspirant Roll On",
     price: 32,
-    image: grocery6,
+    image: grocery5,
     mainCategory: "Groceries",
     subCategory: "Self Care",
     supplierId: "12",
@@ -593,10 +615,10 @@ export const groceries: Grocery[] = [
   },
   {
     id: "6",
-    name: "Pampers Daipers ",
+    name: "Pampers Diapers ",
     description: "Handmade brass pendant with intricate geometric pattern.",
     price: 200,
-    image: grocery3,
+    image: grocery6,
     mainCategory: "Groceries",
     subCategory: "Baby Care",
     supplierId: "11",
@@ -609,13 +631,13 @@ export const groceries: Grocery[] = [
   },
   {
     id: "7",
-    name: "Hand-Painted Vase",
-    description: "Ceramic vase with delicate hand-painted botanical design.",
+    name: "Hake Medallions",
+    description: "Freshly Frozen Hake Medallions 450 g",
     price: 42,
-    image: grocery2,
+    image: grocery7,
     mainCategory: "Groceries",
     subCategory: "Frozen Food",
-    supplierId: "12",
+    supplierId: "13",
     rating: 4.9,
     reviews: 102,
     region: "Johannesburg",
@@ -625,12 +647,12 @@ export const groceries: Grocery[] = [
   },
   {
     id: "8",
-    name: "Brass Geometric Necklace",
-    description: "Handmade brass pendant with intricate geometric pattern.",
+    name: "Sinutab",
+    description: "Nasal Spray 10ml",
     price: 34,
-    image: grocery4,
+    image: grocery8,
     mainCategory: "Groceries",
-    subCategory: "Frozen Food",
+    subCategory: "Self Care",
     supplierId: "11",
     rating: 4.8,
     reviews: 78,
@@ -679,7 +701,7 @@ export const freelance: Freelance[] = [
     name: "Software Development",
     description: "Creating applications or software solutions tailored to client needs.",
     price: 32,
-    image: freelance2,
+    image: freelance3,
     mainCategory: "Freelancing",
     subCategory: "Creative",
     supplierId: "16",
@@ -711,7 +733,7 @@ export const freelance: Freelance[] = [
     name: "Business Consulting",
     description: "Advising companies on improving operations, marketing strategies, or financial management.",
     price: 32,
-    image: freelance6,
+    image: freelance5,
     mainCategory: "Freelancing",
     subCategory: "Consulting",
     supplierId: "17",
@@ -727,7 +749,7 @@ export const freelance: Freelance[] = [
     name: "Financial Consulting",
     description: "Offering expertise in budgeting, investments, and financial planning.",
     price: 200,
-    image: freelance3,
+    image: freelance6,
     mainCategory: "Freelancing",
     subCategory: "Consulting",
     supplierId: "17",
@@ -743,7 +765,7 @@ export const freelance: Freelance[] = [
     name: "Virtual Assistance",
     description: "Providing administrative support remotely, such as managing emails and scheduling.",
     price: 200,
-    image: freelance3,
+    image: freelance7,
     mainCategory: "Freelancing",
     subCategory: "Administrative",
     supplierId: "18",
@@ -759,7 +781,7 @@ export const freelance: Freelance[] = [
     name: "Data Entry",
     description: "Handling data input tasks for various businesses, requiring minimal skills.",
     price: 200,
-    image: freelance2,
+    image: freelance8,
     mainCategory: "Freelancing",
     subCategory: "Administrative",
     supplierId: "18",
@@ -778,7 +800,6 @@ export const mainCategories = [
   "Physical Goods",
   "Services",
   "Freelancing",
-  "Sales & Discounts",
   "Shop by Store",
 ];
 
@@ -787,7 +808,6 @@ export const subCategories: Record<string, string[]> = {
   "Physical Goods": ["All", "Home & Living", "Kitchen & Dining", "Jewelry", "Stationery", "Baby"],
   "Services": ["All", "Electrical", "Plumbing", "Road Side","Home Repairs", "Moving", "Cleaning"],
   "Freelancing": ["All", "Creative", "Technical", "Consulting", "Administrative"],
-  "Sales & Discounts": ["All", "Groceries", "Physical Goods", "Services", "Freelancing"],
   "Shop by Store": ["All", "Pick n' Pay", "Spar", "DisChem", "Clicks", "Woolworths"],
 };
 
