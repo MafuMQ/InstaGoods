@@ -47,6 +47,7 @@ const SupplierProducts = () => {
     name: "",
     description: "",
     price: "",
+    image_url: "",
     main_category: "Physical Goods",
     sub_category: "Home & Living",
     stock_quantity: "0",
@@ -60,6 +61,7 @@ const SupplierProducts = () => {
   delivery_fee: "",
   collection_available: false,
   });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     if (supplierId) {
@@ -80,6 +82,61 @@ const SupplierProducts = () => {
       toast.error("Error fetching products");
     } else {
       setProducts(data || []);
+    }
+  };
+
+  const uploadProductImage = async (file: File) => {
+    if (!supplierId) return null;
+    
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `products/${supplierId}/${fileName}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file, { upsert: false });
+
+      if (uploadError) {
+        toast.error(`Upload failed: ${uploadError.message}`);
+        return null;
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      toast.success("Image uploaded successfully");
+      return publicUrlData.publicUrl;
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    const imageUrl = await uploadProductImage(file);
+    if (imageUrl) {
+      setFormData({ ...formData, image_url: imageUrl });
     }
   };
 
@@ -109,6 +166,7 @@ const SupplierProducts = () => {
       name: formData.name.trim(),
       description: formData.description.trim(),
       price: parseFloat(formData.price),
+      image_url: formData.image_url || null,
       main_category: formData.main_category,
       sub_category: formData.sub_category,
       stock_quantity: parseInt(formData.stock_quantity) || 0,
@@ -184,6 +242,7 @@ const SupplierProducts = () => {
       name: "",
       description: "",
       price: "",
+      image_url: "",
       main_category: "Physical Goods",
       sub_category: "Home & Living",
       stock_quantity: "0",
@@ -206,6 +265,7 @@ const SupplierProducts = () => {
       name: product.name,
       description: product.description || "",
       price: product.price.toString(),
+      image_url: (product as any).image_url || "",
       main_category: product.main_category,
       sub_category: product.sub_category || "",
       stock_quantity: product.stock_quantity.toString(),
@@ -265,6 +325,28 @@ const SupplierProducts = () => {
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
                   />
+                </div>
+                <div>
+                  <Label htmlFor="image">Product Image</Label>
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={uploadingImage}
+                  />
+                  {uploadingImage && (
+                    <p className="text-sm text-muted-foreground mt-1">Uploading image...</p>
+                  )}
+                  {formData.image_url && (
+                    <div className="mt-2">
+                      <img 
+                        src={formData.image_url} 
+                        alt="Product preview" 
+                        className="w-32 h-32 object-cover rounded border"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -426,6 +508,13 @@ const SupplierProducts = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {products.map((product) => (
             <Card key={product.id} className="p-4 md:p-6">
+              {(product as any).image_url && (
+                <img 
+                  src={(product as any).image_url} 
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded mb-4"
+                />
+              )}
               <h3 className="text-lg md:text-xl font-bold mb-2 line-clamp-1">{product.name}</h3>
               <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{product.description}</p>
               <div className="space-y-2 mb-4 text-sm">
