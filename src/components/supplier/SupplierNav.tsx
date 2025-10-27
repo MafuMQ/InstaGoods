@@ -36,7 +36,7 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 text-lg font-bold">
               <Home className="h-5 w-5" />
-              Artisan Market
+              InstaGoods
             </Link>
             {navItems.map((item) => {
               const Icon = item.icon;

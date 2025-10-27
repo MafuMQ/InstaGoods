@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useOnlyAvailable } from "@/context/OnlyAvailableContext";
+import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
 import { Search, ShoppingBag, Heart, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,12 @@ const Header = () => {
   const wishlistCount = getWishlistCount();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const { onlyAvailable, setOnlyAvailable } = useOnlyAvailable();
+  const { onlyAvailable, setOnlyAvailable, deliveryOnly, setDeliveryOnly } = useDeliveryAndAvailable();
 
   // Expose this state globally if needed, or lift to context if filtering is done outside Header
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+  <header className="sticky top-0 z-30 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -29,7 +29,7 @@ const Header = () => {
         </Link>
         
         <div className="hidden md:flex flex-1 max-w-2xl mx-8 gap-4 items-center">
-          <div className="relative w-full">
+          <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search for unique items..."
@@ -45,14 +45,24 @@ const Header = () => {
           </div>
           <div className="w-56 flex items-center gap-2">
             <LocationPicker />
-            <Button
-              variant={onlyAvailable ? "default" : "outline"}
-              size="sm"
-              className="ml-2 whitespace-nowrap"
-              onClick={() => setOnlyAvailable(!onlyAvailable)}
-            >
-              {onlyAvailable ? "Showing Available" : "Only Available"}
-            </Button>
+            <div className="flex flex-row gap-2 ml-2">
+              <Button
+                variant={onlyAvailable ? "default" : "outline"}
+                size="sm"
+                className="whitespace-nowrap"
+                onClick={() => setOnlyAvailable(!onlyAvailable)}
+              >
+                {onlyAvailable ? "Reachable Only" : "Show All"}
+              </Button>
+              <Button
+                variant={deliveryOnly ? "default" : "outline"}
+                size="sm"
+                className="whitespace-nowrap"
+                onClick={() => setDeliveryOnly(!deliveryOnly)}
+              >
+                {deliveryOnly ? "Delivery Only" : "All Delivery Types"}
+              </Button>
+            </div>
           </div>
         </div>
         

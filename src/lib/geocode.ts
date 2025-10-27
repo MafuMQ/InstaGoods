@@ -1,12 +1,17 @@
 
-// Use Google Maps Geocoding API to get lat/lng from address
-// NOTE: The API key is currently hardcoded in main.tsx. For production, move to an environment variable.
-const GOOGLE_MAPS_API_KEY = "AIzaSyDgXizfpUFvwyV-h8dB88KP_EkHsMCGWgM";
-
+// Use Google Maps Geocoding API
+// For production, this should go through a backend proxy with server-side API key
+// For now, using direct API call (requires VITE_GOOGLE_MAPS_FRONTEND_KEY in .env)
 export async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
   if (!address) return null;
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_API_KEY}`;
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_FRONTEND_KEY;
+    if (!apiKey) {
+      console.warn("Google Maps API key not configured");
+      return null;
+    }
+    
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
     const res = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();

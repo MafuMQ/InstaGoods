@@ -124,14 +124,14 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4">Artisan Market</h3>
+              <h3 className="font-bold text-lg mb-4">InstaGoods</h3>
               <p className="text-muted-foreground text-sm">
                 Connecting artisans with people who appreciate handcrafted quality.
               </p>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center text-muted-foreground text-sm">
-            © 2024 Artisan Market. All rights reserved.
+            © 2024 InstaGoods. All rights reserved.
           </div>
         </div>
       </footer>

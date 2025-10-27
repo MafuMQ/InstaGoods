@@ -7,28 +7,28 @@ import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { freelance, products, services, groceries} from "@/lib/data";
-import { useOnlyAvailable } from "@/context/OnlyAvailableContext";
 import { useLocation } from "@/context/LocationContext";
 import { haversineDistance } from "@/lib/distance";
 import { useEffect, useState as useReactState } from "react";
-import { geocodeAddress } from "@/lib/geocode";
+import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import CarouselWithDots from "./CarouselWithDots";
 import heroBanner from "@/assets/hero-banner.jpg";
 import product1 from "@/assets/product-1.jpg";
 import service1 from "@/assets/service-1.jpg";
 import grocery1 from "@/assets/grocery-1.jpg";
 import freelance1 from "@/assets/grocery-1.jpg";
+import { geocodeAddress } from "@/lib/geocode";
 
 const Index = () => {
   const [selectedMainCategory, setSelectedMainCategory] = useState("All");
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
-  const { onlyAvailable } = useOnlyAvailable();
-  const [deliveryOnly, setDeliveryOnly] = useState(false);
+  // deliveryOnly and onlyAvailable state moved to context
   const { address: userAddress } = useLocation();
   const [userLatLng, setUserLatLng] = useReactState<{ lat: number; lng: number } | null>(null);
-
+  const { onlyAvailable, deliveryOnly } = useDeliveryAndAvailable();
   // Geocode user address to lat/lng
   useEffect(() => {
     if (userAddress) {
@@ -38,11 +38,15 @@ const Index = () => {
     }
   }, [userAddress]);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('DEBUG: onlyAvailable =', onlyAvailable, 'userLatLng =', userLatLng, 'userAddress =', userAddress);
+  }, [onlyAvailable, userLatLng, userAddress]);
+
 //   Products
   const filteredProducts = products.filter((p) => {
     if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
     if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
-    // Delivery Only toggle: show only products that can be delivered (not no_delivery)
     if (deliveryOnly && p.no_delivery) return false;
     if (onlyAvailable && userLatLng) {
       if (p.availableEverywhere) return true;
@@ -130,56 +134,12 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      {/* Categories Carousel */}
-      <Carousel opts={{ loop: true }} plugins={[Autoplay({ delay: 5000 })]}>
-        <CarouselContent>
-          {categories.map((category, index) => (
-            <CarouselItem key={index}>
-              <section className="relative h-[400px] overflow-hidden">
-                <img
-                  src={category.image}
-                  alt={category.title}
-                  className="h-full w-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 to-foreground/40" />
-                <div className="absolute inset-0 flex items-center">
-                  <div className="container">
-                    <div className="max-w-2xl text-background">
-                      <h1 className="text-5xl font-bold mb-4">
-                        {category.title}
-                      </h1>
-                      <p className="text-xl mb-6 text-background/90">
-                        {category.description}
-                      </p>
-                      <Link to={category.link}>
-                        <Button size="lg" variant="secondary">
-                          Shop Now
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
-      </Carousel>
+
+      {/* Categories Carousel with Dots */}
+      <CarouselWithDots categories={categories} />
 
       {/* Featured Products */}
       <section className="container py-12">
-        <div className="flex items-center gap-4 mb-4">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={deliveryOnly}
-              onChange={e => setDeliveryOnly(e.target.checked)}
-            />
-            Delivery Only
-          </label>
-        </div>
         {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold">Featured Items</h2>
           <Link to="/products">

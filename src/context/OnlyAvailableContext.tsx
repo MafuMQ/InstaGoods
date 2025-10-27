@@ -1,25 +1,28 @@
 import React, { createContext, useContext, useState } from "react";
 
-interface OnlyAvailableContextType {
+interface DeliveryAndAvailableContextType {
   onlyAvailable: boolean;
   setOnlyAvailable: (val: boolean) => void;
+  deliveryOnly: boolean;
+  setDeliveryOnly: (val: boolean) => void;
 }
 
-const OnlyAvailableContext = createContext<OnlyAvailableContextType | undefined>(undefined);
+const DeliveryAndAvailableContext = createContext<DeliveryAndAvailableContextType | undefined>(undefined);
 
-export const OnlyAvailableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const DeliveryAndAvailableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const [deliveryOnly, setDeliveryOnly] = useState(false);
   return (
-    <OnlyAvailableContext.Provider value={{ onlyAvailable, setOnlyAvailable }}>
+    <DeliveryAndAvailableContext.Provider value={{ onlyAvailable, setOnlyAvailable, deliveryOnly, setDeliveryOnly }}>
       {children}
-    </OnlyAvailableContext.Provider>
+    </DeliveryAndAvailableContext.Provider>
   );
 };
 
-export const useOnlyAvailable = () => {
-  const context = useContext(OnlyAvailableContext);
+export const useDeliveryAndAvailable = () => {
+  const context = useContext(DeliveryAndAvailableContext);
   if (!context) {
-    throw new Error("useOnlyAvailable must be used within an OnlyAvailableProvider");
+    throw new Error("useDeliveryAndAvailable must be used within a DeliveryAndAvailableProvider");
   }
   return context;
 };
