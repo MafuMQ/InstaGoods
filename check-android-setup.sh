@@ -84,6 +84,8 @@ if [ -n "$ANDROID_HOME" ] || [ -n "$ANDROID_SDK_ROOT" ]; then
     echo -e "${GREEN}✓${NC} ANDROID_HOME is set"
     if [ -d "$ANDROID_HOME" ]; then
         echo "   Location: $ANDROID_HOME"
+    elif [ -d "$ANDROID_SDK_ROOT" ]; then
+        echo "   Location: $ANDROID_SDK_ROOT"
     fi
 else
     echo -e "${YELLOW}!${NC} ANDROID_HOME not set. Install Android Studio and set environment variable"
@@ -118,3 +120,5 @@ echo "5. Build and run the app from Android Studio"
 echo ""
 echo "📚 For detailed instructions, see: docs/MOBILE_DEVELOPMENT.md"
 echo ""
+
+exit 0
