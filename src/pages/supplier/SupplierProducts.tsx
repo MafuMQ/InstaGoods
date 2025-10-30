@@ -350,7 +350,7 @@ const SupplierProducts = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">Price (R)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -520,7 +520,7 @@ const SupplierProducts = () => {
               <div className="space-y-2 mb-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price:</span>
-                  <span className="font-semibold">${product.price}</span>
+                  <span className="font-semibold">R{product.price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Stock:</span>

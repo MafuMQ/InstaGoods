@@ -320,7 +320,7 @@ const SupplierOptimize = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{product.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          ${product.price} • Stock: {product.stock_quantity}
+                          R{product.price} • Stock: {product.stock_quantity}
                         </p>
                         <Badge variant="secondary" className="text-xs">
                           {product.sub_category}
@@ -342,7 +342,7 @@ const SupplierOptimize = () => {
               <CardContent>
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="budget">Total Budget ($)</Label>
+                    <Label htmlFor="budget">Total Budget (R)</Label>
                     <Input
                       id="budget"
                       type="number"
@@ -420,7 +420,7 @@ const SupplierOptimize = () => {
                               value={variable.unit_selling_price || ''}
                               onChange={(e) => updateVariable(productId, 'unit_selling_price', e.target.value ? parseFloat(e.target.value) : undefined)}
                               className="text-sm"
-                              placeholder={`Default: $${product.price}`}
+                              placeholder={`Default: R{product.price}`}
                             />
                           </div>
                         </div>
@@ -547,7 +547,7 @@ const SupplierOptimize = () => {
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div className="flex justify-between">
                           <span>Total Budget:</span>
-                          <span>${budget}</span>
+                          <span>R{budget}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Products Selected:</span>

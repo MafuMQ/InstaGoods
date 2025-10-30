@@ -169,11 +169,11 @@ const SupplierOrders = () => {
                 </div>
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">Unit Price</p>
-                  <p className="font-semibold text-sm md:text-base">${order.unit_price}</p>
+                  <p className="font-semibold text-sm md:text-base">R{order.unit_price}</p>
                 </div>
                 <div>
                   <p className="text-xs md:text-sm text-muted-foreground">Total Amount</p>
-                  <p className="font-semibold text-sm md:text-base text-primary">${order.total_amount}</p>
+                  <p className="font-semibold text-sm md:text-base text-primary">R{order.total_amount}</p>
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <p className="text-xs md:text-sm text-muted-foreground mb-1">Update Status</p>

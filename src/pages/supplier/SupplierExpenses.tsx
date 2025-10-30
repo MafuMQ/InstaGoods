@@ -143,7 +143,7 @@ const SupplierExpenses = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="amount">Amount ($)</Label>
+                  <Label htmlFor="amount">Amount (R)</Label>
                   <Input
                     id="amount"
                     type="number"
@@ -193,7 +193,7 @@ const SupplierExpenses = () => {
                       </p>
                     </div>
                     <p className="text-xl sm:text-2xl font-bold text-destructive">
-                      ${expense.amount}
+                      R{expense.amount}
                     </p>
                   </div>
                   {expense.description && (
