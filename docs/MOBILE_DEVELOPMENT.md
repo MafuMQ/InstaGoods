@@ -1,3 +1,26 @@
+# Web App vs Android Native Code Structure
+
+This project uses a hybrid approach with Capacitor, where the web app and the Android app share much of the same codebase, but also have their own platform-specific code.
+
+## Web App Code (`src/`)
+- The main application logic, UI, and components are located in the root `src/` folder.
+- Changes made here affect both the web app and the Android app (after rebuilding and syncing assets).
+- To update the Android app with changes from the web app, you must:
+  1. Build the web assets (e.g., `npm run build`).
+  2. Sync the assets to the Android project (e.g., `npx cap sync android`).
+  3. Rebuild the Android app (e.g., in Android Studio or with Gradle).
+
+## Android Native Code (`android/app/src/`)
+- This folder contains native Android code (Java/Kotlin), resources, and configuration files (e.g., `AndroidManifest.xml`).
+- Changes here only affect the Android app, not the web app.
+- Use this folder for native plugins, platform-specific features, or customizations that require native code.
+
+## Summary
+- **Web app code (`src/`)**: Shared between web and Android (after build/sync).
+- **Android native code (`android/app/src/`)**: Only affects the Android app.
+
+Keep this distinction in mind when making changes, and always rebuild/sync as needed to ensure updates are reflected in the Android app.
+
 # 📱 Mobile Development Guide
 
 This guide explains how to develop and build InstaGoods as a native Android application using Capacitor.
@@ -20,6 +43,10 @@ InstaGoods uses [Capacitor](https://capacitorjs.com/) to wrap the web applicatio
   - Minimum SDK: API 22 (Android 5.1)
   - Target SDK: API 34 (Android 14) or latest
 
+#### ⚠️ Windows Users: Special Note
+
+If you are on Windows, you must manually set the Android SDK environment variables after installing Android Studio and the SDK. See the section below for details.
+
 ### Setting up Android Studio
 
 1. **Install Android Studio**
@@ -36,14 +63,34 @@ InstaGoods uses [Capacitor](https://capacitorjs.com/) to wrap the web applicatio
      - Android SDK Platform-Tools
      - Android SDK Command-line Tools
 
-3. **Set Environment Variables** (if not auto-configured)
-   ```bash
-   # Add to ~/.bashrc or ~/.zshrc
-   export ANDROID_HOME=$HOME/Android/Sdk
-   export PATH=$PATH:$ANDROID_HOME/platform-tools
-   export PATH=$PATH:$ANDROID_HOME/tools
-   export PATH=$PATH:$ANDROID_HOME/tools/bin
-   ```
+
+3. **Set Environment Variables**
+
+  - **On macOS/Linux:**
+    ```bash
+    # Add to ~/.bashrc or ~/.zshrc
+    export ANDROID_HOME=$HOME/Android/Sdk
+    export PATH=$PATH:$ANDROID_HOME/platform-tools
+    export PATH=$PATH:$ANDROID_HOME/tools
+    export PATH=$PATH:$ANDROID_HOME/tools/bin
+    ```
+
+  - **On Windows:**
+    1. Open Android Studio and install the SDK (default location: `C:\Users\<YourName>\AppData\Local\Android\Sdk`)
+    2. Set the following environment variables (search for "Environment Variables" in the Start menu):
+      - `ANDROID_HOME` = `C:\Users\<YourName>\AppData\Local\Android\Sdk`
+      - `ANDROID_SDK_ROOT` = `C:\Users\<YourName>\AppData\Local\Android\Sdk`
+    3. Add these to your `PATH` variable:
+      - `C:\Users\<YourName>\AppData\Local\Android\Sdk\platform-tools`
+      - `C:\Users\<YourName>\AppData\Local\Android\Sdk\tools`
+      - `C:\Users\<YourName>\AppData\Local\Android\Sdk\tools\bin`
+    4. You can also set these variables in PowerShell for the current session:
+      ```powershell
+      $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+      $env:ANDROID_SDK_ROOT = "$env:LOCALAPPDATA\Android\Sdk"
+      $env:PATH += ";$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\tools;$env:ANDROID_HOME\tools\bin"
+      ```
+    5. Restart your terminal or IDE after setting these variables.
 
 4. **Create an Android Virtual Device (AVD)**
    - Open Android Studio
@@ -394,8 +441,11 @@ cd android
 **Problem:** SDK not found
 ```bash
 # Solution: Set ANDROID_HOME
+# On macOS/Linux:
 export ANDROID_HOME=$HOME/Android/Sdk
-# Or point to your Android SDK location
+# On Windows (User Environment Variables):
+# ANDROID_HOME=C:\Users\<YourName>\AppData\Local\Android\Sdk
+# ANDROID_SDK_ROOT=C:\Users\<YourName>\AppData\Local\Android\Sdk
 ```
 
 ### App Won't Start
