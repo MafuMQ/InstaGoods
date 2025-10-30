@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -283,7 +284,14 @@ const SupplierProducts = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <SupplierNav onSignOut={signOut} />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -350,7 +358,7 @@ const SupplierProducts = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">Price (R)</Label>
                     <Input
                       id="price"
                       type="number"
@@ -520,7 +528,7 @@ const SupplierProducts = () => {
               <div className="space-y-2 mb-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price:</span>
-                  <span className="font-semibold">${product.price}</span>
+                  <span className="font-semibold">R{product.price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Stock:</span>

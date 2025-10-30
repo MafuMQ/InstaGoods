@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
+import { Loading } from "@/components/ui/loading-spinner";
 import { useProduct } from "@/hooks/useProduct";
 import { useLocation } from "@/context/LocationContext";
 import { Button } from "@/components/ui/button";
@@ -92,7 +93,7 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <div className="container py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <Loading />
         </div>
       </div>
     );

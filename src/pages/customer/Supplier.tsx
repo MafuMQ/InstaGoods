@@ -7,6 +7,7 @@ import ProductCard from "@/components/customer/ProductCard";
 import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
+import { Loading } from "@/components/ui/loading-spinner";
 import { products, services, groceries, freelance, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,7 +76,14 @@ const Supplier = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   if (!supplier) {
@@ -148,7 +156,7 @@ const Supplier = () => {
         <h2 className="text-2xl font-bold mb-6">
           Products from {supplier.business_name}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div className="grid gap-2 sm:gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', display: 'grid' }}>
           {supplierProducts.map((product) => {
             // Determine which card component to use based on mainCategory
             if (product.mainCategory === "Services") {

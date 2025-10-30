@@ -1,11 +1,13 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppLoading } from "@/components/ui/app-loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ServiceRequestProvider } from "@/context/ServiceRequestContext";
+import { useState, useEffect } from "react";
 import Index from "./pages/customer/Index";
 import ProductDetail from "./pages/customer/ProductDetail";
 import Services from "./pages/customer/Services";
@@ -34,7 +36,29 @@ import NotFound from "./pages/customer/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const [isAppLoading, setIsAppLoading] = useState(true);
+
+  useEffect(() => {
+    // Hide the initial HTML loader immediately when React starts
+    const initialLoader = document.getElementById('initial-loader');
+    if (initialLoader) {
+      initialLoader.style.display = 'none';
+    }
+
+    // Simulate app initialization time
+    const timer = setTimeout(() => {
+      setIsAppLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isAppLoading) {
+    return <AppLoading />;
+  }
+
+  return (
   <QueryClientProvider client={queryClient}>
     <ServiceRequestProvider>
       <WishlistProvider>
@@ -78,5 +102,6 @@ const App = () => (
     </ServiceRequestProvider>
   </QueryClientProvider>
 );
+};
 
 export default App;

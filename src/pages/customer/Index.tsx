@@ -7,6 +7,7 @@ import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import SupplierCard from "@/components/customer/SupplierCard";
 import CategoryNav from "@/components/customer/CategoryNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { freelance, services, groceries, suppliers } from "@/lib/data";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useLocation } from "@/context/LocationContext";
@@ -198,8 +199,8 @@ const Index = () => {
 
   const categories = [
     {
-      title: "Discover Unique Handcrafted Treasures",
-      description: "Support independent artisans and find one-of-a-kind pieces for your home",
+      title: "Discover, Shop, and Grow Local",
+      description: "Connect with local businesses, shop unique products, and help your community thrive.",
       image: product1,
       link: "/"
     },
@@ -257,10 +258,10 @@ const Index = () => {
             <h2 className="text-2xl font-bold mb-6 text-center">Browse Businesses</h2>
             {suppliersLoading ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading businesses...</p>
+                <Loading message="Loading businesses..." />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
                 {allSuppliers.map((supplier) => (
                   <SupplierCard key={supplier.id} supplier={supplier} />
                 ))}
@@ -269,35 +270,36 @@ const Index = () => {
           </div>
         )}
 
-        {/* Products */}
+        {/* All Items */}
   {selectedMainCategory !== "Shop by Business" && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-            
-            {/* Services */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredServices.slice(0, 8).map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
+            {productsLoading ? (
+              <div className="text-center py-12">
+                <Loading message="Loading products..." />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 mb-8">
+                {/* Products */}
+                {filteredProducts.slice(0, 8).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+                
+                {/* Services */}
+                {filteredServices.slice(0, 8).map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
 
-            {/* Groceries */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredGrocery.slice(0, 8).map((grocery) => (
-                <GroceryCard key={grocery.id} grocery={grocery} />
-              ))}
-            </div>
+                {/* Groceries */}
+                {filteredGrocery.slice(0, 8).map((grocery) => (
+                  <GroceryCard key={grocery.id} grocery={grocery} />
+                ))}
 
-            {/* Freelancing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredFreelance.slice(0, 8).map((freelance) => (
-                <FreelanceCard key={freelance.id} freelance={freelance} />
-              ))}
-            </div>
+                {/* Freelancing */}
+                {filteredFreelance.slice(0, 8).map((freelance) => (
+                  <FreelanceCard key={freelance.id} freelance={freelance} />
+                ))}
+              </div>
+            )}
           </>
         )}
         {/*<div className="p-8 text-center">

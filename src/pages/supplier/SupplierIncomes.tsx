@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -195,7 +196,14 @@ const SupplierIncomes = () => {
   const totalIncomes = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <SupplierNav onSignOut={signOut} />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -206,7 +214,7 @@ const SupplierIncomes = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Incomes</h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground">Total: ${totalIncomes.toFixed(2)}</p>
+            <p className="text-xl sm:text-2xl text-muted-foreground">Total: R{totalIncomes.toFixed(2)}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
@@ -234,7 +242,7 @@ const SupplierIncomes = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="amount">Amount ($)</Label>
+                  <Label htmlFor="amount">Amount (R)</Label>
                   <Input
                     id="amount"
                     type="number"
@@ -291,7 +299,7 @@ const SupplierIncomes = () => {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <span className="text-lg font-bold text-primary">
-                        ${order.total_amount.toFixed(2)}
+                        R{order.total_amount.toFixed(2)}
                       </span>
                       {order.hasIncome ? (
                         <Button
@@ -340,7 +348,7 @@ const SupplierIncomes = () => {
                         )}
                       </div>
                       <p className="text-xl sm:text-2xl font-bold text-primary">
-                        ${income.amount.toFixed(2)}
+                        R{income.amount.toFixed(2)}
                       </p>
                     </div>
                     {income.description && (

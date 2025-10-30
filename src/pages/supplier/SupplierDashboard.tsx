@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
 import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 
@@ -54,7 +55,14 @@ const SupplierDashboard = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <SupplierNav onSignOut={signOut} />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   const netIncome = stats.totalRevenue - stats.totalExpenses;
@@ -66,12 +74,12 @@ const SupplierDashboard = () => {
       <div className="container py-4 md:py-8 px-4">
         <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">Supplier Dashboard</h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-xl md:text-3xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-xl md:text-3xl font-bold">R{stats.totalRevenue.toFixed(2)}</p>
               </div>
               <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
@@ -81,7 +89,7 @@ const SupplierDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground">Net Income</p>
-                <p className="text-xl md:text-3xl font-bold">${netIncome.toFixed(2)}</p>
+                <p className="text-xl md:text-3xl font-bold">R{netIncome.toFixed(2)}</p>
               </div>
               <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
@@ -113,15 +121,15 @@ const SupplierDashboard = () => {
           <div className="space-y-4">
             <div className="flex justify-between py-3 border-b">
               <span className="text-sm md:text-base text-muted-foreground">Total Revenue</span>
-              <span className="text-sm md:text-base font-semibold">${stats.totalRevenue.toFixed(2)}</span>
+              <span className="text-sm md:text-base font-semibold">R{stats.totalRevenue.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 border-b">
               <span className="text-sm md:text-base text-muted-foreground">Total Expenses</span>
-              <span className="text-sm md:text-base font-semibold text-destructive">-${stats.totalExpenses.toFixed(2)}</span>
+              <span className="text-sm md:text-base font-semibold text-destructive">-R{stats.totalExpenses.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 pt-4 border-t-2">
               <span className="text-base md:text-lg font-bold">Net Income</span>
-              <span className="text-base md:text-lg font-bold text-primary">${netIncome.toFixed(2)}</span>
+              <span className="text-base md:text-lg font-bold text-primary">R{netIncome.toFixed(2)}</span>
             </div>
           </div>
         </Card>

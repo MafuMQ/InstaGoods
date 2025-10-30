@@ -32,7 +32,7 @@ const SearchResults = () => {
         </p>
 
         {filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => {
               if ("mainCategory" in item && item.mainCategory === "Groceries") {
                 return <GroceryCard key={item.id} grocery={item as Grocery} />;

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -243,7 +244,14 @@ const SupplierOptimize = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <SupplierNav onSignOut={signOut} />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -320,7 +328,7 @@ const SupplierOptimize = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{product.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          ${product.price} • Stock: {product.stock_quantity}
+                          R{product.price} • Stock: {product.stock_quantity}
                         </p>
                         <Badge variant="secondary" className="text-xs">
                           {product.sub_category}
@@ -342,7 +350,7 @@ const SupplierOptimize = () => {
               <CardContent>
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="budget">Total Budget ($)</Label>
+                    <Label htmlFor="budget">Total Budget (R)</Label>
                     <Input
                       id="budget"
                       type="number"
@@ -420,7 +428,7 @@ const SupplierOptimize = () => {
                               value={variable.unit_selling_price || ''}
                               onChange={(e) => updateVariable(productId, 'unit_selling_price', e.target.value ? parseFloat(e.target.value) : undefined)}
                               className="text-sm"
-                              placeholder={`Default: $${product.price}`}
+                              placeholder={`Default: R{product.price}`}
                             />
                           </div>
                         </div>
@@ -454,7 +462,7 @@ const SupplierOptimize = () => {
                         </div>
                         <div className="flex justify-between">
                           <span>Budget:</span>
-                          <span>${budget || "0"}</span>
+                          <span>R{budget || "0"}</span>
                         </div>
                         {budget && parseFloat(budget) > 0 && (
                           <div className="text-xs text-muted-foreground pt-2">
@@ -490,7 +498,7 @@ const SupplierOptimize = () => {
                     <div className="text-center p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                       <DollarSign className="h-12 w-12 text-green-600 mx-auto mb-2" />
                       <div className="text-2xl font-bold text-green-700 dark:text-green-400">
-                        ${result.max_profit.toFixed(2)}
+                        R{result.max_profit.toFixed(2)}
                       </div>
                       <div className="text-sm text-green-600 dark:text-green-300">
                         Maximum Profit
@@ -523,19 +531,19 @@ const SupplierOptimize = () => {
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
                                 <div className="text-muted-foreground">Total Investment:</div>
-                                <div className="font-semibold text-blue-600">${totalCost.toFixed(2)}</div>
+                                <div className="font-semibold text-blue-600">R{totalCost.toFixed(2)}</div>
                               </div>
                               <div>
                                 <div className="text-muted-foreground">Cost per Unit:</div>
-                                <div className="font-semibold">${costPerUnit.toFixed(2)}</div>
+                                <div className="font-semibold">R{costPerUnit.toFixed(2)}</div>
                               </div>
                               <div>
                                 <div className="text-muted-foreground">Sell Price per Unit:</div>
-                                <div className="font-semibold">${sellingPrice.toFixed(2)}</div>
+                                <div className="font-semibold">R{sellingPrice.toFixed(2)}</div>
                               </div>
                               <div>
                                 <div className="text-muted-foreground">Total Profit:</div>
-                                <div className="font-semibold text-green-600">${totalProfit.toFixed(2)}</div>
+                                <div className="font-semibold text-green-600">R{totalProfit.toFixed(2)}</div>
                               </div>
                             </div>
                           </div>
@@ -547,7 +555,7 @@ const SupplierOptimize = () => {
                       <div className="text-sm text-muted-foreground space-y-1">
                         <div className="flex justify-between">
                           <span>Total Budget:</span>
-                          <span>${budget}</span>
+                          <span>R{budget}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Products Selected:</span>
@@ -564,7 +572,7 @@ const SupplierOptimize = () => {
                         </div>
                         <div className="flex justify-between">
                           <span>Total Investment:</span>
-                          <span>${Object.values(result.result).reduce((sum, val) => sum + val, 0).toFixed(2)}</span>
+                          <span>R{Object.values(result.result).reduce((sum, val) => sum + val, 0).toFixed(2)}</span>
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import PlacesAutocomplete from "react-places-autocomplete";
 import { useLocation } from "@/context/LocationContext";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Input } from "@/components/ui/input";
 
 const LocationPicker: React.FC = () => {
@@ -24,7 +25,12 @@ const LocationPicker: React.FC = () => {
           />
           {suggestions.length > 0 && (
             <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow">
-              {loading && <div className="p-2 text-sm text-muted-foreground">Loading...</div>}
+              {loading && (
+                <div className="p-2 flex items-center gap-2">
+                  <LoadingSpinner size="sm" />
+                  <span className="text-sm text-muted-foreground">Loading...</span>
+                </div>
+              )}
               {suggestions.map((suggestion) => (
                 <div
                   {...getSuggestionItemProps(suggestion, {
