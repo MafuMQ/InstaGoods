@@ -206,7 +206,7 @@ const SupplierIncomes = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Incomes</h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground">Total: ${totalIncomes.toFixed(2)}</p>
+            <p className="text-xl sm:text-2xl text-muted-foreground">Total: R{totalIncomes.toFixed(2)}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
@@ -291,7 +291,7 @@ const SupplierIncomes = () => {
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <span className="text-lg font-bold text-primary">
-                        ${order.total_amount.toFixed(2)}
+                        R{order.total_amount.toFixed(2)}
                       </span>
                       {order.hasIncome ? (
                         <Button
@@ -340,7 +340,7 @@ const SupplierIncomes = () => {
                         )}
                       </div>
                       <p className="text-xl sm:text-2xl font-bold text-primary">
-                        ${income.amount.toFixed(2)}
+                        R{income.amount.toFixed(2)}
                       </p>
                     </div>
                     {income.description && (

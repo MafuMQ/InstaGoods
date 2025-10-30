@@ -115,7 +115,7 @@ const SupplierExpenses = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Expenses</h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground">Total: ${totalExpenses.toFixed(2)}</p>
+            <p className="text-xl sm:text-2xl text-muted-foreground">Total: R{totalExpenses.toFixed(2)}</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);

@@ -71,7 +71,7 @@ const SupplierDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-xl md:text-3xl font-bold">${stats.totalRevenue.toFixed(2)}</p>
+                <p className="text-xl md:text-3xl font-bold">R{stats.totalRevenue.toFixed(2)}</p>
               </div>
               <DollarSign className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
@@ -81,7 +81,7 @@ const SupplierDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs md:text-sm text-muted-foreground">Net Income</p>
-                <p className="text-xl md:text-3xl font-bold">${netIncome.toFixed(2)}</p>
+                <p className="text-xl md:text-3xl font-bold">R{netIncome.toFixed(2)}</p>
               </div>
               <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
@@ -113,15 +113,15 @@ const SupplierDashboard = () => {
           <div className="space-y-4">
             <div className="flex justify-between py-3 border-b">
               <span className="text-sm md:text-base text-muted-foreground">Total Revenue</span>
-              <span className="text-sm md:text-base font-semibold">${stats.totalRevenue.toFixed(2)}</span>
+              <span className="text-sm md:text-base font-semibold">R{stats.totalRevenue.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 border-b">
               <span className="text-sm md:text-base text-muted-foreground">Total Expenses</span>
-              <span className="text-sm md:text-base font-semibold text-destructive">-${stats.totalExpenses.toFixed(2)}</span>
+              <span className="text-sm md:text-base font-semibold text-destructive">-R{stats.totalExpenses.toFixed(2)}</span>
             </div>
             <div className="flex justify-between py-3 pt-4 border-t-2">
               <span className="text-base md:text-lg font-bold">Net Income</span>
-              <span className="text-base md:text-lg font-bold text-primary">${netIncome.toFixed(2)}</span>
+              <span className="text-base md:text-lg font-bold text-primary">R{netIncome.toFixed(2)}</span>
             </div>
           </div>
         </Card>
