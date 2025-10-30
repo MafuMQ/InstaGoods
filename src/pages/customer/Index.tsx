@@ -260,7 +260,7 @@ const Index = () => {
                 <p className="text-muted-foreground">Loading businesses...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {allSuppliers.map((supplier) => (
                   <SupplierCard key={supplier.id} supplier={supplier} />
                 ))}
@@ -272,28 +272,28 @@ const Index = () => {
         {/* Products */}
   {selectedMainCategory !== "Shop by Business" && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.slice(0, 8).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
             
             {/* Services */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredServices.slice(0, 8).map((service) => (
                 <ServiceCard key={service.id} service={service} />
               ))}
             </div>
 
             {/* Groceries */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredGrocery.slice(0, 8).map((grocery) => (
                 <GroceryCard key={grocery.id} grocery={grocery} />
               ))}
             </div>
 
             {/* Freelancing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredFreelance.slice(0, 8).map((freelance) => (
                 <FreelanceCard key={freelance.id} freelance={freelance} />
               ))}

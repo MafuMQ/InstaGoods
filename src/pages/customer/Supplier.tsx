@@ -148,7 +148,7 @@ const Supplier = () => {
         <h2 className="text-2xl font-bold mb-6">
           Products from {supplier.business_name}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {supplierProducts.map((product) => {
             // Determine which card component to use based on mainCategory
             if (product.mainCategory === "Services") {
