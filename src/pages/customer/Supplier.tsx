@@ -7,6 +7,7 @@ import ProductCard from "@/components/customer/ProductCard";
 import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
+import { Loading } from "@/components/ui/loading-spinner";
 import { products, services, groceries, freelance, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,7 +76,14 @@ const Supplier = () => {
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   if (!supplier) {

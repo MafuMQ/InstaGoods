@@ -7,6 +7,7 @@ import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import SupplierCard from "@/components/customer/SupplierCard";
 import CategoryNav from "@/components/customer/CategoryNav";
+import { Loading } from "@/components/ui/loading-spinner";
 import { freelance, services, groceries, suppliers } from "@/lib/data";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useLocation } from "@/context/LocationContext";
@@ -257,7 +258,7 @@ const Index = () => {
             <h2 className="text-2xl font-bold mb-6 text-center">Browse Businesses</h2>
             {suppliersLoading ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading businesses...</p>
+                <Loading message="Loading businesses..." />
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
@@ -271,27 +272,35 @@ const Index = () => {
 
         {/* All Items */}
   {selectedMainCategory !== "Shop by Business" && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 mb-8">
-            {/* Products */}
-            {filteredProducts.slice(0, 8).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-            
-            {/* Services */}
-            {filteredServices.slice(0, 8).map((service) => (
-              <ServiceCard key={service.id} service={service} />
-            ))}
+          <>
+            {productsLoading ? (
+              <div className="text-center py-12">
+                <Loading message="Loading products..." />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 mb-8">
+                {/* Products */}
+                {filteredProducts.slice(0, 8).map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+                
+                {/* Services */}
+                {filteredServices.slice(0, 8).map((service) => (
+                  <ServiceCard key={service.id} service={service} />
+                ))}
 
-            {/* Groceries */}
-            {filteredGrocery.slice(0, 8).map((grocery) => (
-              <GroceryCard key={grocery.id} grocery={grocery} />
-            ))}
+                {/* Groceries */}
+                {filteredGrocery.slice(0, 8).map((grocery) => (
+                  <GroceryCard key={grocery.id} grocery={grocery} />
+                ))}
 
-            {/* Freelancing */}
-            {filteredFreelance.slice(0, 8).map((freelance) => (
-              <FreelanceCard key={freelance.id} freelance={freelance} />
-            ))}
-          </div>
+                {/* Freelancing */}
+                {filteredFreelance.slice(0, 8).map((freelance) => (
+                  <FreelanceCard key={freelance.id} freelance={freelance} />
+                ))}
+              </div>
+            )}
+          </>
         )}
         {/*<div className="p-8 text-center">
             <Button size="lg" variant="secondary">
