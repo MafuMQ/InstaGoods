@@ -38,11 +38,44 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
     <nav className="border-b bg-card">
       <div className="container py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 text-lg font-bold">
-            <Home className="h-5 w-5" />
-            <span className="hidden sm:inline">InstaGoods</span>
-          </Link>
+          {/* Logo and Mobile Menu */}
+          <div className="flex items-center gap-2">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="sm">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64">
+                <div className="flex flex-col gap-4 mt-8">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.to;
+                    return (
+                      <Link key={item.to} to={item.to} onClick={() => setOpen(false)}>
+                        <Button
+                          variant={isActive ? "default" : "ghost"}
+                          size="sm"
+                          className="w-full justify-start gap-2"
+                        >
+                          <Icon className="h-4 w-4" />
+                          {item.label}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                  <Button onClick={() => { onSignOut(); setOpen(false); }} variant="outline" size="sm" className="justify-start gap-2">
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Link to="/" className="flex items-center gap-2 text-lg font-bold">
+              <Home className="h-5 w-5" />
+              <span className="hidden sm:inline">InstaGoods</span>
+            </Link>
+          </div>
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-2">
@@ -69,39 +102,6 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
           </Button>
-
-          {/* Mobile Navigation */}
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="sm">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <div className="flex flex-col gap-4 mt-8">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.to;
-                  return (
-                    <Link key={item.to} to={item.to} onClick={() => setOpen(false)}>
-                      <Button
-                        variant={isActive ? "default" : "ghost"}
-                        size="sm"
-                        className="w-full justify-start gap-2"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {item.label}
-                      </Button>
-                    </Link>
-                  );
-                })}
-                <Button onClick={() => { onSignOut(); setOpen(false); }} variant="outline" size="sm" className="justify-start gap-2">
-                  <LogOut className="h-4 w-4" />
-                  Sign Out
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
     </nav>
