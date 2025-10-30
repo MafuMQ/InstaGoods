@@ -198,8 +198,8 @@ const Index = () => {
 
   const categories = [
     {
-      title: "Discover Unique Handcrafted Treasures",
-      description: "Support independent artisans and find one-of-a-kind pieces for your home",
+      title: "Discover, Shop, and Grow Local",
+      description: "Connect with local businesses, shop unique products, and help your community thrive.",
       image: product1,
       link: "/"
     },
