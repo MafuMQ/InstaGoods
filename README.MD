@@ -186,6 +186,13 @@ InstaGoods/
 - **Sonner** - Toast notifications
 - **Vaul** - Drawer component for mobile
 
+### Mobile Development
+- **Capacitor** - Native mobile app wrapper
+  - Android platform support
+  - Native device API access
+  - WebView-based architecture
+  - Hot reload during development
+
 ---
 
 ## 🎨 Key Features Explained
@@ -243,6 +250,7 @@ Fully optimized for all screen sizes:
 - **[API Documentation](./docs/API.md)** - API endpoints and usage
 - **[Component Guide](./docs/COMPONENTS.md)** - Component architecture and usage
 - **[Deployment Guide](./docs/DEPLOYMENT.md)** - How to deploy to production
+- **[Mobile Development Guide](./docs/MOBILE_DEVELOPMENT.md)** - Android development with Capacitor
 
 ---
 
@@ -259,6 +267,13 @@ npm run preview      # Preview production build
 
 # Code Quality
 npm run lint         # Run ESLint
+
+# Mobile Development (Capacitor)
+npm run cap:sync              # Build and sync all platforms
+npm run cap:sync:android      # Build and sync Android only
+npm run cap:open:android      # Open Android project in Android Studio
+npm run cap:run:android       # Build, sync, and run on Android
+npm run cap:build:android     # Build Android APK for testing
 ```
 
 ---
