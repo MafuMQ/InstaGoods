@@ -255,10 +255,10 @@ const SupplierOptimize = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <div className="flex flex-col gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold flex items-center gap-2">

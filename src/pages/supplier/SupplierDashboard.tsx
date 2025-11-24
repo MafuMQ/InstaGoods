@@ -68,10 +68,10 @@ const SupplierDashboard = () => {
   const netIncome = stats.totalRevenue - stats.totalExpenses;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-4 md:py-8 px-4">
+      <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">Supplier Dashboard</h1>
 
   <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
