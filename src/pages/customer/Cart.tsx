@@ -95,7 +95,9 @@ const Cart = () => {
                 </Button>
               </Link>
               <Button className="flex-1" onClick={clearCart} variant="destructive">Clear Cart</Button>
-              <Button className="flex-1">Checkout</Button>
+              <Link to="/payment" className="flex-1">
+                <Button className="w-full">Checkout</Button>
+              </Link>
             </div>
           </div>
         </div>

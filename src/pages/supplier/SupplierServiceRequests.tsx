@@ -88,10 +88,10 @@ const SupplierServiceRequests = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header onSignOut={handleSignOut} />
 
-      <div className="container px-4 sm:px-6 py-4 sm:py-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Service Requests</h1>
           <p className="text-muted-foreground">

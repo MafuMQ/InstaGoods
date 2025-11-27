@@ -24,6 +24,9 @@ import HelpCenter from "./pages/customer/HelpCenter";
 import ContactUs from "./pages/customer/ContactUs";
 import Cart from "./pages/customer/Cart";
 import Wishlist from "./pages/customer/Wishlist";
+import Payment from "./pages/customer/Payment";
+import PaymentSuccess from "./pages/customer/PaymentSuccess";
+import PaymentFailed from "./pages/customer/PaymentFailed";
 import SupplierDashboard from "./pages/supplier/SupplierDashboard";
 import SupplierProducts from "./pages/supplier/SupplierProducts";
 import SupplierOrders from "./pages/supplier/SupplierOrders";
@@ -92,6 +95,9 @@ const App = () => {
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/payment" element={<Payment />} />
+                  <Route path="/payment/success" element={<PaymentSuccess />} />
+                  <Route path="/payment/failed" element={<PaymentFailed />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

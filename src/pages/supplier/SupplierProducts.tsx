@@ -295,10 +295,10 @@ const SupplierProducts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="container py-4 md:py-8 px-4">
+      <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="text-2xl md:text-4xl font-bold">My Products</h1>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
