@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
-import { Search, ShoppingBag, Heart, Store, Menu } from "lucide-react";
+import { Search, ShoppingBag,CircleUserIcon, Heart, Store, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -70,6 +70,16 @@ const Header = () => {
                     {deliveryOnly ? "Delivery Only" : "All Delivery Types"}
                   </Button>
                 </div>
+                    
+                {/* User Links */}
+                <div className="flex flex-col gap-2 pt-20">
+                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <CircleUserIcon className="h-4 w-4 mr-2" />
+                      Customer Portal
+                    </Button>
+                  </Link>
+                </div>
 
                 {/* Navigation Links */}
                 <div className="flex flex-col gap-2 pt-4 border-t">
@@ -85,7 +95,7 @@ const Header = () => {
           </Sheet>
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              InstaGoods
+              InstaGoods 
             </span>
           </Link>
         </div>
@@ -129,12 +139,7 @@ const Header = () => {
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-2">
-          <Link to="/auth">
-            <Button variant="ghost" size="sm">
-              <Store className="h-4 w-4 mr-2" />
-              <span className="hidden lg:inline">Supplier Portal</span>
-            </Button>
-          </Link>
+          
           <Link to="/wishlist">
             <Button variant="ghost" size="icon" className="relative">
               <Heart className="h-5 w-5" />
@@ -155,6 +160,30 @@ const Header = () => {
               )}
             </Button>
           </Link>
+
+          {/* working on this user sign up link  */}
+          <div className="flex flex-col gap-2 pl-20 ">
+            <Link to="/">
+              <Button variant="ghost" size="icon" className="relative">
+                <CircleUserIcon className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          </div>
+
+          <div className="flex flex-col gap-2 pl-10 ">
+            <Link to="/auth">
+            <Button variant="ghost" size="sm">
+              <Store className="h-4 w-4 mr-2" />
+              <span className="hidden lg:inline">Supplier Portal</span>
+            </Button>
+          </Link>
+          </div>
+
         </nav>
 
         {/* Mobile Navigation */}
