@@ -74,7 +74,7 @@ const Payment = () => {
       const success = Math.random() > 0.1;
 
       if (success) {
-        // Clear cart if payment was from cart
+        // Clear cart only if payment was from cart AND payment was successful
         if (!orderId) {
           clearCart();
         }
@@ -82,7 +82,13 @@ const Payment = () => {
         // Redirect to success page
         navigate(`/payment/success?amount=${total.toFixed(2)}&orderId=${orderId || 'cart-' + Date.now()}`);
       } else {
-        // Redirect to failure page
+        // Cart is NOT cleared on payment failure - user keeps their items
+        toast({
+          title: "Payment Failed",
+          description: "Your payment was declined. Your cart items are preserved.",
+          variant: "destructive",
+        });
+        // Cart is NOT cleared on failed payment - user keeps their items
         navigate(`/payment/failed?amount=${total.toFixed(2)}`);
       }
     } catch (error) {
@@ -115,7 +121,13 @@ const Payment = () => {
         // Redirect to success page
         navigate(`/payment/success?amount=${total.toFixed(2)}&orderId=${orderId || 'cart-' + Date.now()}&method=${selectedMethod}`);
       } else {
-        // Redirect to failure page
+        // Cart is NOT cleared on crypto verification failure - user keeps their items
+        toast({
+          title: "Crypto Payment Failed",
+          description: "Crypto payment verification failed. Your cart items are preserved.",
+          variant: "destructive",
+        });
+        // Cart is NOT cleared on failed crypto payment - user keeps their items
         navigate(`/payment/failed?amount=${total.toFixed(2)}&error=crypto_verification_failed`);
       }
     } catch (error) {

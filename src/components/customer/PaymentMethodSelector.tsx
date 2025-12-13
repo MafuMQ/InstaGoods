@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CreditCard, Smartphone, Building2, Bitcoin, Coins, Star } from "lucide-react";
@@ -22,24 +22,6 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange }: PaymentMethod
       processingTime: "Instant",
     },
     {
-      id: "bitcoin" as PaymentMethod,
-      name: "Bitcoin",
-      description: "Pay with Bitcoin (BTC)",
-      icon: Bitcoin,
-      available: true,
-      recommended: false,
-      processingTime: "10-30 minutes",
-    },
-    {
-      id: "ethereum" as PaymentMethod,
-      name: "Ethereum",
-      description: "Pay with Ethereum (ETH)",
-      icon: Coins,
-      available: true,
-      recommended: false,
-      processingTime: "5-15 minutes",
-    },
-    {
       id: "mobile" as PaymentMethod,
       name: "Mobile Money",
       description: "MTN Mobile Money, Airtel Money",
@@ -57,12 +39,30 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange }: PaymentMethod
       recommended: false,
       processingTime: "1-3 business days",
     },
+    {
+      id: "bitcoin" as PaymentMethod,
+      name: "Bitcoin",
+      description: "Pay with Bitcoin (BTC)",
+      icon: Bitcoin,
+      available: true,
+      recommended: false,
+      processingTime: "10-30 minutes",
+    },
+    {
+      id: "ethereum" as PaymentMethod,
+      name: "Ethereum",
+      description: "Pay with Ethereum (ETH)",
+      icon: Coins,
+      available: true,
+      recommended: false,
+      processingTime: "5-15 minutes",
+    },
   ];
 
   return (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold">Select Payment Method</h3>
-      <div className="grid gap-3">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
         {methods.map((method) => {
           const Icon = method.icon;
           const isSelected = selectedMethod === method.id;
@@ -70,7 +70,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange }: PaymentMethod
           return (
             <Card
               key={method.id}
-              className={`cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+              className={`w-full cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
                 isSelected
                   ? "border-primary bg-primary/5 shadow-xl scale-[1.02] ring-2 ring-primary/20"
                   : method.available
