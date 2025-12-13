@@ -22,22 +22,41 @@ const CustomerAuth = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/supplier/dashboard");
+        // Check if user has customer role
+        checkCustomerRole(session.user.id);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/supplier/dashboard");
+        checkCustomerRole(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const checkCustomerRole = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error checking customer role:", error);
+      return;
+    }
+
+    // If user has customer role, redirect to payment page
+    if (data?.role === "customer") {
+      navigate("/payment");
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const emailValidation = emailSchema.safeParse(email);
     if (!emailValidation.success) {
       toast.error(emailValidation.error.errors[0].message);
@@ -56,7 +75,7 @@ const CustomerAuth = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -64,16 +83,50 @@ const CustomerAuth = () => {
       },
     });
 
-    setLoading(false);
-
-    if (error) {
-      if (error.message.includes("already registered")) {
+    if (signUpError) {
+      setLoading(false);
+      if (signUpError.message.includes("already registered")) {
         toast.error("This email is already registered. Please sign in instead.");
       } else {
-        toast.error(error.message);
+        toast.error("Sign up failed: " + signUpError.message);
       }
-    } else {
+      // Cart is NOT cleared on failed signup - user keeps their items
+      return;
+    }
+
+    // After successful signup, add customer role
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert({
+          user_id: user.id,
+          role: "customer"
+        });
+
+      if (roleError) {
+        setLoading(false);
+        toast.error("Account created but failed to set customer role: " + roleError.message);
+        return;
+      }
+
+      // Add to profiles table
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: fullName
+        });
+
+      if (profileError) {
+        console.error("Failed to create profile:", profileError);
+      }
+
+      setLoading(false);
       toast.success("Account created successfully! You are now logged in.");
+      navigate("/payment");
     }
   };
 
@@ -101,15 +154,16 @@ const CustomerAuth = () => {
     setLoading(false);
 
     if (error) {
-      toast.error(error.message);
+      toast.error("Sign in failed: " + error.message);
+      // Cart is NOT cleared on failed sign in - user keeps their items
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8 sm:p-4">
       <Card className="w-full max-w-md p-4 sm:p-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">Supplier Portal</h1>
-        
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6">Customer Login</h1>
+
         <Tabs defaultValue="signin" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign In</TabsTrigger>

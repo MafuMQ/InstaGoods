@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation as useRouterLocation } from "react-router-dom";
 import Header from "@/components/customer/Header";
 import ProductCard from "@/components/customer/ProductCard";
@@ -136,66 +136,71 @@ const Index = () => {
   // Combine static and database suppliers
   const allSuppliers = [...suppliers, ...dbSuppliers];
 
-//   Products
-  const filteredProducts = products.filter((p) => {
-    if (selectedMainCategory !== "All" && p.main_category !== selectedMainCategory) return false;
-    if (selectedSubCategory !== "All" && p.sub_category !== selectedSubCategory) return false;
-    if (deliveryOnly && p.no_delivery) return false;
-    if (onlyAvailable && userLatLng) {
-      if (p.available_everywhere) return true;
-      if (p.delivery_lat && p.delivery_lng && typeof p.delivery_radius_km === 'number') {
-        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
-        return dist <= p.delivery_radius_km;
+// Memoized filtering functions to prevent unnecessary recalculations
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      if (selectedMainCategory !== "All" && p.main_category !== selectedMainCategory) return false;
+      if (selectedSubCategory !== "All" && p.sub_category !== selectedSubCategory) return false;
+      if (deliveryOnly && p.no_delivery) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.available_everywhere) return true;
+        if (p.delivery_lat && p.delivery_lng && typeof p.delivery_radius_km === 'number') {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
+          return dist <= p.delivery_radius_km;
+        }
+        return false;
       }
-      return false;
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [products, selectedMainCategory, selectedSubCategory, deliveryOnly, onlyAvailable, userLatLng]);
 
-// Services
-   const filteredServices = services.filter((p) => {
-    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
-    if (onlyAvailable && userLatLng) {
-      if (p.availableEverywhere) return true;
-      if (p.location && typeof p.deliveryRadiusKm === 'number') {
-        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
-        return dist <= p.deliveryRadiusKm;
+  const filteredServices = useMemo(() => {
+    return services.filter((p) => {
+      if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+      if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.availableEverywhere) return true;
+        if (p.location && typeof p.deliveryRadiusKm === 'number') {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+          return dist <= p.deliveryRadiusKm;
+        }
+        return false;
       }
-      return false;
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [services, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng]);
 
-  // Groceries
-   const filteredGrocery = groceries.filter((p) => {
-    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
-    if (onlyAvailable && userLatLng) {
-      if (p.availableEverywhere) return true;
-      if (p.location && typeof p.deliveryRadiusKm === 'number') {
-        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
-        return dist <= p.deliveryRadiusKm;
+  const filteredGrocery = useMemo(() => {
+    return groceries.filter((p) => {
+      if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+      if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.availableEverywhere) return true;
+        if (p.location && typeof p.deliveryRadiusKm === 'number') {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+          return dist <= p.deliveryRadiusKm;
+        }
+        return false;
       }
-      return false;
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [groceries, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng]);
 
-  // Freelancing
-   const filteredFreelance = freelance.filter((p) => {
-    if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
-    if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
-    if (onlyAvailable && userLatLng) {
-      if (p.availableEverywhere) return true;
-      if (p.location && typeof p.deliveryRadiusKm === 'number') {
-        const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
-        return dist <= p.deliveryRadiusKm;
+  const filteredFreelance = useMemo(() => {
+    return freelance.filter((p) => {
+      if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
+      if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.availableEverywhere) return true;
+        if (p.location && typeof p.deliveryRadiusKm === 'number') {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.location.lat, p.location.lng);
+          return dist <= p.deliveryRadiusKm;
+        }
+        return false;
       }
-      return false;
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [freelance, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng]);
 
   const categories = [
     {
