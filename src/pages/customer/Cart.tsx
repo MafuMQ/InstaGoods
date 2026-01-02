@@ -1,11 +1,75 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart();
+  const navigate = useNavigate();
+  const [isCustomer, setIsCustomer] = useState<boolean | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        // Check if user has customer role
+        const { data, error } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error checking customer role:", error);
+          setIsCustomer(false);
+        } else {
+          setIsCustomer(data?.role === "customer");
+        }
+      } else {
+        setIsCustomer(false);
+      }
+
+      setLoadingAuth(false);
+    };
+
+    checkAuthStatus();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (error) {
+              console.error("Error checking customer role:", error);
+              setIsCustomer(false);
+            } else {
+              setIsCustomer(data?.role === "customer");
+            }
+          });
+      } else {
+        setIsCustomer(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleCheckout = () => {
+    if (isCustomer) {
+      navigate("/payment");
+    } else {
+      navigate("/customer-auth");
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -88,16 +152,50 @@ const Cart = () => {
               <span className="text-base sm:text-lg font-semibold">Total:</span>
               <span className="text-xl sm:text-2xl font-bold">R{getCartTotal()}</span>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-center justify-center">
               <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full">
                   Continue Shopping
                 </Button>
               </Link>
-              <Button className="flex-1" onClick={clearCart} variant="destructive">Clear Cart</Button>
-              <Link to="/payment" className="flex-1">
-                <Button className="w-full">Checkout</Button>
-              </Link>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="flex-1"
+                    variant="destructive"
+                  >
+                    Clear Cart
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear Cart</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to clear your cart?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        clearCart();
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Clear Cart
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <Button
+                className="flex-1"
+                onClick={handleCheckout}
+                disabled={loadingAuth}
+              >
+                {loadingAuth ? "Checking auth..." : "Checkout"}
+              </Button>
             </div>
           </div>
         </div>

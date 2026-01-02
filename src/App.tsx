@@ -1,113 +1,125 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AppLoading } from "@/components/ui/app-loading";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ServiceRequestProvider } from "@/context/ServiceRequestContext";
-import { useState, useEffect } from "react";
-import Index from "./pages/customer/Index";
-import ProductDetail from "./pages/customer/ProductDetail";
-import Services from "./pages/customer/Services";
-import ServiceDetail from "./pages/customer/ServiceDetails";
-import Grocery from "./pages/customer/Grocery";
-import GroceryDetail from "./pages/customer/GroceryDetail";
-import Freelancing from "./pages/customer/Freelance";
-import FreelancingDetail from "./pages/customer/FreelanceDetails";
-import SearchResults from "./pages/customer/SearchResults";
-import Supplier from "./pages/customer/Supplier";
-import Auth from "./pages/customer/Auth";
-import About from "./pages/customer/About";
-import HelpCenter from "./pages/customer/HelpCenter";
-import ContactUs from "./pages/customer/ContactUs";
-import Cart from "./pages/customer/Cart";
-import Wishlist from "./pages/customer/Wishlist";
-import Payment from "./pages/customer/Payment";
-import PaymentSuccess from "./pages/customer/PaymentSuccess";
-import PaymentFailed from "./pages/customer/PaymentFailed";
-import SupplierDashboard from "./pages/supplier/SupplierDashboard";
-import SupplierProducts from "./pages/supplier/SupplierProducts";
-import SupplierOrders from "./pages/supplier/SupplierOrders";
-import SupplierIncomes from "./pages/supplier/SupplierIncomes";
-import SupplierExpenses from "./pages/supplier/SupplierExpenses";
-import SupplierServiceRequests from "./pages/supplier/SupplierServiceRequests";
-import SupplierOptimize from "./pages/supplier/SupplierOptimize";
-import SupplierShopSettings from "./pages/supplier/SupplierShopSettings";
-import NotFound from "./pages/customer/NotFound";
+import { useEffect, Suspense, lazy } from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
 
-const queryClient = new QueryClient();
+// Lazy load pages for code splitting
+const Index = lazy(() => import("./pages/customer/Index"));
+const ProductDetail = lazy(() => import("./pages/customer/ProductDetail"));
+const Services = lazy(() => import("./pages/customer/Services"));
+const ServiceDetail = lazy(() => import("./pages/customer/ServiceDetails"));
+const Grocery = lazy(() => import("./pages/customer/Grocery"));
+const GroceryDetail = lazy(() => import("./pages/customer/GroceryDetail"));
+const Freelancing = lazy(() => import("./pages/customer/Freelance"));
+const FreelancingDetail = lazy(() => import("./pages/customer/FreelanceDetails"));
+const SearchResults = lazy(() => import("./pages/customer/SearchResults"));
+const Supplier = lazy(() => import("./pages/customer/Supplier"));
+const Auth = lazy(() => import("./pages/customer/Auth"));
+const CustomerAuth = lazy(() => import("./pages/customer/CustomerAuth"));
+const About = lazy(() => import("./pages/customer/About"));
+const HelpCenter = lazy(() => import("./pages/customer/HelpCenter"));
+const ContactUs = lazy(() => import("./pages/customer/ContactUs"));
+const Cart = lazy(() => import("./pages/customer/Cart"));
+const Wishlist = lazy(() => import("./pages/customer/Wishlist"));
+const Payment = lazy(() => import("./pages/customer/Payment"));
+const PaymentSuccess = lazy(() => import("./pages/customer/PaymentSuccess"));
+const PaymentFailed = lazy(() => import("./pages/customer/PaymentFailed"));
+const SupplierDashboard = lazy(() => import("./pages/supplier/SupplierDashboard"));
+const SupplierProducts = lazy(() => import("./pages/supplier/SupplierProducts"));
+const SupplierOrders = lazy(() => import("./pages/supplier/SupplierOrders"));
+const SupplierIncomes = lazy(() => import("./pages/supplier/SupplierIncomes"));
+const SupplierExpenses = lazy(() => import("./pages/supplier/SupplierExpenses"));
+const SupplierServiceRequests = lazy(() => import("./pages/supplier/SupplierServiceRequests"));
+const SupplierOptimize = lazy(() => import("./pages/supplier/SupplierOptimize"));
+const SupplierShopSettings = lazy(() => import("./pages/supplier/SupplierShopSettings"));
+const NotFound = lazy(() => import("./pages/customer/NotFound"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <LoadingSpinner />
+  </div>
+);
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+      retry: 2,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+    },
+  },
+});
 
 const App = () => {
-  const [isAppLoading, setIsAppLoading] = useState(true);
-
   useEffect(() => {
     // Hide the initial HTML loader immediately when React starts
     const initialLoader = document.getElementById('initial-loader');
     if (initialLoader) {
       initialLoader.style.display = 'none';
     }
-
-    // Simulate app initialization time
-    const timer = setTimeout(() => {
-      setIsAppLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
   }, []);
 
-  if (isAppLoading) {
-    return <AppLoading />;
-  }
-
   return (
-  <QueryClientProvider client={queryClient}>
-    <ServiceRequestProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/services" element={<Services/>}/>
-                  <Route path="/service/:id" element={<ServiceDetail />} />
-                  <Route path="/groceries" element={<Grocery/>}/>
-                  <Route path="/grocery/:id" element={<GroceryDetail />} />
-                  <Route path="/freelance" element={<Freelancing/>}/>
-                  <Route path="/freelance/:id" element={<FreelancingDetail />} />
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/supplier/:id" element={<Supplier />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
-                  <Route path="/supplier/products" element={<SupplierProducts />} />
-                  <Route path="/supplier/orders" element={<SupplierOrders />} />
-                  <Route path="/supplier/incomes" element={<SupplierIncomes />} />
-                  <Route path="/supplier/expenses" element={<SupplierExpenses />} />
-                  <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
-                  <Route path="/supplier/optimize" element={<SupplierOptimize />} />
-                  <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/help-center" element={<HelpCenter />} />
-                  <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/payment/success" element={<PaymentSuccess />} />
-                  <Route path="/payment/failed" element={<PaymentFailed />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
-      </WishlistProvider>
-    </ServiceRequestProvider>
-  </QueryClientProvider>
-);
+    <QueryClientProvider client={queryClient}>
+      <ServiceRequestProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <PerformanceMonitor />
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/services" element={<Services />} />
+                    <Route path="/service/:id" element={<ServiceDetail />} />
+                    <Route path="/groceries" element={<Grocery />} />
+                    <Route path="/grocery/:id" element={<GroceryDetail />} />
+                    <Route path="/freelance" element={<Freelancing />} />
+                    <Route path="/freelance/:id" element={<FreelancingDetail />} />
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/supplier/:id" element={<Supplier />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/customer-auth" element={<CustomerAuth />} />
+                    <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
+                    <Route path="/supplier/products" element={<SupplierProducts />} />
+                    <Route path="/supplier/orders" element={<SupplierOrders />} />
+                    <Route path="/supplier/incomes" element={<SupplierIncomes />} />
+                    <Route path="/supplier/expenses" element={<SupplierExpenses />} />
+                    <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
+                    <Route path="/supplier/optimize" element={<SupplierOptimize />} />
+                    <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/help-center" element={<HelpCenter />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/payment" element={<Payment />} />
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+                    <Route path="/payment/failed" element={<PaymentFailed />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </WishlistProvider>
+      </ServiceRequestProvider>
+    </QueryClientProvider>
+  );
 };
 
 export default App;

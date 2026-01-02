@@ -73,6 +73,7 @@ const PaymentFailed = () => {
               <div className="text-sm text-muted-foreground space-y-2">
                 <p>• Your card was not charged</p>
                 <p>• Your order has not been placed</p>
+                <p>• Your cart items are preserved and safe</p>
                 <p>• You can safely try again</p>
               </div>
 
