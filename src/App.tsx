@@ -23,6 +23,9 @@ const SearchResults = lazy(() => import("./pages/customer/SearchResults"));
 const Supplier = lazy(() => import("./pages/customer/Supplier"));
 const Auth = lazy(() => import("./pages/customer/Auth"));
 const CustomerAuth = lazy(() => import("./pages/customer/CustomerAuth"));
+const CustomerDashboard = lazy(() => import("./pages/customer/NewCustomerDashboard"));
+const CustomerOrders = lazy(() => import("./pages/customer/CustomerOrders"));
+const CustomerProfile = lazy(() => import("./pages/customer/CustomerProfile"));
 const About = lazy(() => import("./pages/customer/About"));
 const HelpCenter = lazy(() => import("./pages/customer/HelpCenter"));
 const ContactUs = lazy(() => import("./pages/customer/ContactUs"));
@@ -93,6 +96,9 @@ const App = () => {
                     <Route path="/supplier/:id" element={<Supplier />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/customer-auth" element={<CustomerAuth />} />
+                    <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+                    <Route path="/customer/orders" element={<CustomerOrders />} />
+                    <Route path="/customer/profile" element={<CustomerProfile />} />
                     <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
                     <Route path="/supplier/products" element={<SupplierProducts />} />
                     <Route path="/supplier/orders" element={<SupplierOrders />} />

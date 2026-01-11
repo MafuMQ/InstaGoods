@@ -15,6 +15,10 @@ CREATE POLICY "Users can view their own roles"
   ON public.user_roles FOR SELECT
   USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can insert customer role during signup"
+  ON public.user_roles FOR INSERT
+  WITH CHECK (auth.uid() = user_id AND role = 'customer');
+
 -- RLS Policies for suppliers
 CREATE POLICY "Suppliers can view their own data"
   ON public.suppliers FOR SELECT

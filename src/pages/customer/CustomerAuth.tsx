@@ -41,6 +41,7 @@ const CustomerAuth = () => {
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
+      .eq("role", "customer")
       .maybeSingle();
 
     if (error) {
@@ -48,9 +49,9 @@ const CustomerAuth = () => {
       return;
     }
 
-    // If user has customer role, redirect to payment page
+    // If user has customer role, redirect to customer dashboard
     if (data?.role === "customer") {
-      navigate("/payment");
+      navigate("/customer/dashboard");
     }
   };
 
@@ -151,12 +152,19 @@ const CustomerAuth = () => {
       password,
     });
 
-    setLoading(false);
-
     if (error) {
+      setLoading(false);
       toast.error("Sign in failed: " + error.message);
       // Cart is NOT cleared on failed sign in - user keeps their items
+      return;
     }
+
+    // Check customer role and redirect
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await checkCustomerRole(user.id);
+    }
+    setLoading(false);
   };
 
   return (

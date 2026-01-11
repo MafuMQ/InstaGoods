@@ -73,7 +73,7 @@ const Header = () => {
                     
                 {/* User Links */}
                 <div className="flex flex-col gap-2 pt-20">
-                  <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                  <Link to="/customer-auth" onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="ghost" className="w-full justify-start">
                       <CircleUserIcon className="h-4 w-4 mr-2" />
                       Customer Portal
@@ -163,14 +163,10 @@ const Header = () => {
 
           {/* working on this user sign up link  */}
           <div className="flex flex-col gap-2 pl-20 ">
-            <Link to="/">
-              <Button variant="ghost" size="icon" className="relative">
-                <CircleUserIcon className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
+            <Link to="/customer-auth">
+              <Button variant="ghost" size="sm">
+                <CircleUserIcon className="h-4 w-4 mr-2" />
+                <span className="hidden lg:inline">Customer Portal</span>
               </Button>
             </Link>
           </div>
