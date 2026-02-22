@@ -48,6 +48,14 @@ CREATE POLICY "Anyone can view active products"
   USING (is_active = true);
 
 -- RLS Policies for orders
+CREATE POLICY "Customers can create their own orders"
+  ON public.orders FOR INSERT
+  WITH CHECK (auth.uid() = customer_id);
+
+CREATE POLICY "Customers can view their own orders"
+  ON public.orders FOR SELECT
+  USING (auth.uid() = customer_id);
+
 CREATE POLICY "Suppliers can view their own orders"
   ON public.orders FOR SELECT
   USING (

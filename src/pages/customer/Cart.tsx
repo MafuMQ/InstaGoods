@@ -64,6 +64,17 @@ const Cart = () => {
   }, [navigate]);
 
   const handleCheckout = () => {
+    // Store cart items in localStorage for checkout process
+    const cartData = cartItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      image: item.image,
+      supplierId: item.supplierId || 'unknown'
+    }));
+    localStorage.setItem('checkout_cart', JSON.stringify(cartData));
+    
     if (isCustomer) {
       navigate("/payment");
     } else {

@@ -50,8 +50,15 @@ const CustomerAuth = () => {
     }
 
     // If user has customer role, redirect to customer dashboard
+    // or to payment if there's a pending checkout
     if (data?.role === "customer") {
-      navigate("/customer/dashboard");
+      // Check if there's a pending checkout
+      const hasPendingCheckout = localStorage.getItem('checkout_cart');
+      if (hasPendingCheckout) {
+        navigate("/payment");
+      } else {
+        navigate("/customer/dashboard");
+      }
     }
   };
 
@@ -127,7 +134,13 @@ const CustomerAuth = () => {
 
       setLoading(false);
       toast.success("Account created successfully! You are now logged in.");
-      navigate("/payment");
+      // Check if there's a pending checkout
+      const hasPendingCheckout = localStorage.getItem('checkout_cart');
+      if (hasPendingCheckout) {
+        navigate("/payment");
+      } else {
+        navigate("/customer/dashboard");
+      }
     }
   };
 

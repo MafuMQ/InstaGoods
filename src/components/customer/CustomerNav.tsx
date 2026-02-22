@@ -9,6 +9,7 @@ import {
   LogOut,
   Home,
   Menu,
+  Heart,
 } from "lucide-react";
 
 interface CustomerNavProps {
@@ -22,6 +23,7 @@ const CustomerNav = ({ onSignOut }: CustomerNavProps) => {
   const navItems = [
     { to: "/customer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/customer/orders", icon: ShoppingBag, label: "My Orders" },
+    { to: "/wishlist", icon: Heart, label: "Wishlist" },
     { to: "/customer/profile", icon: User, label: "Profile" },
   ];
 
