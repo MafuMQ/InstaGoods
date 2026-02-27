@@ -26,7 +26,7 @@ import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderType } from "@/components/customer/ProviderBadge";
-import { Sparkles, Link2, Layers } from "lucide-react";
+import { Sprout, Handshake, Layers } from "lucide-react";
 
 const Index = () => {
   const routerLocation = useRouterLocation();
@@ -285,7 +285,7 @@ const Index = () => {
                 value="internal" 
                 className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                <Sparkles className="w-5 h-5 text-blue-600" />
+                <Sprout className="w-5 h-5 text-blue-600" />
                 <span>InstaGoods Curated</span>
                 <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
                   {services.filter(s => s.providerType === 'internal').length}
@@ -295,7 +295,7 @@ const Index = () => {
                 value="external" 
                 className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
-                <Link2 className="w-5 h-5 text-emerald-600" />
+                <Handshake className="w-5 h-5 text-emerald-600" />
                 <span>Verified Partners</span>
                 <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
                   {services.filter(s => s.providerType === 'external').length}
@@ -366,7 +366,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t mt-16">
         <div className="container py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Admin</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><Link to="/admin/suppliers">Supplier Management</Link></li>
+              </ul>
+            </div>
             <div>
               <h3 className="font-bold text-lg mb-4">About</h3>
               <ul className="space-y-2 text-muted-foreground">

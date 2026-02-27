@@ -1,4 +1,4 @@
-import { BadgeCheck, Link2, Sparkles, LucideIcon } from "lucide-react";
+import { BadgeCheck, Handshake, Sprout, LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type ProviderType = 'internal' | 'external';
@@ -33,7 +33,7 @@ export function ProviderBadge({
   
   const config: Record<ProviderType, BadgeConfig> = {
     internal: {
-      icon: Sparkles,
+      icon: Sprout,
       label: 'InstaGoods Curated',
       bgColor: 'bg-blue-50',
       textColor: 'text-blue-700',
@@ -41,7 +41,7 @@ export function ProviderBadge({
       iconColor: 'text-blue-600'
     },
     external: {
-      icon: Link2,
+      icon: Handshake,
       label: 'Verified Partner',
       bgColor: 'bg-gray-50',
       textColor: 'text-gray-700',
@@ -52,7 +52,7 @@ export function ProviderBadge({
   
   const levelConfig: Record<VerificationLevel, BadgeConfig> = {
     basic: {
-      icon: Sparkles,
+      icon: Sprout,
       label: 'New Partner',
       bgColor: 'bg-green-50',
       textColor: 'text-green-700',
@@ -122,9 +122,9 @@ export function ProviderBadgeCompact({
       title={isInternal ? 'InstaGoods Curated Service' : 'External Partner'}
     >
       {isInternal ? (
-        <Sparkles className="w-5 h-5" />
+        <Sprout className="w-5 h-5" />
       ) : (
-        <Link2 className="w-5 h-5" />
+        <Handshake className="w-5 h-5" />
       )}
     </div>
   );

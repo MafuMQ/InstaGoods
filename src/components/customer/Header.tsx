@@ -106,12 +106,6 @@ const Header = () => {
                       Supplier Portal
                     </Button>
                   </Link>
-                  <Link to="/partners" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Users className="h-4 w-4 mr-2" />
-                      Partner Network
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </SheetContent>
@@ -201,13 +195,6 @@ const Header = () => {
           </Link>
           </div>
 
-          <div className="flex flex-col gap-2 pl-2 ">
-            <Link to="/partners">
-            <Button variant="ghost" size="sm" title="Partner Network">
-              <Users className="h-5 w-5" />
-            </Button>
-          </Link>
-          </div>
 
         </nav>
 

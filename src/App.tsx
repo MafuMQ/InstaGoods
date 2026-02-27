@@ -21,7 +21,6 @@ const Freelancing = lazy(() => import("./pages/customer/Freelance"));
 const FreelancingDetail = lazy(() => import("./pages/customer/FreelanceDetails"));
 const SearchResults = lazy(() => import("./pages/customer/SearchResults"));
 const Supplier = lazy(() => import("./pages/customer/Supplier"));
-const Partners = lazy(() => import("./pages/customer/Partners"));
 const Auth = lazy(() => import("./pages/customer/Auth"));
 const CustomerAuth = lazy(() => import("./pages/customer/CustomerAuth"));
 const CustomerDashboard = lazy(() => import("./pages/customer/NewCustomerDashboard"));
@@ -43,6 +42,7 @@ const SupplierExpenses = lazy(() => import("./pages/supplier/SupplierExpenses"))
 const SupplierServiceRequests = lazy(() => import("./pages/supplier/SupplierServiceRequests"));
 const SupplierOptimize = lazy(() => import("./pages/supplier/SupplierOptimize"));
 const SupplierShopSettings = lazy(() => import("./pages/supplier/SupplierShopSettings"));
+const SupplierManagement = lazy(() => import("./pages/admin/SupplierManagement"));
 const NotFound = lazy(() => import("./pages/customer/NotFound"));
 
 // Loading fallback component
@@ -95,7 +95,6 @@ const App = () => {
                     <Route path="/freelance/:id" element={<FreelancingDetail />} />
                     <Route path="/search" element={<SearchResults />} />
                     <Route path="/supplier/:id" element={<Supplier />} />
-                    <Route path="/partners" element={<Partners />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/customer-auth" element={<CustomerAuth />} />
                     <Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -109,6 +108,7 @@ const App = () => {
                     <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
                     <Route path="/supplier/optimize" element={<SupplierOptimize />} />
                     <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                    <Route path="/admin/suppliers" element={<SupplierManagement />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/help-center" element={<HelpCenter />} />
                     <Route path="/contact" element={<ContactUs />} />
