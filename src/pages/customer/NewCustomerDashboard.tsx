@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
@@ -19,6 +19,18 @@ import {
   getStatusColor,
   StoredCartItem
 } from "@/types/orders";
+import { products, services, groceries, freelance, Product, Service, Grocery, Freelance } from "@/lib/data";
+
+// Combine all items into one array with type info
+const allItems: (Product | Service | Grocery | Freelance)[] = [
+  ...products,
+  ...services,
+  ...groceries,
+  ...freelance
+];
+
+// Helper to find item by ID
+const findItemById = (id: string) => allItems.find(item => item.id === id);
 
 // Local order type for dashboard (matches database)
 interface OrderItem {
@@ -51,7 +63,15 @@ const CustomerDashboard = () => {
   const { loading: authLoading, customerId, signOut } = useCustomerAuth();
   const navigate = useNavigate();
   const { getCartTotal } = useCart();
-  const { wishlistItems, getWishlistCount } = useWishlist();
+  const { wishlistItemIds, getWishlistCount } = useWishlist();
+  
+  // Get actual items from IDs - memoized to prevent re-calculation
+  const wishlistItems = useMemo(() => 
+    wishlistItemIds
+      .map(id => findItemById(id))
+      .filter((item): item is Product | Service | Grocery | Freelance => item !== undefined),
+    [wishlistItemIds]
+  );
   
   const [stats, setStats] = useState<CustomerStats>({
     totalOrders: 0,
@@ -363,6 +383,8 @@ const CustomerDashboard = () => {
                         src={item.image}
                         alt={item.name}
                         className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <p className="text-sm font-medium mt-2 truncate">{item.name}</p>

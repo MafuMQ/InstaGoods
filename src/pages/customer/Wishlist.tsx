@@ -4,15 +4,30 @@ import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
+import { products, services, groceries, freelance, Product, Service, Grocery, Freelance } from "@/lib/data";
 
+// Combine all items into one array with type info
+const allItems: (Product | Service | Grocery | Freelance)[] = [
+  ...products,
+  ...services,
+  ...groceries,
+  ...freelance
+];
+
+// Helper to find item by ID
+const findItemById = (id: string) => allItems.find(item => item.id === id);
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { wishlistItemIds, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
+
+  // Get actual items from IDs
+  const wishlistItems = wishlistItemIds
+    .map(id => findItemById(id))
+    .filter((item): item is Product | Service | Grocery | Freelance => item !== undefined);
 
   const handleAddAllToCart = () => {
     wishlistItems.forEach((item) => {
-      // Only add items that have price (i.e., are products/services/groceries/freelance)
       if (typeof item.price === "number") {
         addToCart(item);
       }
@@ -53,6 +68,7 @@ const Wishlist = () => {
                     src={item.image}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-md"
+                    loading="lazy"
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{item.name}</h3>

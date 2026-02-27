@@ -124,6 +124,7 @@ const ProductDetail = () => {
               src={product.image_url || '/placeholder-product.jpg'}
               alt={product.name}
               className="h-full w-full object-cover"
+              decoding="async"
             />
           </div>
 
