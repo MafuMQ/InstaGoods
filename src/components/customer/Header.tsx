@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
-import { Search, ShoppingBag,CircleUserIcon, Heart, Store, Menu } from "lucide-react";
+import { Search, ShoppingBag,CircleUserIcon, Heart, Store, Menu, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -106,6 +106,12 @@ const Header = () => {
                       Supplier Portal
                     </Button>
                   </Link>
+                  <Link to="/partners" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      Partner Network
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </SheetContent>
@@ -191,6 +197,14 @@ const Header = () => {
             <Link to="/auth">
             <Button variant="ghost" size="sm" title="Supplier Portal">
               <Store className="h-5 w-5" />
+            </Button>
+          </Link>
+          </div>
+
+          <div className="flex flex-col gap-2 pl-2 ">
+            <Link to="/partners">
+            <Button variant="ghost" size="sm" title="Partner Network">
+              <Users className="h-5 w-5" />
             </Button>
           </Link>
           </div>

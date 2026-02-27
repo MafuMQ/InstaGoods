@@ -8,6 +8,7 @@ import FreelanceCard from "@/components/customer/FreelanceCard";
 import SupplierCard from "@/components/customer/SupplierCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { Loading } from "@/components/ui/loading-spinner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { freelance, services, groceries, suppliers } from "@/lib/data";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useLocation } from "@/context/LocationContext";
@@ -24,6 +25,8 @@ import grocery1 from "@/assets/Grocery-bg.jpg";
 import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
 import { supabase } from "@/integrations/supabase/client";
+import { ProviderType } from "@/components/customer/ProviderBadge";
+import { Sparkles, Link2, Layers } from "lucide-react";
 
 const Index = () => {
   const routerLocation = useRouterLocation();
@@ -56,6 +59,7 @@ const Index = () => {
   const initialState = getInitialState();
   const [selectedMainCategory, setSelectedMainCategory] = useState(initialState.mainCategory);
   const [selectedSubCategory, setSelectedSubCategory] = useState(initialState.subCategory);
+  const [selectedProviderType, setSelectedProviderType] = useState<ProviderType | 'all'>('all');
   const [dbSuppliers, setDbSuppliers] = useReactState<any[]>([]);
   const [suppliersLoading, setSuppliersLoading] = useReactState(false);
   // deliveryOnly and onlyAvailable state moved to context
@@ -158,6 +162,8 @@ const Index = () => {
     return services.filter((p) => {
       if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
       if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
+      // Provider type filter
+      if (selectedProviderType !== 'all' && p.providerType !== selectedProviderType) return false;
       if (onlyAvailable && userLatLng) {
         if (p.availableEverywhere) return true;
         if (p.location && typeof p.deliveryRadiusKm === 'number') {
@@ -168,7 +174,7 @@ const Index = () => {
       }
       return true;
     });
-  }, [services, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng]);
+  }, [services, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng, selectedProviderType]);
 
   const filteredGrocery = useMemo(() => {
     return groceries.filter((p) => {
@@ -255,6 +261,48 @@ const Index = () => {
             }}
             onSubCategoryChange={setSelectedSubCategory}
           />
+        </div>
+
+        {/* Provider Type Filter - Segmented Control Tabs */}
+        <div className="mb-6">
+          <Tabs 
+            value={selectedProviderType} 
+            onValueChange={(value) => setSelectedProviderType(value as ProviderType | 'all')}
+            className="w-full"
+          >
+            <TabsList className="w-full grid grid-cols-3 h-auto p-1 bg-muted/50">
+              <TabsTrigger 
+                value="all" 
+                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Layers className="w-5 h-5" />
+                <span>All Providers</span>
+                <span className="ml-auto text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">
+                  {services.length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="internal" 
+                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <span>InstaGoods Curated</span>
+                <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
+                  {services.filter(s => s.providerType === 'internal').length}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="external" 
+                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <Link2 className="w-5 h-5 text-emerald-600" />
+                <span>Verified Partners</span>
+                <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+                  {services.filter(s => s.providerType === 'external').length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
   {/* Shop by Business - Display Supplier Cards */}

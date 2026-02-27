@@ -47,6 +47,9 @@ export interface Supplier {
   location: string;
   rating: number;
   totalSales: number;
+  // Provider type for segregation
+  providerType?: 'internal' | 'external';
+  providerVerificationLevel?: 'basic' | 'verified' | 'premium';
 }
 
 export interface Product {
@@ -87,6 +90,9 @@ export interface Service {
   location?: { lat: number; lng: number };
   deliveryRadiusKm?: number;
   availableEverywhere?: boolean;
+  // Provider type for segregation
+  providerType?: 'internal' | 'external';
+  providerVerificationLevel?: 'basic' | 'verified' | 'premium';
 }
 
 export interface Grocery {
@@ -417,6 +423,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 25,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "verified",
   },
   {
     id: "service-2",
@@ -433,6 +441,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 20,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "basic",
   },
   {
     id: "service-3",
@@ -449,6 +459,8 @@ export const services: Service[] = [
     location: { lat: -26.1076, lng: 28.0567 },
     deliveryRadiusKm: 15,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "premium",
   },
   {
     id: "service-4",
@@ -465,6 +477,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 50,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "verified",
   },
   {
     id: "service-5",
@@ -481,6 +495,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 30,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "verified",
   },
   {
     id: "service-6",
@@ -497,6 +513,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 30,
     availableEverywhere: false,
+    providerType: "internal",
+    providerVerificationLevel: "premium",
   },
   {
     id: "service-7",
@@ -513,6 +531,8 @@ export const services: Service[] = [
     location: { lat: -26.1076, lng: 28.0567 },
     deliveryRadiusKm: 15,
     availableEverywhere: false,
+    providerType: "external",
+    providerVerificationLevel: "verified",
   },
   {
     id: "service-8",
@@ -529,6 +549,8 @@ export const services: Service[] = [
     location: { lat: -26.2041, lng: 28.0473 },
     deliveryRadiusKm: 25,
     availableEverywhere: false,
+    providerType: "internal",
+    providerVerificationLevel: "verified",
   },
 ];
 
