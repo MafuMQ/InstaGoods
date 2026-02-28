@@ -5,6 +5,7 @@ import SupplierNav from "@/components/supplier/SupplierNav";
 import { Loading } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
 import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
+import SupplierChat from "@/components/supplier/SupplierChat";
 
 const SupplierDashboard = () => {
   const { loading, supplierId, signOut } = useSupplierAuth();
@@ -134,6 +135,7 @@ const SupplierDashboard = () => {
           </div>
         </Card>
       </div>
+      <SupplierChat supplierId={supplierId} />
     </div>
   );
 };
