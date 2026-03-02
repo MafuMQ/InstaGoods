@@ -26,7 +26,8 @@ import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderType } from "@/components/customer/ProviderBadge";
-import { Sprout, Handshake, Layers } from "lucide-react";
+import { Sprout, Handshake, Layers, Store } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
   const routerLocation = useRouterLocation();
@@ -162,8 +163,6 @@ const Index = () => {
     return services.filter((p) => {
       if (selectedMainCategory !== "All" && p.mainCategory !== selectedMainCategory) return false;
       if (selectedSubCategory !== "All" && p.subCategory !== selectedSubCategory) return false;
-      // Provider type filter
-      if (selectedProviderType !== 'all' && p.providerType !== selectedProviderType) return false;
       if (onlyAvailable && userLatLng) {
         if (p.availableEverywhere) return true;
         if (p.location && typeof p.deliveryRadiusKm === 'number') {
@@ -174,7 +173,16 @@ const Index = () => {
       }
       return true;
     });
-  }, [services, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng, selectedProviderType]);
+  }, [services, selectedMainCategory, selectedSubCategory, onlyAvailable, userLatLng]);
+
+  // Separate internal (InstaGoods Curated) and external (Verified Partners) services
+  const internalServices = useMemo(() => {
+    return filteredServices.filter(s => s.providerType === 'internal');
+  }, [filteredServices]);
+
+  const externalServices = useMemo(() => {
+    return filteredServices.filter(s => s.providerType === 'external' || !s.providerType);
+  }, [filteredServices]);
 
   const filteredGrocery = useMemo(() => {
     return groceries.filter((p) => {
@@ -323,35 +331,97 @@ const Index = () => {
           </div>
         )}
 
-        {/* All Items */}
-  {selectedMainCategory !== "Shop by Business" && (
+        {/* All Items - with Separate Sections for Internal vs External Services */}
+        {selectedMainCategory !== "Shop by Business" && (
           <>
             {productsLoading ? (
               <div className="text-center py-12">
                 <Loading message="Loading products..." />
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6 mb-8">
-                {/* Products */}
-                {filteredProducts.slice(0, 8).map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-                
-                {/* Services */}
-                {filteredServices.slice(0, 8).map((service) => (
-                  <ServiceCard key={service.id} service={service} />
-                ))}
+              <>
+                {/* Products, Groceries, and Freelance - Always shown together */}
+                {(filteredProducts.length > 0 || filteredGrocery.length > 0 || filteredFreelance.length > 0) && selectedProviderType === 'all' && (
+                  <div className="mb-12">
+                    <h2 className="text-2xl font-bold mb-6">Products & More</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                      {/* Products */}
+                      {filteredProducts.slice(0, 8).map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
 
-                {/* Groceries */}
-                {filteredGrocery.slice(0, 8).map((grocery) => (
-                  <GroceryCard key={grocery.id} grocery={grocery} />
-                ))}
+                      {/* Groceries */}
+                      {filteredGrocery.slice(0, 8).map((grocery) => (
+                        <GroceryCard key={grocery.id} grocery={grocery} />
+                      ))}
 
-                {/* Freelancing */}
-                {filteredFreelance.slice(0, 8).map((freelance) => (
-                  <FreelanceCard key={freelance.id} freelance={freelance} />
-                ))}
-              </div>
+                      {/* Freelancing */}
+                      {filteredFreelance.slice(0, 8).map((freelance) => (
+                        <FreelanceCard key={freelance.id} freelance={freelance} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* InstaGoods Curated Section - Internal Services */}
+                {(selectedProviderType === 'all' || selectedProviderType === 'internal') && (
+                  <div className="mb-12">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Sprout className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold">InstaGoods Curated</h2>
+                        <p className="text-sm text-muted-foreground">Services managed directly by InstaGoods</p>
+                      </div>
+                      <span className="ml-auto bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                        {internalServices.length} services
+                      </span>
+                    </div>
+                    {internalServices.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                        {internalServices.slice(0, 8).map((service) => (
+                          <ServiceCard key={service.id} service={service} />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground py-8 text-center">No curated services available in this category</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Divider between sections when showing all */}
+                {selectedProviderType === 'all' && internalServices.length > 0 && externalServices.length > 0 && (
+                  <Separator className="my-12" />
+                )}
+
+                {/* Verified Partners Section - External Services */}
+                {(selectedProviderType === 'all' || selectedProviderType === 'external') && (
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-emerald-100 rounded-lg">
+                        <Handshake className="w-6 h-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold">Verified Partners</h2>
+                        <p className="text-sm text-muted-foreground">Services from trusted external providers</p>
+                      </div>
+                      <span className="ml-auto bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
+                        {externalServices.length} services
+                      </span>
+                    </div>
+                    {externalServices.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                        {externalServices.slice(0, 8).map((service) => (
+                          <ServiceCard key={service.id} service={service} />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground py-8 text-center">No partner services available in this category</p>
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
