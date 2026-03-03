@@ -82,7 +82,10 @@ const Index = () => {
 
   // Debug logging
   useEffect(() => {
-    console.log('DEBUG: onlyAvailable =', onlyAvailable, 'userLatLng =', userLatLng, 'userAddress =', userAddress);
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('DEBUG: onlyAvailable =', onlyAvailable, 'userLatLng =', userLatLng, 'userAddress =', userAddress);
+    }
   }, [onlyAvailable, userLatLng, userAddress]);
 
   // Save state to sessionStorage whenever filters change
@@ -245,13 +248,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:font-medium"
+      >
+        Skip to main content
+      </a>
+      
       <Header />
 
       {/* Categories Carousel with Dots */}
       <CarouselWithDots categories={categories} />
 
       {/* Featured Products */}
-      <section className="container py-12">
+      <section id="main-content" className="container py-12">
         {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold">Featured Items</h2>
           <Link to="/products">
