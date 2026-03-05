@@ -72,7 +72,7 @@ const PaymentSuccess = () => {
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild className="flex-1">
-                  <Link to="/orders">
+                  <Link to="/customer/orders">
                     <ShoppingBag className="w-4 h-4 mr-2" />
                     View Orders
                   </Link>
