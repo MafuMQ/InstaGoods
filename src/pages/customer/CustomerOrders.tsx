@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import CustomerNav from "@/components/customer/CustomerNav";
@@ -21,12 +21,48 @@ const CustomerOrders = () => {
   const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     if (customerId) {
       fetchOrders();
     }
+    
+    // Listen for order updates from PaymentSuccess
+    const handleOrdersUpdated = (event: Event) => {
+      console.log("Orders updated event received:", event);
+      fetchOrders();
+    };
+    
+    // Also check for newly created orders in localStorage on mount
+    const checkNewOrders = () => {
+      const newOrders = localStorage.getItem('newly_created_orders');
+      if (newOrders) {
+        console.log("Found newly created orders, refreshing...");
+        localStorage.removeItem('newly_created_orders');
+        fetchOrders();
+      }
+    };
+    
+    // Check immediately and set up listener
+    checkNewOrders();
+    window.addEventListener('orders-updated', handleOrdersUpdated);
+    
+    // Set up storage listener for cross-tab communication
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'newly_created_orders' && e.newValue) {
+        console.log("Storage change detected for new orders");
+        localStorage.removeItem('newly_created_orders');
+        fetchOrders();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('orders-updated', handleOrdersUpdated);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [customerId]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!customerId) return;
 
     setOrdersLoading(true);
@@ -48,7 +84,7 @@ const CustomerOrders = () => {
       setOrders(data || []);
     }
     setOrdersLoading(false);
-  };
+  }, [customerId]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

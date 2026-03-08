@@ -31,9 +31,23 @@ const Payment = () => {
   const orderId = searchParams.get("orderId");
   const amount = parseFloat(searchParams.get("amount") || getCartTotal().toString());
 
+  // Get unique supplier IDs from cart items
+  const uniqueSupplierIds = [...new Set(cartItems.map(item => item.supplierId))];
+  
+  // Get delivery fee for each unique supplier (using first product's delivery fee from each supplier)
+  const supplierDeliveryFees = uniqueSupplierIds.map(supplierId => {
+    const supplierProduct = cartItems.find(item => item.supplierId === supplierId);
+    return supplierProduct?.delivery_fee || 50;
+  });
+  
+  // Calculate total delivery fee (sum of all supplier delivery fees)
+  const baseDeliveryFee = supplierDeliveryFees.reduce((sum, fee) => sum + fee, 0);
+  
   // Calculate fees
   const subtotal = amount;
-  const deliveryFee = subtotal > 500 ? 0 : 50; // Free delivery over R500
+  
+  // Free delivery over R500, otherwise use supplier's delivery fee
+  const deliveryFee = subtotal > 500 ? 0 : baseDeliveryFee;
   const tax = subtotal * 0.15; // 15% VAT
   const total = subtotal + deliveryFee + tax;
 
@@ -74,6 +88,18 @@ const Payment = () => {
       const success = Math.random() > 0.1;
 
       if (success) {
+        // Store cart data in sessionStorage before clearing for order creation on success page
+        if (!orderId && cartItems.length > 0) {
+          const orderData = {
+            items: cartItems,
+            amount: total,
+            deliveryFee,
+            tax,
+            timestamp: new Date().toISOString()
+          };
+          sessionStorage.setItem('pending_order_data', JSON.stringify(orderData));
+        }
+        
         // Clear cart only if payment was from cart AND payment was successful
         if (!orderId) {
           clearCart();
@@ -113,6 +139,19 @@ const Payment = () => {
       const success = Math.random() > 0.15;
 
       if (success) {
+        // Store cart data in sessionStorage before clearing for order creation on success page
+        if (!orderId && cartItems.length > 0) {
+          const orderData = {
+            items: cartItems,
+            amount: total,
+            deliveryFee,
+            tax,
+            timestamp: new Date().toISOString(),
+            paymentMethod: selectedMethod
+          };
+          sessionStorage.setItem('pending_order_data', JSON.stringify(orderData));
+        }
+        
         // Clear cart if payment was from cart
         if (!orderId) {
           clearCart();

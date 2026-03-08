@@ -23,7 +23,7 @@ const SearchResults = lazy(() => import("./pages/customer/SearchResults"));
 const Supplier = lazy(() => import("./pages/customer/Supplier"));
 const Auth = lazy(() => import("./pages/customer/Auth"));
 const CustomerAuth = lazy(() => import("./pages/customer/CustomerAuth"));
-const CustomerDashboard = lazy(() => import("./pages/customer/NewCustomerDashboard"));
+const CustomerDashboard = lazy(() => import("./pages/customer/CustomerDashboard"));
 const CustomerOrders = lazy(() => import("./pages/customer/CustomerOrders"));
 const CustomerProfile = lazy(() => import("./pages/customer/CustomerProfile"));
 const About = lazy(() => import("./pages/customer/About"));
