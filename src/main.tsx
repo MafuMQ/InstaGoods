@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { LocationProvider } from "@/context/LocationContext";
 import { LoadScript } from "@react-google-maps/api";
 import "./index.css";
 import { DeliveryAndAvailableProvider } from './context/OnlyAvailableContext';
-
-// State to track if Google Maps loaded successfully
-const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-const [googleMapsError, setGoogleMapsError] = useState(false);
 
 // Register service worker for performance optimization
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -59,6 +55,10 @@ const GoogleMapsErrorFallback = () => (
 
 // Custom app wrapper that handles Google Maps loading state
 const AppWrapper = () => {
+  // State to track Google Maps loading - must be inside component
+  const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
+  const [googleMapsError, setGoogleMapsError] = useState(false);
+  
   // Only render app content when Google Maps is confirmed loaded
   if (!googleMapsLoaded && !googleMapsError) {
     return (

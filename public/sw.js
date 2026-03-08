@@ -1,5 +1,5 @@
 // Service Worker for InstaGoods Performance Optimization
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -70,8 +70,15 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets, try network first with cache fallback
+  // For static assets, use network-only for JS/CSS to prevent stale cache issues
+  // For images and other assets, use network first with cache fallback
   if (isStaticAsset(request.url)) {
+    // Never cache JS and CSS - always get fresh from network
+    if (isJsOrCss(request.url)) {
+      event.respondWith(networkOnly(request));
+      return;
+    }
+    // For images and other assets, try network first
     event.respondWith(networkFirst(request));
     return;
   }
@@ -90,6 +97,22 @@ function isStaticAsset(url) {
          url.includes('.jpeg') ||
          url.includes('.webp') ||
          url.includes('.svg');
+}
+
+// Check if request is for JS or CSS (should never be cached)
+function isJsOrCss(url) {
+  return url.includes('.js') || url.includes('.css');
+}
+
+// Network only - always fetch from network, never use cache
+async function networkOnly(request) {
+  try {
+    const networkResponse = await fetch(request);
+    return networkResponse;
+  } catch (error) {
+    console.log('Service Worker: Network failed for:', request.url);
+    return new Response('Network error', { status: 503, statusText: 'Service Unavailable' });
+  }
 }
 
 // Network first strategy - try network, fallback to cache
