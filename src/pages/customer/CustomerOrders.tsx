@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import CustomerNav from "@/components/customer/CustomerNav";
@@ -16,15 +16,38 @@ interface Order {
 }
 
 const CustomerOrders = () => {
-  const { loading, customerId, signOut } = useCustomerAuth();
+  const { loading: authLoading, signOut } = useCustomerAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    if (customerId) {
-      fetchOrders();
-    }
+    // Get the authenticated user and fetch orders
+    const fetchOrders = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      setOrdersLoading(true);
+      const { data, error } = await supabase
+        .from("orders")
+        .select(`
+          id,
+          order_date,
+          status,
+          total_amount,
+          product_name
+        `)
+        .eq("customer_id", user.id)
+        .order("order_date", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching orders:", error);
+      } else {
+        setOrders(data || []);
+      }
+      setOrdersLoading(false);
+    };
+
+    fetchOrders();
     
     // Listen for order updates from PaymentSuccess
     const handleOrdersUpdated = (event: Event) => {
@@ -60,31 +83,7 @@ const CustomerOrders = () => {
       window.removeEventListener('orders-updated', handleOrdersUpdated);
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [customerId]);
-
-  const fetchOrders = useCallback(async () => {
-    if (!customerId) return;
-
-    setOrdersLoading(true);
-    const { data, error } = await supabase
-      .from("orders")
-      .select(`
-        id,
-        order_date,
-        status,
-        total_amount,
-        product_name
-      `)
-      .eq("customer_id", customerId)
-      .order("order_date", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching orders:", error);
-    } else {
-      setOrders(data || []);
-    }
-    setOrdersLoading(false);
-  }, [customerId]);
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -99,7 +98,7 @@ const CustomerOrders = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
         <CustomerNav onSignOut={signOut} />

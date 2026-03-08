@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Package, DollarSign, ShoppingBag, ArrowRight } from "lucide-react";
 
 const CustomerDashboard = () => {
-  const { loading, customerId, signOut } = useCustomerAuth();
+  const { loading: authLoading, signOut } = useCustomerAuth();
   const [searchParams] = useSearchParams();
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -34,34 +34,33 @@ const CustomerDashboard = () => {
   }, [showEmptyCartMessage, isNewAccount]);
 
   useEffect(() => {
-    if (customerId) {
-      fetchDashboardStats();
-    }
-  }, [customerId]);
+    const fetchDashboardStats = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-  const fetchDashboardStats = async () => {
-    if (!customerId) return;
+      // Fetch orders - using the authenticated user's ID
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id, total_amount")
+        .eq("customer_id", user.id);
 
-    // Fetch orders - using correct column name from database schema
-    const { data: orders } = await supabase
-      .from("orders")
-      .select("id, total_amount")
-      .eq("customer_id", customerId);
+      // Note: wishlist and cart tables don't exist in the database schema yet
+      // Setting these to 0 for now
 
-    // Note: wishlist and cart tables don't exist in the database schema yet
-    // Setting these to 0 for now
+      const totalSpent = orders?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
 
-    const totalSpent = orders?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+      setStats({
+        totalOrders: orders?.length || 0,
+        wishlistItems: 0,
+        cartValue: 0,
+        totalSpent,
+      });
+    };
 
-    setStats({
-      totalOrders: orders?.length || 0,
-      wishlistItems: 0,
-      cartValue: 0,
-      totalSpent,
-    });
-  };
+    fetchDashboardStats();
+  }, []);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
         <CustomerNav onSignOut={signOut} />
