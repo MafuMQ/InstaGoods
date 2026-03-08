@@ -87,7 +87,7 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 -- Create orders table
 CREATE TABLE public.orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  supplier_id UUID REFERENCES public.suppliers(id) ON DELETE CASCADE NOT NULL,
+  supplier_id UUID REFERENCES public.suppliers(id) ON DELETE SET NULL,
   customer_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
   product_name TEXT NOT NULL,

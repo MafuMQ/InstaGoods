@@ -1,10 +1,10 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { Product, Service, Grocery, Freelance } from "@/lib/data";
 
 type WishlistItem = Product | Service | Grocery | Freelance;
 
 interface WishlistContextType {
-  wishlistItems: WishlistItem[];
+  wishlistItemIds: string[];
   addToWishlist: (item: WishlistItem) => void;
   removeFromWishlist: (itemId: string) => void;
   isInWishlist: (itemId: string) => boolean;
@@ -14,42 +14,54 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>(() => {
+  const [wishlistItemIds, setWishlistItemIds] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
     const savedWishlist = localStorage.getItem("wishlist");
-    return savedWishlist ? JSON.parse(savedWishlist) : [];
+    try {
+      return savedWishlist ? JSON.parse(savedWishlist) : [];
+    } catch {
+      return [];
+    }
   });
 
-  const addToWishlist = (item: WishlistItem) => {
-    setWishlistItems((prevItems) => {
-      if (!prevItems.find((i) => i.id === item.id)) {
-        const newItems = [...prevItems, item];
-        localStorage.setItem("wishlist", JSON.stringify(newItems));
-        return newItems;
+  // Persist to localStorage only when IDs change
+  const persistWishlist = useCallback((ids: string[]) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("wishlist", JSON.stringify(ids));
+    }
+  }, []);
+
+  const addToWishlist = useCallback((item: WishlistItem) => {
+    setWishlistItemIds((prevIds) => {
+      if (!prevIds.includes(item.id)) {
+        const newIds = [...prevIds, item.id];
+        persistWishlist(newIds);
+        return newIds;
       }
-      return prevItems;
+      return prevIds;
     });
-  };
+  }, [persistWishlist]);
 
-  const removeFromWishlist = (itemId: string) => {
-    setWishlistItems((prevItems) => {
-      const newItems = prevItems.filter((item) => item.id !== itemId);
-      localStorage.setItem("wishlist", JSON.stringify(newItems));
-      return newItems;
+  const removeFromWishlist = useCallback((itemId: string) => {
+    setWishlistItemIds((prevIds) => {
+      const newIds = prevIds.filter((id) => id !== itemId);
+      persistWishlist(newIds);
+      return newIds;
     });
-  };
+  }, [persistWishlist]);
 
-  const isInWishlist = (itemId: string) => {
-    return wishlistItems.some((item) => item.id === itemId);
-  };
+  const isInWishlist = useCallback((itemId: string) => {
+    return wishlistItemIds.includes(itemId);
+  }, [wishlistItemIds]);
 
-  const getWishlistCount = () => {
-    return wishlistItems.length;
-  };
+  const getWishlistCount = useCallback(() => {
+    return wishlistItemIds.length;
+  }, [wishlistItemIds]);
 
   return (
     <WishlistContext.Provider
       value={{
-        wishlistItems,
+        wishlistItemIds,
         addToWishlist,
         removeFromWishlist,
         isInWishlist,
