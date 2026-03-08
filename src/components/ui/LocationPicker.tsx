@@ -1,14 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PlacesAutocomplete from "react-places-autocomplete";
 import { useLocation } from "@/context/LocationContext";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Input } from "@/components/ui/input";
 import { reverseGeocode } from "@/lib/geocode";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, AlertCircle } from "lucide-react";
+
+// Check if Google Maps is available
+const isGoogleMapsAvailable = (): boolean => {
+  return Boolean(typeof window !== 'undefined' && 
+         typeof (window as any).google !== 'undefined' && 
+         (window as any).google && 
+         (window as any).google.maps);
+};
 
 const LocationPicker: React.FC = () => {
   const { address, setAddress } = useLocation();
   const [isDetecting, setIsDetecting] = useState(false);
+  const [googleAvailable, setGoogleAvailable] = useState(true);
+
+  // Check if Google Maps is available on mount
+  useEffect(() => {
+    setGoogleAvailable(isGoogleMapsAvailable());
+  }, []);
 
   const detectLocation = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent any form submission
@@ -66,6 +80,26 @@ const LocationPicker: React.FC = () => {
       setIsDetecting(false);
     }
   };
+
+  // Show fallback when Google Maps is not available
+  if (!googleAvailable) {
+    return (
+      <div className="relative w-full">
+        <Input
+          placeholder="Enter location manually..."
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="pl-3 pr-12 w-full md:w-56"
+        />
+        <div
+          title="Google Maps not available"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-yellow-500"
+        >
+          <AlertCircle className="h-4 w-4" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <PlacesAutocomplete
