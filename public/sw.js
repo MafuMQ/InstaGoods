@@ -1,16 +1,16 @@
 // Service Worker for InstaGoods Performance Optimization
-const CACHE_NAME = 'instagoods-v2';
-const STATIC_CACHE = 'static-v2';
-const DYNAMIC_CACHE = 'dynamic-v2';
+const CACHE_VERSION = 'v3';
+const STATIC_CACHE = `static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
-// Files to cache immediately
+// Precache manifest - update this when deploying new versions
+// Vite uses content-hashed filenames, so we cache dynamically
 const STATIC_FILES = [
   '/',
-  '/index.html',
-  '/manifest.json'
+  '/index.html'
 ];
 
-// Install event - cache static files
+// Install event - cache essential files
 self.addEventListener('install', (event) => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
@@ -33,6 +33,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
+          // Delete all caches that don't match current version
           if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
             console.log('Service Worker: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
@@ -46,7 +47,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache with network fallback
+// Fetch event - Network first, fallback to cache
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -56,59 +57,102 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip cross-origin requests
+  // Handle same-origin requests only
   if (url.origin !== location.origin) {
+    // For cross-origin (like CDN), try network first
+    event.respondWith(networkFirst(request));
     return;
   }
 
-  event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          console.log('Service Worker: Serving from cache:', request.url);
-          return cachedResponse;
-        }
+  // For navigation requests (HTML pages), use network first
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
 
-        // Fetch from network
-        return fetch(request)
-          .then((response) => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+  // For static assets, try network first with cache fallback
+  if (isStaticAsset(request.url)) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
 
-            // Clone response for caching
-            const responseToCache = response.clone();
+  // Default: network first
+  event.respondWith(networkFirst(request));
+});
 
-            // Determine cache strategy
-            const shouldCache = 
-              request.url.includes('/assets/') || 
-              request.url.includes('.js') || 
-              request.url.includes('.css') ||
-              request.url.includes('.png') ||
-              request.url.includes('.jpg') ||
-              request.url.includes('.jpeg') ||
-              request.url.includes('.webp');
+// Check if request is for a static asset
+function isStaticAsset(url) {
+  return url.includes('/assets/') || 
+         url.includes('.js') || 
+         url.includes('.css') ||
+         url.includes('.png') ||
+         url.includes('.jpg') ||
+         url.includes('.jpeg') ||
+         url.includes('.webp') ||
+         url.includes('.svg');
+}
 
-            if (shouldCache) {
-              caches.open(DYNAMIC_CACHE)
-                .then((cache) => {
-                  console.log('Service Worker: Caching new resource:', request.url);
-                  cache.put(request, responseToCache);
-                });
-            }
+// Network first strategy - try network, fallback to cache
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    
+    // Only cache successful responses
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      
+      // Clone the response before caching
+      const responseToCache = networkResponse.clone();
+      
+      // Don't cache non-basic responses (cross-origin)
+      if (responseToCache.type === 'basic' || responseToCache.type === 'cors') {
+        console.log('Service Worker: Caching new resource:', request.url);
+        cache.put(request, responseToCache);
+      }
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    console.log('Service Worker: Network failed, falling back to cache for:', request.url);
+    
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // If no cache and offline, return offline page for navigation
+    if (request.mode === 'navigate') {
+      return caches.match('/index.html');
+    }
+    
+    // Return a basic error response for other requests
+    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+  }
+}
 
-            return response;
-          })
-          .catch(() => {
-            // Network failed - return offline fallback if available
-            if (request.destination === 'document') {
-              return caches.match('/index.html');
-            }
-          });
-      })
-  );
+// Listen for messages from the main app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Service Worker: Skip waiting triggered');
+    self.skipWaiting();
+  }
+  
+  // Force update - clear all caches and reload
+  if (event.data && event.data.type === 'FORCE_UPDATE') {
+    console.log('Service Worker: Force update triggered');
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          console.log('Service Worker: Deleting cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(() => {
+      self.clients.claim();
+      self.skipWaiting();
+    });
+  }
 });
 
 // Background sync for offline actions
