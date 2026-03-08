@@ -533,7 +533,7 @@ const CustomerAuth = () => {
                       type="text"
                       value={city}
                       onChange={(e) => handleInputChange("city", e.target.value, setCity)}
-                      placeholder="New York"
+                      placeholder="Johannesburg"
                       className={errors.city ? "border-destructive" : ""}
                     />
                     {errors.city && (
@@ -541,13 +541,13 @@ const CustomerAuth = () => {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="signup-state">State/Province *</Label>
+                    <Label htmlFor="signup-state">Province *</Label>
                     <Input
                       id="signup-state"
                       type="text"
                       value={state}
                       onChange={(e) => handleInputChange("state", e.target.value, setState)}
-                      placeholder="NY"
+                      placeholder="Gauteng"
                       className={errors.state ? "border-destructive" : ""}
                     />
                     {errors.state && (

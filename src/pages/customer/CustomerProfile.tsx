@@ -49,7 +49,7 @@ interface RecentOrder {
 }
 
 const CustomerProfile = () => {
-  const { loading: authLoading, customerId, signOut } = useCustomerAuth();
+  const { loading: authLoading, customerId, signOut, user: authUser } = useCustomerAuth();
   const [profile, setProfile] = useState<ProfileData>({
     email: "",
     full_name: "",
@@ -67,6 +67,13 @@ const CustomerProfile = () => {
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Format user data for CustomerNav
+  const user = authUser ? {
+    name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+    email: authUser.email || '',
+    avatar: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture
+  } : undefined;
 
   useEffect(() => {
     if (customerId) {
@@ -186,7 +193,7 @@ const CustomerProfile = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <CustomerNav onSignOut={signOut} />
+        <CustomerNav onSignOut={signOut} user={user} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -196,7 +203,7 @@ const CustomerProfile = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <CustomerNav onSignOut={signOut} />
+      <CustomerNav onSignOut={signOut} user={user} />
       
       <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <div className="flex items-center justify-between mb-6 md:mb-8">

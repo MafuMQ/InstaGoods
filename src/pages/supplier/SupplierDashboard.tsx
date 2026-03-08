@@ -64,7 +64,7 @@ interface ChartDataPoint {
 const COLORS = ["#10b981", "#ef4444", "#f59e0b", "#3b82f6", "#8b5cf6"];
 
 const SupplierDashboard = () => {
-  const { loading, supplierId, signOut } = useSupplierAuth();
+  const { loading, supplierId, signOut, user: authUser } = useSupplierAuth();
   const [timePeriod, setTimePeriod] = useState("30");
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -86,6 +86,13 @@ const SupplierDashboard = () => {
     completed: 0,
     cancelled: 0,
   });
+
+  // Format user data for SupplierNav
+  const user = authUser ? {
+    name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+    email: authUser.email || '',
+    avatar: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture
+  } : undefined;
 
   const calculateTrend = (current: number, previous: number): TrendData => {
     if (previous === 0) {
@@ -284,7 +291,7 @@ const SupplierDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <SupplierNav onSignOut={signOut} />
+        <SupplierNav onSignOut={signOut} user={user} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -294,7 +301,7 @@ const SupplierDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <SupplierNav onSignOut={signOut} />
+      <SupplierNav onSignOut={signOut} user={user} />
       
       <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">

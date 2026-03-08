@@ -26,7 +26,7 @@ import freelance1 from "@/assets/Freelancer-bg.jpg";
 import { geocodeAddress } from "@/lib/geocode";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderType } from "@/components/customer/ProviderBadge";
-import { Sprout, Handshake, Layers, Store } from "lucide-react";
+import { Sprout, Handshake, Layers, Store, Heart, Twitter, Instagram, Facebook, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 const Index = () => {
@@ -474,8 +474,47 @@ const Index = () => {
               </p>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t text-center text-muted-foreground text-sm">
-            © 2025 InstaGoods. All rights reserved.
+          <div className="mt-8 pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-4 text-muted-foreground text-sm">
+            <div className="flex items-center gap-2 hover:text-primary transition-colors duration-300">
+              <span className="font-semibold text-foreground">© {new Date().getFullYear()} InstaGoods</span>
+              <span className="hidden sm:inline">All rights reserved.</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://twitter.com/instagoods" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors duration-300 transform hover:scale-110"
+                aria-label="Twitter"
+              >
+                <Twitter className="w-4 h-4" />
+              </a>
+              <a 
+                href="https://instagram.com/instagoods" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors duration-300 transform hover:scale-110"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a 
+                href="https://facebook.com/instagoods" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors duration-300 transform hover:scale-110"
+                aria-label="Facebook"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a 
+                href="mailto:hello@instagoods.co.za"
+                className="hover:text-primary transition-colors duration-300 transform hover:scale-110"
+                aria-label="Email"
+              >
+                <Mail className="w-4 h-4" />
+              </a>
+            </div>
           </div>
         </div>
       </footer>

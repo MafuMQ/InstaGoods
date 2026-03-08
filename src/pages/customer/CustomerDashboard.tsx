@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Package, DollarSign, ShoppingBag, ArrowRight } from "lucide-react";
 
 const CustomerDashboard = () => {
-  const { loading: authLoading, signOut } = useCustomerAuth();
+  const { loading: authLoading, signOut, user: authUser } = useCustomerAuth();
   const [searchParams] = useSearchParams();
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -17,6 +17,13 @@ const CustomerDashboard = () => {
     cartValue: 0,
     totalSpent: 0,
   });
+
+  // Format user data for CustomerNav
+  const user = authUser ? {
+    name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+    email: authUser.email || '',
+    avatar: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture
+  } : undefined;
 
   // Check for redirect flags from login
   const showEmptyCartMessage = searchParams.get("emptyCart") === "true";
@@ -63,7 +70,7 @@ const CustomerDashboard = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <CustomerNav onSignOut={signOut} />
+        <CustomerNav onSignOut={signOut} user={user} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -73,7 +80,7 @@ const CustomerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <CustomerNav onSignOut={signOut} />
+      <CustomerNav onSignOut={signOut} user={user} />
       
       <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
         <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">My Dashboard</h1>

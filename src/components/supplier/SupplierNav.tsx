@@ -17,9 +17,14 @@ import {
 
 interface SupplierNavProps {
   onSignOut: () => void;
+  user?: {
+    name: string;
+    email: string;
+    avatar?: string;
+  };
 }
 
-const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
+const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -45,7 +50,23 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-64">
-            <div className="flex flex-col gap-4 mt-8">
+            {/* User Profile Display for Mobile */}
+            {user && (
+              <div className="flex items-center gap-3 px-2 py-3 mb-4 rounded-lg bg-muted/50">
+                <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
+                  ) : (
+                    user.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-sm font-medium truncate">{user.name}</span>
+                  <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col gap-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.to;
@@ -77,7 +98,24 @@ const SupplierNav = ({ onSignOut }: SupplierNavProps) => {
 
       {/* Desktop fixed sidebar (hidden on small screens) */}
       <nav className="hidden lg:flex fixed left-0 top-0 h-full w-64 bg-card border-r">
-        <div className="flex flex-col py-4 px-4">
+        <div className="flex flex-col py-4 px-4 w-full">
+          {/* User Profile Display */}
+          {user && (
+            <div className="flex items-center gap-3 px-3 py-3 mb-4 rounded-lg bg-muted/50">
+              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+                {user.avatar ? (
+                  <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
+                ) : (
+                  user.name.charAt(0).toUpperCase()
+                )}
+              </div>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-sm font-medium truncate">{user.name}</span>
+                <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+              </div>
+            </div>
+          )}
+          
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
