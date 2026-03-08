@@ -23,7 +23,7 @@ const SearchResults = lazy(() => import("./pages/customer/SearchResults"));
 const Supplier = lazy(() => import("./pages/customer/Supplier"));
 const Auth = lazy(() => import("./pages/customer/Auth"));
 const CustomerAuth = lazy(() => import("./pages/customer/CustomerAuth"));
-const CustomerDashboard = lazy(() => import("./pages/customer/NewCustomerDashboard"));
+const CustomerDashboard = lazy(() => import("./pages/customer/CustomerDashboard"));
 const CustomerOrders = lazy(() => import("./pages/customer/CustomerOrders"));
 const CustomerProfile = lazy(() => import("./pages/customer/CustomerProfile"));
 const About = lazy(() => import("./pages/customer/About"));
@@ -42,6 +42,7 @@ const SupplierExpenses = lazy(() => import("./pages/supplier/SupplierExpenses"))
 const SupplierServiceRequests = lazy(() => import("./pages/supplier/SupplierServiceRequests"));
 const SupplierOptimize = lazy(() => import("./pages/supplier/SupplierOptimize"));
 const SupplierShopSettings = lazy(() => import("./pages/supplier/SupplierShopSettings"));
+const SupplierManagement = lazy(() => import("./pages/admin/SupplierManagement"));
 const NotFound = lazy(() => import("./pages/customer/NotFound"));
 
 // Loading fallback component
@@ -107,6 +108,7 @@ const App = () => {
                     <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
                     <Route path="/supplier/optimize" element={<SupplierOptimize />} />
                     <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                    <Route path="/admin/suppliers" element={<SupplierManagement />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/help-center" element={<HelpCenter />} />
                     <Route path="/contact" element={<ContactUs />} />

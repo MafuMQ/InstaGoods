@@ -4,6 +4,7 @@ import { Service, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
+import { ProviderBadgeCompact, ProviderType, VerificationLevel } from "./ProviderBadge";
 
 interface ServiceCardProps {
   service: Service;
@@ -41,6 +42,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
     return undefined;
   };
 
+  // Get provider type from service or default to external
+  const providerType: ProviderType = service.providerType || 'external';
+  const verificationLevel: VerificationLevel = service.providerVerificationLevel || 'basic';
+
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-hover)]">
       <Link to={`/service/${service.id}`} state={getLinkState()} className="block">
@@ -62,6 +67,12 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
           >
             <Heart className={`h-4 w-4 ${isInWishlist(service.id) ? 'fill-current' : ''}`} />
           </Button>
+          {/* Provider Badge - positioned in top-left */}
+          <div className="absolute left-2 top-2">
+            <ProviderBadgeCompact 
+              providerType={providerType}
+            />
+          </div>
         </div>
         <div className="p-4">
           <h3 className="font-semibold text-base mb-1 line-clamp-2">
