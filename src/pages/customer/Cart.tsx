@@ -6,7 +6,7 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, Sparkles } from "lucide-react";
+import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, Sparkles, Heart, Truck } from "lucide-react";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart();
@@ -120,15 +120,24 @@ const Cart = () => {
               {/* Suggestion cards */}
               <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🛒 Browse Products</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium">Browse Products</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Explore our curated collection</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">❤️ Save Favorites</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-5 w-5 text-red-500" />
+                    <h3 className="font-medium">Save Favorites</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Add items to your wishlist</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🚚 Fast Delivery</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Truck className="h-5 w-5 text-green-600" />
+                    <h3 className="font-medium">Fast Delivery</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Get items delivered to you</p>
                 </div>
               </div>

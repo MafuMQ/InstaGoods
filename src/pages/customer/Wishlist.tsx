@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
-import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles } from "lucide-react";
+import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 
 const Wishlist = () => {
@@ -86,15 +86,24 @@ const Wishlist = () => {
               {/* Suggestions */}
               <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">💝 Save Favorites</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-5 w-5 text-red-500" />
+                    <h3 className="font-medium">Save Favorites</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Click the heart on any product</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🛒 Move to Cart</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
+                    <h3 className="font-medium">Move to Cart</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Add saved items to your cart</p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">📱 Access Anywhere</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Smartphone className="h-5 w-5 text-blue-500" />
+                    <h3 className="font-medium">Access Anywhere</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground">Your wishlist syncs automatically</p>
                 </div>
               </div>

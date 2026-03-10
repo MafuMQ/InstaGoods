@@ -69,7 +69,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
         rating: 4.5,
         reviews: 0,
         supplierId: marketplaceProduct.supplier_id,
-        description: marketplaceProduct.description || ""
+        description: marketplaceProduct.description || "",
+        delivery_fee: marketplaceProduct.delivery_fee ?? 0,
+        no_delivery: marketplaceProduct.no_delivery ?? false,
+        availableEverywhere: marketplaceProduct.available_everywhere ?? true,
+        collection_available: marketplaceProduct.collection_available ?? false
       };
       addToCart(productForCart);
       toast.success(`${marketplaceProduct.name} added to cart!`);
@@ -98,7 +102,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
         rating: 4.5,
         reviews: 0,
         supplierId: marketplaceProduct.supplier_id,
-        description: marketplaceProduct.description || ""
+        description: marketplaceProduct.description || "",
+        delivery_fee: marketplaceProduct.delivery_fee ?? 0,
+        no_delivery: marketplaceProduct.no_delivery ?? false,
+        availableEverywhere: marketplaceProduct.available_everywhere ?? true,
+        collection_available: marketplaceProduct.collection_available ?? false
       };
     } else {
       itemForWishlist = product as Product;
