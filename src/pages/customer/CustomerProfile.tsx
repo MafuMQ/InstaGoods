@@ -12,40 +12,19 @@ import { toast } from "sonner";
 import { 
   User, 
   Mail, 
-  Phone, 
-  MapPin, 
   Calendar, 
-  ShoppingCart, 
-  DollarSign, 
-  Package,
-  Clock,
   Shield,
   UserCog,
   Edit2,
   Save
 } from "lucide-react";
-import { formatDistanceToNow, format } from "date-fns";
+import { format } from "date-fns";
 
 interface ProfileData {
   email: string;
   full_name: string;
   avatar_url: string | null;
   created_at: string | null;
-}
-
-interface OrderSummary {
-  totalOrders: number;
-  totalSpent: number;
-  pendingOrders: number;
-  completedOrders: number;
-}
-
-interface RecentOrder {
-  id: string;
-  order_date: string;
-  status: string;
-  total_amount: number;
-  product_name: string;
 }
 
 const CustomerProfile = () => {
@@ -56,13 +35,6 @@ const CustomerProfile = () => {
     avatar_url: null,
     created_at: null,
   });
-  const [orderSummary, setOrderSummary] = useState<OrderSummary>({
-    totalOrders: 0,
-    totalSpent: 0,
-    pendingOrders: 0,
-    completedOrders: 0,
-  });
-  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [saving, setSaving] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,31 +87,6 @@ const CustomerProfile = () => {
           created_at: profileData.created_at,
         });
       }
-
-      // Fetch orders using the auth user ID (customer_id in orders is the profile ID)
-      const { data: ordersData, error: ordersError } = await supabase
-        .from("orders")
-        .select("id, order_date, status, total_amount, product_name")
-        .eq("customer_id", user.id)
-        .order("order_date", { ascending: false });
-
-      if (!ordersError && ordersData) {
-        // Calculate order summary
-        const totalOrders = ordersData.length;
-        const totalSpent = ordersData.reduce((sum, order) => sum + Number(order.total_amount), 0);
-        const pendingOrders = ordersData.filter(o => o.status === "pending").length;
-        const completedOrders = ordersData.filter(o => o.status === "completed").length;
-
-        setOrderSummary({
-          totalOrders,
-          totalSpent,
-          pendingOrders,
-          completedOrders,
-        });
-
-        // Get 5 most recent orders
-        setRecentOrders(ordersData.slice(0, 5));
-      }
     } catch (err) {
       console.error("Error fetching data:", err);
       setError("An unexpected error occurred");
@@ -175,19 +122,6 @@ const CustomerProfile = () => {
     }
 
     setSaving(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-500";
-      case "pending":
-        return "bg-yellow-500";
-      case "cancelled":
-        return "bg-red-500";
-      default:
-        return "bg-gray-500";
-    }
   };
 
   if (authLoading) {
@@ -340,101 +274,6 @@ const CustomerProfile = () => {
                     <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
-                </div>
-              )}
-            </Card>
-
-            {/* Order Statistics Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground">Total Orders</p>
-                    <p className="text-xl md:text-2xl font-bold">{orderSummary.totalOrders}</p>
-                  </div>
-                  <ShoppingCart className="h-8 w-8 text-primary" />
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground">Total Spent</p>
-                    <p className="text-xl md:text-2xl font-bold">R{orderSummary.totalSpent.toFixed(2)}</p>
-                  </div>
-                  <DollarSign className="h-8 w-8 text-green-600" />
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground">Pending</p>
-                    <p className="text-xl md:text-2xl font-bold">{orderSummary.pendingOrders}</p>
-                  </div>
-                  <Clock className="h-8 w-8 text-yellow-600" />
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs md:text-sm text-muted-foreground">Completed</p>
-                    <p className="text-xl md:text-2xl font-bold">{orderSummary.completedOrders}</p>
-                  </div>
-                  <Package className="h-8 w-8 text-green-600" />
-                </div>
-              </Card>
-            </div>
-
-            {/* Recent Orders Section */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Recent Orders
-                </h2>
-                {orderSummary.totalOrders > 5 && (
-                  <Button variant="link" asChild>
-                    <a href="/customer/orders">View All Orders</a>
-                  </Button>
-                )}
-              </div>
-
-              {recentOrders.length === 0 ? (
-                <div className="text-center py-8">
-                  <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">You haven't placed any orders yet.</p>
-                  <Button className="mt-4" asChild>
-                    <a href="/">Start Shopping</a>
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {recentOrders.map((order) => (
-                    <div 
-                      key={order.id} 
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold truncate">Order #{order.id.slice(0, 8)}</p>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground truncate">{order.product_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {order.order_date 
-                            ? formatDistanceToNow(new Date(order.order_date), { addSuffix: true })
-                            : "Date not available"}
-                        </p>
-                      </div>
-                      <div className="text-right ml-4">
-                        <p className="font-bold">R{Number(order.total_amount).toFixed(2)}</p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               )}
             </Card>
