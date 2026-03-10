@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
+import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 import CustomerNav from "@/components/customer/CustomerNav";
 import { Loading } from "@/components/ui/loading-spinner";
 import { Card } from "@/components/ui/card";
@@ -10,7 +12,10 @@ import { ShoppingCart, Heart, Package, DollarSign, ShoppingBag, ArrowRight } fro
 
 const CustomerDashboard = () => {
   const { loading: authLoading, signOut, user: authUser } = useCustomerAuth();
+  const { wishlistItemIds } = useWishlist();
+  const { cartItems, getCartTotal } = useCart();
   const [searchParams] = useSearchParams();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [stats, setStats] = useState({
     totalOrders: 0,
     wishlistItems: 0,
@@ -51,27 +56,32 @@ const CustomerDashboard = () => {
         .select("id, total_amount")
         .eq("customer_id", user.id);
 
-      // Note: wishlist and cart tables don't exist in the database schema yet
-      // Setting these to 0 for now
+      // Note: cart table doesn't exist in the database schema yet
+      // Setting cart value to 0 for now
 
       const totalSpent = orders?.reduce((sum, order) => sum + Number(order.total_amount), 0) || 0;
+      const cartValue = getCartTotal();
 
       setStats({
         totalOrders: orders?.length || 0,
-        wishlistItems: 0,
-        cartValue: 0,
+        wishlistItems: wishlistItemIds.length,
+        cartValue,
         totalSpent,
       });
     };
 
     fetchDashboardStats();
-  }, []);
+  }, [wishlistItemIds, cartItems]);
 
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <CustomerNav onSignOut={signOut} user={user} />
-        <div className="min-h-screen flex items-center justify-center">
+        <CustomerNav 
+        onSignOut={signOut} 
+        user={user}
+        onCollapsedChange={setIsSidebarCollapsed}
+      />
+      <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
       </div>
@@ -80,9 +90,15 @@ const CustomerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <CustomerNav onSignOut={signOut} user={user} />
+      <CustomerNav 
+        onSignOut={signOut} 
+        user={user} 
+        onCollapsedChange={setIsSidebarCollapsed}
+      />
       
-      <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
+      <div className={`mx-auto max-w-7xl py-4 md:py-8 px-4 transition-all duration-300 ${
+        isSidebarCollapsed ? "lg:ml-16 lg:max-w-[calc(100vw-4rem)]" : "lg:ml-64 lg:max-w-[calc(100vw-16rem)]"
+      }`}>
         <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8">My Dashboard</h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
@@ -129,7 +145,7 @@ const CustomerDashboard = () => {
 
         <div className="space-y-6">
           {/* Contextual Messages Section */}
-          {(showEmptyCartMessage || isNewAccount) && (
+          {stats.cartValue === 0 && (showEmptyCartMessage || isNewAccount) && (
             <Card className="p-6 border-amber-200 bg-amber-50">
               <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5 text-amber-600" />

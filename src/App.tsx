@@ -9,6 +9,7 @@ import { ServiceRequestProvider } from "@/context/ServiceRequestContext";
 import { useEffect, Suspense, lazy } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
+import { SupplierLayout } from "@/layouts/SupplierLayout";
 
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/customer/Index"));
@@ -100,14 +101,16 @@ const App = () => {
                     <Route path="/customer/dashboard" element={<CustomerDashboard />} />
                     <Route path="/customer/orders" element={<CustomerOrders />} />
                     <Route path="/customer/profile" element={<CustomerProfile />} />
-                    <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
-                    <Route path="/supplier/products" element={<SupplierProducts />} />
-                    <Route path="/supplier/orders" element={<SupplierOrders />} />
-                    <Route path="/supplier/incomes" element={<SupplierIncomes />} />
-                    <Route path="/supplier/expenses" element={<SupplierExpenses />} />
-                    <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
-                    <Route path="/supplier/optimize" element={<SupplierOptimize />} />
-                    <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                    <Route element={<SupplierLayout />}>
+                      <Route path="/supplier/dashboard" element={<SupplierDashboard />} />
+                      <Route path="/supplier/products" element={<SupplierProducts />} />
+                      <Route path="/supplier/orders" element={<SupplierOrders />} />
+                      <Route path="/supplier/incomes" element={<SupplierIncomes />} />
+                      <Route path="/supplier/expenses" element={<SupplierExpenses />} />
+                      <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
+                      <Route path="/supplier/optimize" element={<SupplierOptimize />} />
+                      <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                    </Route>
                     <Route path="/admin/suppliers" element={<SupplierManagement />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/help-center" element={<HelpCenter />} />

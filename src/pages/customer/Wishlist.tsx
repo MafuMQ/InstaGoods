@@ -9,10 +9,26 @@ import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles } from "lucide-r
 import { toast } from "sonner";
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { wishlistItems, loading, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const [addingItems, setAddingItems] = useState<string[]>([]);
   const [removingItem, setRemovingItem] = useState<string | null>(null);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container px-4 sm:px-6 py-6 sm:py-12">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Your Wishlist</h1>
+            <div className="flex items-center justify-center py-20">
+              <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddToCart = async (item: any) => {
     setAddingItems(prev => [...prev, item.id]);

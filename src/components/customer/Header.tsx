@@ -182,8 +182,12 @@ const Header = () => {
               <div className="flex flex-col gap-2 pt-4 border-t mt-auto">
                 {session && user ? (
                   <>
-                    {/* User Profile Info when logged in */}
-                    <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-muted/50">
+                    {/* User Profile Info when logged in - Clickable to dashboard */}
+                    <Link 
+                      to="/customer/dashboard" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-3 px-2 py-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                    >
                       <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold flex-shrink-0">
                         {getUserAvatar() ? (
                           <img src={getUserAvatar()!} alt={getUserDisplayName()} className="h-9 w-9 rounded-full object-cover" />
@@ -195,7 +199,7 @@ const Header = () => {
                         <span className="text-sm font-medium truncate">{getUserDisplayName()}</span>
                         <span className="text-xs text-muted-foreground truncate">{userRole === 'customer' ? 'Customer' : userRole === 'supplier' ? 'Supplier' : 'User'}</span>
                       </div>
-                    </div>
+                    </Link>
                     <Button 
                       onClick={() => {
                         handleSignOut();
@@ -324,7 +328,10 @@ const Header = () => {
           {/* Customer Portal Button - Show user info when logged in */}
           {session && user ? (
             <div className="flex items-center gap-2">
-              <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
+              <Link 
+                to="/customer/dashboard" 
+                className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+              >
                 <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
                   {getUserAvatar() ? (
                     <img src={getUserAvatar()!} alt={getUserDisplayName()} className="h-8 w-8 rounded-full object-cover" />
@@ -333,7 +340,7 @@ const Header = () => {
                   )}
                 </div>
                 <span className="text-sm font-medium max-w-[120px] truncate">{getUserDisplayName()}</span>
-              </div>
+              </Link>
               <Button 
                 variant="outline" 
                 size="sm" 

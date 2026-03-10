@@ -43,6 +43,8 @@ interface CustomerNavProps {
   wishlistCount?: number;
   /** Current user profile information */
   user?: UserProfile;
+  /** Callback function triggered when sidebar collapsed state changes */
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 /**
@@ -67,7 +69,7 @@ interface NavItem {
  * 
  * Supports keyboard navigation and includes proper ARIA attributes for accessibility.
  */
-const CustomerNav = ({ onSignOut, cartCount = 0, notificationCount = 0, wishlistCount = 0, user }: CustomerNavProps) => {
+const CustomerNav = ({ onSignOut, cartCount = 0, notificationCount = 0, wishlistCount = 0, user, onCollapsedChange }: CustomerNavProps) => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -251,7 +253,10 @@ const CustomerNav = ({ onSignOut, cartCount = 0, notificationCount = 0, wishlist
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onClick={() => {
+              setIsSidebarCollapsed(!isSidebarCollapsed);
+              onCollapsedChange?.(!isSidebarCollapsed);
+            }}
             className={`mb-4 ${isSidebarCollapsed ? "justify-center" : "justify-end"} ml-auto`}
             aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -313,11 +318,11 @@ const CustomerNav = ({ onSignOut, cartCount = 0, notificationCount = 0, wishlist
             onClick={onSignOut} 
             variant="outline" 
             size="sm" 
-            className="w-full justify-start gap-2 mt-2"
+            className={`w-full justify-start gap-2 mt-2 ${isSidebarCollapsed ? "justify-center px-0" : ""}`}
             aria-label="Sign out of your account"
           >
-            <LogOut className="h-4 w-4" aria-hidden="true" />
-            Sign Out
+            <LogOut className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+            {!isSidebarCollapsed && "Sign Out"}
           </Button>
         </div>
       </nav>
