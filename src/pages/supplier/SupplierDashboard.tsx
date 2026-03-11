@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
 import { Loading } from "@/components/ui/loading-spinner";
+import { useSupplierNav } from "@/contexts/SupplierNavContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ const COLORS = ["#10b981", "#ef4444", "#f59e0b", "#3b82f6", "#8b5cf6"];
 const SupplierDashboard = () => {
   const { loading, supplierId, signOut, user: authUser } = useSupplierAuth();
   const [timePeriod, setTimePeriod] = useState("30");
+  const { collapsed } = useSupplierNav();
   const [stats, setStats] = useState({
     totalRevenue: 0,
     totalOrders: 0,
@@ -303,7 +305,7 @@ const SupplierDashboard = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SupplierNav onSignOut={signOut} user={user} />
       
-      <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
+      <div className={`mx-auto max-w-7xl py-4 md:py-8 px-4 transition-all duration-300 ${collapsed ? "lg:ml-16 lg:max-w-[calc(100vw-4rem)]" : "lg:ml-64 lg:max-w-[calc(100vw-16rem)]"}`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="text-2xl md:text-4xl font-bold">Supplier Dashboard</h1>
           <Select value={timePeriod} onValueChange={setTimePeriod}>

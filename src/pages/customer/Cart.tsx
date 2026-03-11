@@ -6,7 +6,7 @@ import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, Sparkles } from "lucide-react";
+import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, Sparkles, Heart, Truck } from "lucide-react";
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount, clearCart } = useCart();
@@ -95,19 +95,19 @@ const Cart = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen bg-background flex flex-col">
         <Header />
-        <div className="container px-4 sm:px-6 py-6 sm:py-12">
+        <div className="flex-1 overflow-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Your Cart</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Your Cart</h1>
             
             {/* Enhanced Empty State */}
-            <div className="text-center py-12 sm:py-16 animate-in fade-in zoom-in-95 duration-500">
-              <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-6 rounded-full bg-muted/50 flex items-center justify-center">
-                <ShoppingBag className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground" />
+            <div className="text-center py-6 sm:py-8 animate-in fade-in zoom-in-95 duration-500">
+              <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <ShoppingBag className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-semibold mb-2">Your cart is empty</h2>
-              <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+              <h2 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">Your cart is empty</h2>
+              <p className="text-muted-foreground mb-3 sm:mb-4 max-w-sm mx-auto text-xs sm:text-sm">
                 Looks like you haven't added any items yet. Start shopping to fill your cart with amazing products!
               </p>
               <Link to="/">
@@ -118,18 +118,27 @@ const Cart = () => {
               </Link>
               
               {/* Suggestion cards */}
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🛒 Browse Products</h3>
-                  <p className="text-sm text-muted-foreground">Explore our curated collection</p>
+              <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-left">
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ShoppingBag className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium text-sm">Browse Products</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Explore our curated collection</p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">❤️ Save Favorites</h3>
-                  <p className="text-sm text-muted-foreground">Add items to your wishlist</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Heart className="h-4 w-4 text-red-500" />
+                    <h3 className="font-medium text-sm">Save Favorites</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Add items to your wishlist</p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🚚 Fast Delivery</h3>
-                  <p className="text-sm text-muted-foreground">Get items delivered to you</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Truck className="h-4 w-4 text-green-600" />
+                    <h3 className="font-medium text-sm">Fast Delivery</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Get items delivered to you</p>
                 </div>
               </div>
             </div>
@@ -140,22 +149,22 @@ const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col">
       <Header />
-      <div className="container px-4 sm:px-6 py-6 sm:py-12">
+      <div className="flex-1 overflow-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold">Your Cart</h1>
-              <p className="text-muted-foreground mt-1">{getCartCount()} item{getCartCount() !== 1 ? 's' : ''} in your cart</p>
+              <p className="text-muted-foreground mt-0.5 text-sm">{getCartCount()} item{getCartCount() !== 1 ? 's' : ''} in your cart</p>
             </div>
           </div>
           
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-3">
             {cartItems.map((item, index) => (
               <Card 
                 key={item.id} 
-                className={`p-4 sm:p-6 transition-all duration-300 ${
+                className={`p-2 sm:p-3 transition-all duration-300 ${
                   removingItem === item.id ? 'opacity-0 scale-95' : 'animate-in fade-in slide-in-from-bottom-2'
                 }`}
                 style={{ animationDelay: `${index * 50}ms` }}
@@ -166,17 +175,17 @@ const Cart = () => {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md"
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md"
                     />
                   </div>
                   
                   {/* Product Details */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-base sm:text-lg truncate">{item.name}</h3>
-                    <p className="text-muted-foreground">R{item.price} each</p>
+                    <h3 className="font-semibold text-sm sm:text-base truncate">{item.name}</h3>
+                    <p className="text-muted-foreground text-sm">R{item.price} each</p>
                     
                     {/* Quantity Controls */}
-                    <div className="flex items-center gap-3 mt-4">
+                    <div className="flex items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
                       <div className="flex items-center gap-1">
                         <Button
                           variant="outline"
@@ -192,12 +201,12 @@ const Cart = () => {
                           aria-label={item.quantity === 1 ? "Remove item" : "Decrease quantity"}
                         >
                           {item.quantity === 1 ? (
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           ) : (
-                            <Minus className="h-4 w-4" />
+                            <Minus className="h-3.5 w-3.5" />
                           )}
                         </Button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <span className="w-8 sm:w-10 text-center font-medium text-sm">{item.quantity}</span>
                         <Button
                           variant="outline"
                           size="icon"
@@ -206,7 +215,7 @@ const Cart = () => {
                           disabled={item.quantity >= 10}
                           aria-label="Increase quantity"
                         >
-                          <Plus className="h-4 w-4" />
+                          <Plus className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                       
@@ -225,7 +234,7 @@ const Cart = () => {
                   {/* Item Total */}
                   <div className="flex sm:flex-col items-center justify-between sm:justify-end gap-2 mt-4 sm:mt-0 sm:ml-auto">
                     <span className="text-sm text-muted-foreground sm:hidden">Subtotal:</span>
-                    <span className="font-bold text-lg">R{(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="font-bold text-sm sm:text-base">R{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 </div>
               </Card>
@@ -233,10 +242,10 @@ const Cart = () => {
           </div>
           
           {/* Cart Summary */}
-          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card rounded-lg border shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-card rounded-lg border shadow-sm">
+            <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3">Order Summary</h2>
             
-            <div className="space-y-3 mb-6">
+            <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span>R{getCartTotal().toFixed(2)}</span>
@@ -245,13 +254,13 @@ const Cart = () => {
                 <span className="text-muted-foreground">Delivery</span>
                 <span className="text-green-600">Calculated at checkout</span>
               </div>
-              <div className="border-t pt-3 flex justify-between">
+              <div className="border-t pt-2 flex justify-between">
                 <span className="font-semibold">Total</span>
-                <span className="text-xl font-bold text-primary">R{getCartTotal().toFixed(2)}</span>
+                <span className="text-lg sm:text-xl font-bold text-primary">R{getCartTotal().toFixed(2)}</span>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full gap-2">
                   <ArrowRight className="h-4 w-4 rotate-180" />
@@ -296,7 +305,6 @@ const Cart = () => {
                 className="flex-1 gap-2"
                 onClick={handleCheckout}
                 disabled={loadingAuth || cartItems.length === 0}
-                size="lg"
               >
                 {loadingAuth ? (
                   "Checking..."

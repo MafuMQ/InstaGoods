@@ -5,14 +5,30 @@ import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
-import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles } from "lucide-react";
+import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { wishlistItems, loading, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const [addingItems, setAddingItems] = useState<string[]>([]);
   const [removingItem, setRemovingItem] = useState<string | null>(null);
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-background flex flex-col">
+        <Header />
+        <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Wishlist</h1>
+            <div className="flex items-center justify-center py-8 sm:py-10">
+              <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddToCart = async (item: any) => {
     setAddingItems(prev => [...prev, item.id]);
@@ -45,19 +61,19 @@ const Wishlist = () => {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="h-screen bg-background flex flex-col">
         <Header />
-        <div className="container px-4 sm:px-6 py-6 sm:py-12">
+        <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Your Wishlist</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Wishlist</h1>
             
             {/* Enhanced Empty State */}
-            <div className="text-center py-12 sm:py-16 animate-in fade-in zoom-in-95 duration-500">
-              <div className="mx-auto w-24 h-24 sm:w-32 sm:h-32 mb-6 rounded-full bg-muted/50 flex items-center justify-center">
-                <Heart className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground" />
+            <div className="text-center py-6 sm:py-8 animate-in fade-in zoom-in-95 duration-500">
+              <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24 mb-3 sm:mb-6 rounded-full bg-muted/50 flex items-center justify-center">
+                <Heart className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-semibold mb-2">Your wishlist is empty</h2>
-              <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">Your wishlist is empty</h2>
+              <p className="text-muted-foreground mb-3 sm:mb-4 max-w-sm mx-auto text-xs sm:text-sm">
                 Save your favorite items here! Browse products and click the heart icon to add them to your wishlist.
               </p>
               <Link to="/">
@@ -68,18 +84,27 @@ const Wishlist = () => {
               </Link>
               
               {/* Suggestions */}
-              <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">💝 Save Favorites</h3>
-                  <p className="text-sm text-muted-foreground">Click the heart on any product</p>
+              <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 text-left">
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Heart className="h-4 w-4 text-red-500" />
+                    <h3 className="font-medium text-sm">Save Favorites</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Click the heart on any product</p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">🛒 Move to Cart</h3>
-                  <p className="text-sm text-muted-foreground">Add saved items to your cart</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <ShoppingBag className="h-4 w-4 text-primary" />
+                    <h3 className="font-medium text-sm">Move to Cart</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Add saved items to your cart</p>
                 </div>
-                <div className="p-4 rounded-lg bg-muted/30">
-                  <h3 className="font-medium mb-1">📱 Access Anywhere</h3>
-                  <p className="text-sm text-muted-foreground">Your wishlist syncs automatically</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Smartphone className="h-4 w-4 text-blue-500" />
+                    <h3 className="font-medium text-sm">Access Anywhere</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Your wishlist syncs automatically</p>
                 </div>
               </div>
             </div>
@@ -90,14 +115,14 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col">
       <Header />
-      <div className="container px-4 sm:px-6 py-6 sm:py-12">
+      <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold">Your Wishlist</h1>
-              <p className="text-muted-foreground mt-1">{wishlistItems.length} saved item{wishlistItems.length !== 1 ? 's' : ''}</p>
+              <p className="text-muted-foreground mt-0.5 text-sm">{wishlistItems.length} saved item{wishlistItems.length !== 1 ? 's' : ''}</p>
             </div>
             <Button 
               variant="ghost" 
@@ -111,11 +136,11 @@ const Wishlist = () => {
             </Button>
           </div>
           
-          <div className="space-y-4 sm:space-y-6">
+          <div className="space-y-2 sm:space-y-3">
             {wishlistItems.map((item, index) => (
               <Card 
                 key={item.id} 
-                className={`p-4 sm:p-6 transition-all duration-300 ${
+                className={`p-3 sm:p-4 transition-all duration-300 ${
                   removingItem === item.id ? 'opacity-0 scale-95' : 'animate-in fade-in slide-in-from-bottom-2'
                 }`}
                 style={{ animationDelay: `${index * 50}ms` }}
@@ -126,21 +151,21 @@ const Wishlist = () => {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md hover:opacity-80 transition-opacity"
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md hover:opacity-80 transition-opacity"
                     />
                   </Link>
                   
                   {/* Product Details */}
                   <div className="flex-1 min-w-0">
                     <Link to={`/product/${item.id}`}>
-                      <h3 className="font-semibold text-base sm:text-lg hover:text-primary transition-colors truncate">
+                      <h3 className="font-semibold text-sm sm:text-base hover:text-primary transition-colors truncate">
                         {item.name}
                       </h3>
                     </Link>
-                    <p className="text-muted-foreground mt-1">R{item.price}</p>
+                    <p className="text-muted-foreground mt-0.5 text-sm">R{item.price}</p>
                     
                     {/* Actions */}
-                    <div className="flex flex-wrap items-center gap-2 mt-4">
+                    <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-3">
                       <Button
                         size="sm"
                         onClick={() => handleAddToCart(item)}
@@ -177,7 +202,7 @@ const Wishlist = () => {
           </div>
           
           {/* Actions Footer */}
-          <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-card rounded-lg border shadow-sm">
+          <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-card rounded-lg border shadow-sm">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
               <Link to="/" className="flex-1">
                 <Button variant="outline" className="w-full gap-2">
