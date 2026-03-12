@@ -3,24 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
 import { Loading } from "@/components/ui/loading-spinner";
+import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 import { useSupplierNav } from "@/contexts/SupplierNavContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  DollarSign,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  BarChart3,
-} from "lucide-react";
+import {TrendingDown, ArrowUpRight, ArrowDownRight, Clock, CheckCircle, AlertCircle, BarChart3 } from "lucide-react";
 import {
   ChartContainer,
   ChartTooltip,
@@ -293,7 +282,7 @@ const SupplierDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <SupplierNav onSignOut={signOut} user={user} />
+        <SupplierNav onSignOut={signOut} supplierId={supplierId} user={user} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -303,7 +292,7 @@ const SupplierDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <SupplierNav onSignOut={signOut} user={user} />
+      <SupplierNav onSignOut={signOut} supplierId={supplierId} user={user} />
       
       <div className={`mx-auto max-w-7xl py-4 md:py-8 px-4 transition-all duration-300 ${collapsed ? "lg:ml-16 lg:max-w-[calc(100vw-4rem)]" : "lg:ml-64 lg:max-w-[calc(100vw-16rem)]"}`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">

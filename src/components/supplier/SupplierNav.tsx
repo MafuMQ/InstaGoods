@@ -8,18 +8,21 @@ import {
   ShoppingCart,
   DollarSign,
   LogOut,
-  Home,
-  MessageSquare,
+  Settings,
+  Wrench,
   TrendingUp,
   Target,
   Menu,
   ChevronLeft,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import { useSupplierNav } from "@/contexts/SupplierNavContext";
+import SupplierChat from "./SupplierChat";
 
 interface SupplierNavProps {
   onSignOut: () => void;
+  supplierId: string | null;
   user?: {
     name: string;
     email: string;
@@ -27,7 +30,7 @@ interface SupplierNavProps {
   };
 }
 
-const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
+const SupplierNav = ({ onSignOut, supplierId, user }: SupplierNavProps) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const { collapsed, setCollapsed } = useSupplierNav();
@@ -40,11 +43,12 @@ const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
     { to: "/supplier/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/supplier/products", icon: Package, label: "Products" },
     { to: "/supplier/orders", icon: ShoppingCart, label: "Orders" },
+    { to: "/supplier/messages", icon: MessageCircle, label: "Messages" },
     { to: "/supplier/incomes", icon: TrendingUp, label: "Incomes" },
     { to: "/supplier/expenses", icon: DollarSign, label: "Expenses" },
-    { to: "/supplier/service-requests", icon: MessageSquare, label: "Service Requests" },
+    { to: "/supplier/service-requests", icon: Wrench, label: "Service Requests" },
     { to: "/supplier/optimize", icon: Target, label: "Optimize" },
-    { to: "/supplier/shop-settings", icon: Home, label: "Shop Settings" },
+    { to: "/supplier/shop-settings", icon: Settings, label: "Shop Settings" },
   ];
 
   return (
@@ -77,18 +81,33 @@ const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
             <div className="flex flex-col gap-4">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.to;
+                const isActive = item.to ? location.pathname === item.to : false;
+                const isChat = !!item.action;
+                if (item.to) {
+                  return (
+                    <Link key={item.to} to={item.to} onClick={() => setOpen(false)}>
+                      <Button
+                        variant={isActive ? "default" : "ghost"}
+                        size="sm"
+                        className="w-full justify-start gap-2"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    </Link>
+                  );
+                }
                 return (
-                  <Link key={item.to} to={item.to} onClick={() => setOpen(false)}>
-                    <Button
-                      variant={isActive ? "default" : "ghost"}
-                      size="sm"
-                      className="w-full justify-start gap-2"
-                    >
-                      <Icon className="h-4 w-4" />
-                      {item.label}
-                    </Button>
-                  </Link>
+                  <Button
+                    key={item.label}
+                    variant={isActive ? "default" : "ghost"}
+                    size="sm"
+                    className="w-full justify-start gap-2"
+                    onClick={() => { setOpen(false); }}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
                 );
               })}
               <Button onClick={() => { onSignOut(); setOpen(false); }} variant="outline" size="sm" className="justify-start gap-2">
@@ -99,7 +118,7 @@ const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
           </SheetContent>
         </Sheet>
         <Link to="/" className="flex items-center gap-2 text-lg font-bold">
-          <Home className="h-5 w-5" />
+          <Settings className="h-5 w-5" />
           <span className="hidden sm:inline">InstaGoods</span>
         </Link>
       </div>
@@ -158,18 +177,32 @@ const SupplierNav = ({ onSignOut, user }: SupplierNavProps) => {
           <div className={`flex flex-col gap-1 ${collapsed ? "items-center" : ""}`}>
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.to;
+              const isActive = item.to ? location.pathname === item.to : false;
+              if (item.to) {
+                return (
+                  <Link key={item.to} to={item.to} title={collapsed ? item.label : undefined}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      size="sm"
+                      className={`${collapsed ? "w-10 px-0 justify-center" : "w-full justify-start"} gap-2`}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      {!collapsed && item.label}
+                    </Button>
+                  </Link>
+                );
+              }
               return (
-                <Link key={item.to} to={item.to} title={collapsed ? item.label : undefined}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    size="sm"
-                    className={`${collapsed ? "w-10 px-0 justify-center" : "w-full justify-start"} gap-2`}
-                  >
-                    <Icon className="h-4 w-4 flex-shrink-0" />
-                    {!collapsed && item.label}
-                  </Button>
-                </Link>
+                <Button
+                  key={item.label}
+                  variant={isActive ? "default" : "ghost"}
+                  size="sm"
+                  className={`${collapsed ? "w-10 px-0 justify-center" : "w-full justify-start"} gap-2`}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {!collapsed && item.label}
+                </Button>
               );
             })}
           </div>

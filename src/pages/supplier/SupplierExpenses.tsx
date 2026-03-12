@@ -109,7 +109,7 @@ const SupplierExpenses = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <SupplierNav onSignOut={signOut} />
+        <SupplierNav onSignOut={signOut} supplierId={supplierId} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -119,7 +119,7 @@ const SupplierExpenses = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <SupplierNav onSignOut={signOut} />
+      <SupplierNav onSignOut={signOut} supplierId={supplierId} />
       
       <div className={`mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 transition-all duration-300 ${collapsed ? "lg:ml-16" : "lg:ml-64"} lg:max-w-[calc(100vw-16rem)]`}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
