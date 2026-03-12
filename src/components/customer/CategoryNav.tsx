@@ -23,13 +23,13 @@ const CategoryNav = ({
     <div className="space-y-4">
        <div>
          <h3 className="text-sm text-center font-medium mb-2 text-muted-foreground">Main Categories</h3>
-         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-center">
+         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-start sm:justify-center px-2 sm:px-0">
            {mainCategories.map((category) => (
              <Button
                key={category}
                variant={selectedMainCategory === category ? "default" : "outline"}
                onClick={() => onMainCategoryChange(category)}
-               className="whitespace-nowrap"
+               className="whitespace-nowrap touch-target flex-shrink-0 text-xs sm:text-sm px-3 sm:px-4"
              >
                {category}
              </Button>
@@ -40,13 +40,13 @@ const CategoryNav = ({
        {showSubCategories && (
          <div>
            <h3 className="text-sm text-center font-medium mb-2 text-muted-foreground">Subcategories</h3>
-           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-center">
+           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-start sm:justify-center px-2 sm:px-0">
              {subCategories[selectedMainCategory].map((subCat) => (
                <Button
                  key={subCat}
                  variant={selectedSubCategory === subCat ? "default" : "outline"}
                  onClick={() => onSubCategoryChange(subCat)}
-                 className="whitespace-nowrap"
+                 className="whitespace-nowrap touch-target flex-shrink-0 text-xs px-2 sm:px-3"
                  size="sm"
                >
                  {subCat}
@@ -57,4 +57,5 @@ const CategoryNav = ({
        )}
     </div>
   );
-};export default CategoryNav;
+};
+export default CategoryNav;

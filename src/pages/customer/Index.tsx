@@ -414,36 +414,30 @@ const Index = () => {
             }
             className="w-full"
           >
-            <TabsList className="w-full grid grid-cols-3 h-auto p-1 bg-muted/50">
-              <TabsTrigger
-                value="all"
-                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            <TabsList className="w-full grid grid-cols-3 h-auto p-1 bg-muted/50 gap-1">
+              <TabsTrigger 
+                value="all" 
+                className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs sm:text-sm py-2"
               >
-                <Layers className="w-5 h-5" />
-                <span>All Providers</span>
-                <span className="ml-auto text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">
-                  {services.length}
-                </span>
+                <Layers className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="hidden xs:inline">All</span>
+                <span className="xs:hidden">All</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="internal"
-                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              <TabsTrigger 
+                value="internal" 
+                className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs sm:text-sm py-2"
               >
-                <Sprout className="w-5 h-5 text-blue-600" />
-                <span>InstaGoods Curated</span>
-                <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">
-                  {services.filter((s) => s.providerType === "internal").length}
-                </span>
+                <Sprout className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-blue-600" />
+                <span className="hidden sm:inline">InstaGoods</span>
+                <span className="sm:hidden">Curated</span>
               </TabsTrigger>
-              <TabsTrigger
-                value="external"
-                className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              <TabsTrigger 
+                value="external" 
+                className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm text-xs sm:text-sm py-2"
               >
-                <Handshake className="w-5 h-5 text-emerald-600" />
-                <span>Verified Partners</span>
-                <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
-                  {services.filter((s) => s.providerType === "external").length}
-                </span>
+                <Handshake className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 text-emerald-600" />
+                <span className="hidden sm:inline">Partners</span>
+                <span className="sm:hidden">Partners</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -513,20 +507,16 @@ const Index = () => {
                 {(selectedProviderType === "all" ||
                   selectedProviderType === "internal") && (
                   <div className="mb-12">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <Sprout className="w-6 h-6 text-blue-600" />
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+                      <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
+                        <Sprout className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                       </div>
-                      <div>
-                        <h2 className="text-2xl font-bold">
-                          InstaGoods Curated
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          Services managed directly by InstaGoods
-                        </p>
+                      <div className="flex-1">
+                        <h2 className="text-xl sm:text-2xl font-bold">InstaGoods Curated</h2>
+                        <p className="text-sm text-muted-foreground hidden sm:block">Services managed directly by InstaGoods</p>
                       </div>
-                      <span className="ml-auto bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-                        {internalServices.length} services
+                      <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium self-start">
+                        {internalServices.length}
                       </span>
                     </div>
                     {internalServices.length > 0 ? (
@@ -554,20 +544,16 @@ const Index = () => {
                 {(selectedProviderType === "all" ||
                   selectedProviderType === "external") && (
                   <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="p-2 bg-emerald-100 rounded-lg">
-                        <Handshake className="w-6 h-6 text-emerald-600" />
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+                      <div className="p-2 bg-emerald-100 rounded-lg flex-shrink-0">
+                        <Handshake className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
                       </div>
-                      <div>
-                        <h2 className="text-2xl font-bold">
-                          Verified Partners
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          Services from trusted external providers
-                        </p>
+                      <div className="flex-1">
+                        <h2 className="text-xl sm:text-2xl font-bold">Verified Partners</h2>
+                        <p className="text-sm text-muted-foreground hidden sm:block">Services from trusted external providers</p>
                       </div>
-                      <span className="ml-auto bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">
-                        {externalServices.length} services
+                      <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium self-start">
+                        {externalServices.length}
                       </span>
                     </div>
                     {externalServices.length > 0 ? (

@@ -78,6 +78,7 @@ const CustomerNav = ({ onSignOut, cartCount = 0, notificationCount = 0, wishlist
   const navItems: NavItem[] = [
     { to: "/customer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { to: "/customer/orders", icon: ShoppingBag, label: "My Orders" },
+    { to: "/", icon: Home, label: "Store" },
     { to: "/cart", icon: ShoppingCart, label: "Cart", badge: cartCount },
     { to: "/wishlist", icon: Heart, label: "Wishlist", badge: wishlistCount },
     { to: "/customer/profile", icon: User, label: "Profile" },
