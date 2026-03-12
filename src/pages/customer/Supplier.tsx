@@ -195,7 +195,7 @@ const Supplier = () => {
                 {supplier.description}
               </p>
             </div>
-            
+            <ChatWidget supplierId= {supplier.id} />
           </div>
         </div>
       </div>
@@ -221,7 +221,6 @@ const Supplier = () => {
           })}
         </div>
       </div>
-      <ChatWidget supplierId= {supplier.id} />
     </div>
   );
 };

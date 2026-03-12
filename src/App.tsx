@@ -43,6 +43,7 @@ const SupplierExpenses = lazy(() => import("./pages/supplier/SupplierExpenses"))
 const SupplierServiceRequests = lazy(() => import("./pages/supplier/SupplierServiceRequests"));
 const SupplierOptimize = lazy(() => import("./pages/supplier/SupplierOptimize"));
 const SupplierShopSettings = lazy(() => import("./pages/supplier/SupplierShopSettings"));
+const SupplierMessages = lazy(() => import("./pages/supplier/SupplierMessages"));
 const SupplierManagement = lazy(() => import("./pages/admin/SupplierManagement"));
 const NotFound = lazy(() => import("./pages/customer/NotFound"));
 
@@ -110,6 +111,7 @@ const App = () => {
                       <Route path="/supplier/service-requests" element={<SupplierServiceRequests />} />
                       <Route path="/supplier/optimize" element={<SupplierOptimize />} />
                       <Route path="/supplier/shop-settings" element={<SupplierShopSettings />} />
+                      <Route path="/supplier/messages" element={<SupplierMessages />} />
                     </Route>
                     <Route path="/admin/suppliers" element={<SupplierManagement />} />
                     <Route path="/about" element={<About />} />

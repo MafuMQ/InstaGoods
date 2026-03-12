@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "../ui/card";
 import { Send } from "lucide-react";
 
 interface Message {
@@ -23,15 +22,17 @@ function getTime(ts: string): string {
 }
 
 function shortId(id: string): string {
-    return "Customer #" + id.slice(0, 6).toUpperCase
+    return "Customer #" + id.slice(0, 6).toUpperCase();
 }
 
-export default function SupplierChat({supplierId}: {supplierId: string | null}) {
+export default function SupplierChat({supplierId, className = ""}: {supplierId: string | null, className?: string}) {
     const [sessions, setSession] = useState<Session[]>([]);
     const [selectedSession, setSelectedSession] = useState<string | null> (null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [unread, setUnread] = useState<Record<string, boolean>>({});
+    const [sending, setSending] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -97,25 +98,53 @@ export default function SupplierChat({supplierId}: {supplierId: string | null}) 
     }, [messages]);
 
     const sendReply = async () => {
-        if (!input.trim() || !selectedSession || !supplierId) return;
+        if (!input.trim() || !selectedSession || !supplierId) {
+            setError("Unable to send message");
+            return;
+        }
+        setError(null);
+        setSending(true);
         const text = input.trim();
-        setInput("");
-        await supabase.from("messages").insert({
-            consumer_id: selectedSession,
-            supplier_id: supplierId,
-            sender: "supplier",
-            text,
-        });
+        
+        try {
+            const { error: insertError } = await supabase.from("messages").insert({
+                consumer_id: selectedSession,
+                supplier_id: supplierId,
+                sender: "supplier",
+                text,
+            });
+            
+            if (insertError) {
+                console.error("Failed to send reply:", insertError);
+                setError("Failed to send reply: " + insertError.message);
+            } else {
+                setInput("");
+                // Optimistically add the message to the UI
+                const newMessage: Message = {
+                    id: crypto.randomUUID(),
+                    consumer_id: selectedSession,
+                    supplier_id: supplierId,
+                    sender: "supplier",
+                    text: text,
+                    created_at: new Date().toISOString()
+                };
+                setMessages(prev => [...prev, newMessage]);
+            }
+        } catch (err) {
+            console.error("Error sending reply:", err);
+            setError("Failed to send reply. Please try again.");
+        } finally {
+            setSending(false);
+        }
     };
 
     const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {e.preventDefault(), sendReply};
+        if (e.key === "Enter" && !e.shiftKey) {e.preventDefault(), sendReply();}
     };
 
     return (
-    <Card className="p-4 md:p-6 mt-6">
-      <h2 className="text-xl md:text-2xl font-bold mb-4">Customer Messages</h2>
-      <div className="flex gap-4 h-[500px]">
+    <div className={`flex flex-col h-full ${className}`}>
+      <div className="flex gap-4 flex-1 min-h-0">
 
         {/* Sessions list */}
         <div className="w-48 flex-shrink-0 border-r overflow-y-auto">
@@ -163,6 +192,11 @@ export default function SupplierChat({supplierId}: {supplierId: string | null}) 
                 <div ref={bottomRef} />
               </div>
               <div className="flex gap-2 items-end pt-3 border-t">
+                {error && (
+                  <div className="text-xs text-red-500 bg-red-50 px-2 py-1 rounded">
+                    {error}
+                  </div>
+                )}
                 <textarea
                   className="flex-1 border border-input rounded-xl px-3 py-2 text-sm resize-none outline-none bg-background focus:border-primary transition-colors max-h-24"
                   placeholder="Type your reply..."
@@ -173,16 +207,23 @@ export default function SupplierChat({supplierId}: {supplierId: string | null}) 
                 />
                 <button
                   onClick={sendReply}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || sending}
                   className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send size={14} color="white" />
+                  {sending ? (
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <Send size={14} color="white" />
+                  )}
                 </button>
               </div>
             </>
             )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
