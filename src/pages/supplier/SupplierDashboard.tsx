@@ -3,6 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSupplierAuth } from "@/hooks/useSupplierAuth";
 import SupplierNav from "@/components/supplier/SupplierNav";
 import { Loading } from "@/components/ui/loading-spinner";
+import { Card } from "@/components/ui/card";
+import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
+import SupplierChat from "@/components/supplier/SupplierChat";
 import { useSupplierNav } from "@/contexts/SupplierNavContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -543,6 +546,7 @@ const SupplierDashboard = () => {
           </Card>
         </div>
       </div>
+      <SupplierChat supplierId={supplierId} />
     </div>
   );
 };

@@ -11,6 +11,7 @@ import { Loading } from "@/components/ui/loading-spinner";
 import { products, services, groceries, freelance, suppliers} from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import ChatWidget from "@/components/customer/ChatCard";
 import { ProviderBadge, ProviderType, VerificationLevel } from "@/components/customer/ProviderBadge";
 
 const Supplier = () => {
@@ -194,6 +195,7 @@ const Supplier = () => {
                 {supplier.description}
               </p>
             </div>
+            
           </div>
         </div>
       </div>
@@ -219,6 +221,7 @@ const Supplier = () => {
           })}
         </div>
       </div>
+      <ChatWidget supplierId= {supplier.id} />
     </div>
   );
 };
