@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { Product } from "@/lib/data";
 
 interface CartItem extends Product {
@@ -13,12 +13,49 @@ interface CartContextType {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
+  hasCheckedCart: boolean;
 }
+
+const CART_STORAGE_KEY = "instagoods_cart";
+
+// Load cart from localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+// Save cart to localStorage
+const saveCartToStorage = (items: CartItem[]): void => {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error("Failed to save cart to localStorage:", error);
+  }
+};
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [hasCheckedCart, setHasCheckedCart] = useState(false);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const storedCart = loadCartFromStorage();
+    setCartItems(storedCart);
+    setHasCheckedCart(true);
+  }, []);
+
+  // Save cart to localStorage whenever cartItems changes
+  useEffect(() => {
+    if (hasCheckedCart) {
+      saveCartToStorage(cartItems);
+    }
+  }, [cartItems, hasCheckedCart]);
 
   const addToCart = (product: Product) => {
     setCartItems((prevItems) => {
@@ -74,6 +111,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         getCartTotal,
         getCartCount,
+        hasCheckedCart,
       }}
     >
       {children}

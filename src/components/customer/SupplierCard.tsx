@@ -50,6 +50,8 @@ const SupplierCard = ({ supplier }: SupplierCardProps) => {
                 src={supplier.logo_url}
                 alt={businessName}
                 className="h-full w-full object-cover rounded-full"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               businessName.charAt(0)

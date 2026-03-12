@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { mainCategories, subCategories } from "@/lib/data";
+import { useSupplierNav } from "@/contexts/SupplierNavContext";
 
 interface Product {
   id: string;
@@ -39,6 +40,7 @@ interface Product {
 
 const SupplierProducts = () => {
   const { loading, supplierId, signOut } = useSupplierAuth();
+  const { collapsed } = useSupplierNav();
   const [products, setProducts] = useState<Product[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -298,7 +300,7 @@ const SupplierProducts = () => {
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SupplierNav onSignOut={signOut} />
       
-      <div className="mx-auto max-w-7xl py-4 md:py-8 px-4 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
+      <div className={`mx-auto max-w-7xl py-4 md:py-8 px-4 transition-all duration-300 ${collapsed ? "lg:ml-16" : "lg:ml-64"} lg:max-w-[calc(100vw-16rem)]`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <h1 className="text-2xl md:text-4xl font-bold">My Products</h1>
           <Dialog open={dialogOpen} onOpenChange={(open) => {

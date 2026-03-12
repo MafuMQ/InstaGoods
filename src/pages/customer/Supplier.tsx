@@ -8,10 +8,11 @@ import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import { Loading } from "@/components/ui/loading-spinner";
-import { products, services, groceries, freelance, suppliers } from "@/lib/data";
+import { products, services, groceries, freelance, suppliers} from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import ChatWidget from "@/components/customer/ChatCard";
+import { ProviderBadge, ProviderType, VerificationLevel } from "@/components/customer/ProviderBadge";
 
 const Supplier = () => {
 
@@ -19,6 +20,32 @@ const Supplier = () => {
   const [supplier, setSupplier] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [supplierProducts, setSupplierProducts] = useState<any[]>([]);
+  const [providerType, setProviderType] = useState<ProviderType>('external');
+  const [verificationLevel, setVerificationLevel] = useState<VerificationLevel>('basic');
+
+  // Helper function to determine provider type for static suppliers
+  const getStaticProviderType = (supplierId: string): { type: ProviderType; level: VerificationLevel } => {
+    // Find the supplier in static data
+    const staticSupplier = suppliers.find(s => s.id === supplierId);
+    
+    // Check if any services from this supplier are internal
+    const supplierServices = services.filter(s => s.supplierId === supplierId && s.providerType === 'internal');
+    if (supplierServices.length > 0) {
+      // Use the verification level from the service
+      const level = supplierServices[0].providerVerificationLevel || 'basic';
+      return { type: 'internal', level: level as VerificationLevel };
+    }
+    
+    // Check supplier names - major chains are typically internal
+    if (staticSupplier) {
+      const majorChains = ['Pick n Pay', 'Spar', 'Woolworths', 'DisChem', 'Clicks', 'Game', 'Makro', 'Checkers'];
+      if (majorChains.some(chain => staticSupplier.name?.includes(chain))) {
+        return { type: 'internal', level: 'premium' };
+      }
+    }
+    
+    return { type: 'external', level: 'verified' };
+  };
 
   useEffect(() => {
     const fetchSupplier = async () => {
@@ -38,15 +65,26 @@ const Supplier = () => {
           rating: staticSupplier.rating,
           totalSales: staticSupplier.totalSales
         });
+        
+        // Determine provider type for static supplier
+        const { type, level } = getStaticProviderType(id!);
+        setProviderType(type);
+        setVerificationLevel(level);
         setLoading(false);
       } else {
         // If not static, fetch from database
         const { data, error } = await supabase
           .from("suppliers")
-          .select("id, business_name, description, location, logo_url, banner_url")
+          .select("id, business_name, description, location, logo_url, banner_url, provider_type, provider_verification_level")
           .eq("id", id)
           .single();
         setSupplier(data);
+        
+        // Set provider type from database
+        if (data?.provider_type) {
+          setProviderType(data.provider_type as ProviderType);
+          setVerificationLevel(data.provider_verification_level as VerificationLevel || 'basic');
+        }
         setLoading(false);
       }
     };
@@ -126,7 +164,16 @@ const Supplier = () => {
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">{supplier.business_name}</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-4xl font-bold">{supplier.business_name}</h1>
+                {/* Provider Type Badge - Prominently Displayed */}
+                <ProviderBadge 
+                  providerType={providerType} 
+                  verificationLevel={verificationLevel}
+                  showLabel={true}
+                  className="text-sm px-3 py-1.5"
+                />
+              </div>
               <div className="flex items-center gap-4 mb-3">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
