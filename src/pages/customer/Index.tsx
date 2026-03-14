@@ -26,10 +26,12 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import CarouselWithDots from "./CarouselWithDots";
-import product1 from "@/assets/hero-banner.webp";
-import service1 from "@/assets/Plumber-bg.webp";
-import grocery1 from "@/assets/Grocery-bg.webp";
-import freelance1 from "@/assets/Freelancer-bg.webp";
+// Banner images hosted in Supabase Storage (product-images/banners/)
+const STORAGE_BASE = "https://tkixhgkaseiyshhgjgkp.supabase.co/storage/v1/object/public/product-images/banners";
+const product1  = `${STORAGE_BASE}/hero-banner.webp`;
+const service1  = `${STORAGE_BASE}/Plumber-bg.webp`;
+const grocery1  = `${STORAGE_BASE}/Grocery-bg.webp`;
+const freelance1 = `${STORAGE_BASE}/Freelancer-bg.webp`;
 import { geocodeAddress } from "@/lib/geocode";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderType } from "@/components/customer/ProviderBadge";
