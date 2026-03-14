@@ -1,6 +1,7 @@
 import { useSearchParams, Link } from "react-router-dom";
 import { useState, useMemo } from "react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import GroceryCard from "@/components/customer/GroceryCard";
 import ProductCard from "@/components/customer/ProductCard";
 import ServiceCard from "@/components/customer/ServiceCard";
@@ -357,6 +358,7 @@ const SearchResults = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

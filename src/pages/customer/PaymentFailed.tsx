@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { XCircle, RefreshCw, Home, HelpCircle } from "lucide-react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 
 const PaymentFailed = () => {
   const [searchParams] = useSearchParams();
@@ -102,6 +103,7 @@ const PaymentFailed = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

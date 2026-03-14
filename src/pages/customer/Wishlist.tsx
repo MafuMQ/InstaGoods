@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import { Heart, Trash2, ShoppingBag, Plus, ArrowRight, Sparkles, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 
@@ -222,6 +223,7 @@ const Wishlist = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

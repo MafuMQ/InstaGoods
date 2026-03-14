@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Download, Home, ShoppingBag, AlertCircle, Loader2 } from "lucide-react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { toast } from "sonner";
@@ -338,6 +339,7 @@ const PaymentSuccess = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

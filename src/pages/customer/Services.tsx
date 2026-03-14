@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import ServiceCard from "@/components/customer/ServiceCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { services } from "@/lib/data";
@@ -43,6 +44,7 @@ const Services = () => {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

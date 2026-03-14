@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useCart } from "@/context/CartContext";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 import { ShoppingBag, Trash2, Minus, Plus, ArrowRight, Sparkles, Heart, Truck } from "lucide-react";
@@ -319,6 +320,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

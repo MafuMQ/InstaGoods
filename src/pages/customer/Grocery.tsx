@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import GroceryCard from "@/components/customer/GroceryCard";
 import CategoryNav from "@/components/customer/CategoryNav";
 import { groceries, suppliers } from "@/lib/data";
@@ -48,6 +49,7 @@ const Grocery = () => {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

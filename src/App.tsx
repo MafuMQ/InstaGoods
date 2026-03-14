@@ -46,6 +46,12 @@ const SupplierShopSettings = lazy(() => import("./pages/supplier/SupplierShopSet
 const SupplierMessages = lazy(() => import("./pages/supplier/SupplierMessages"));
 const SupplierManagement = lazy(() => import("./pages/admin/SupplierManagement"));
 const NotFound = lazy(() => import("./pages/customer/NotFound"));
+const AllProducts = lazy(() => import("./pages/customer/AllProducts"));
+const Categories = lazy(() => import("./pages/customer/Categories"));
+const PrivacyPolicy = lazy(() => import("./pages/customer/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/customer/TermsOfService"));
+const RefundPolicy = lazy(() => import("./pages/customer/RefundPolicy"));
+const FAQ = lazy(() => import("./pages/customer/FAQ"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -122,6 +128,12 @@ const App = () => {
                     <Route path="/payment" element={<Payment />} />
                     <Route path="/payment/success" element={<PaymentSuccess />} />
                     <Route path="/payment/failed" element={<PaymentFailed />} />
+                    <Route path="/products" element={<AllProducts />} />
+                    <Route path="/categories" element={<Categories />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
+                    <Route path="/refund" element={<RefundPolicy />} />
+                    <Route path="/faq" element={<FAQ />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
