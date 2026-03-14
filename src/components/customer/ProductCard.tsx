@@ -223,9 +223,23 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <h3 className="font-semibold text-base line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
             {product.name}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-1">
-            {businessName || staticSupplier?.name || (isMarketplaceProduct ? "Artisan Seller" : "Local Artisan")}
-          </p>
+          {(() => {
+            const supplierId = isMarketplaceProduct
+              ? (product as MarketplaceProduct).supplier_id
+              : (product as Product).supplierId;
+            const name = businessName || staticSupplier?.name || (isMarketplaceProduct ? "Artisan Seller" : "Local Artisan");
+            return supplierId ? (
+              <Link
+                to={`/supplier/${supplierId}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-sm text-muted-foreground line-clamp-1 hover:text-primary hover:underline transition-colors"
+              >
+                {name}
+              </Link>
+            ) : (
+              <p className="text-sm text-muted-foreground line-clamp-1">{name}</p>
+            );
+          })()}
           
           {/* Rating */}
           <div className="flex items-center gap-1">

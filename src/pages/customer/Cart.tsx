@@ -96,9 +96,9 @@ const Cart = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="flex-1 overflow-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="flex-1 px-3 sm:px-4 py-3 sm:py-4">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Your Cart</h1>
             
@@ -145,14 +145,15 @@ const Cart = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="flex-1 overflow-auto px-3 sm:px-4 py-3 sm:py-4">
+      <div className="flex-1 px-3 sm:px-4 py-3 sm:py-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>

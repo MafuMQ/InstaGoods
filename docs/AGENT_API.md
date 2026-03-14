@@ -11,8 +11,13 @@ Public read-only endpoints designed for AI agent integrations. No authentication
 
 ## Authentication
 
-### Via Vercel proxy
-No auth headers required. The proxy injects credentials server-side automatically.
+### Public endpoints (`/agent-categories`, `/agent-products`, `/agent-product-detail`)
+No auth headers required via the Vercel proxy. The proxy injects credentials server-side automatically.
+
+### Protected endpoints (`/agent-cart`, `/agent-wishlist`)
+These endpoints access private user data and require a valid Supabase user JWT:
+- Obtain the JWT from the Supabase client on the frontend: `supabase.auth.getSession()` → `session.access_token`
+- Pass it as the `user_jwt` query parameter
 
 ### Via Supabase directly
 Include the anon key in both headers:
@@ -98,6 +103,106 @@ Keyword search with price cap:
 ```
 GET https://<your-vercel-app>.vercel.app/api/agent-products?search=bread&max_price=50
 ```
+
+---
+
+### 3. `GET /agent-product-detail`
+
+_(see existing documentation)_
+
+---
+
+### 4. `GET /agent-cart` _(authenticated)_
+
+Returns the authenticated user's current cart with full product details, quantities, and a cart total.
+
+**Authentication:** `user_jwt` query parameter required (Supabase access token).
+
+**Query Parameters:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `user_jwt` | string | **Required.** The user's Supabase `access_token` |
+
+**Example:**
+```
+GET https://<your-vercel-app>.vercel.app/api/agent-cart?user_jwt=<access_token>
+```
+
+**Response:**
+```json
+{
+  "user_id": "uuid",
+  "item_count": 3,
+  "cart_total": 149.97,
+  "items": [
+    {
+      "product_id": "uuid",
+      "quantity": 2,
+      "updated_at": "2026-03-14T10:00:00Z",
+      "product": {
+        "id": "uuid",
+        "name": "Sourdough Bread",
+        "price": 45.00,
+        "image_url": "...",
+        "main_category": "Food",
+        "sub_category": "Bread",
+        "suppliers": { "business_name": "Cape Bakes", "location": "Cape Town" }
+      }
+    }
+  ]
+}
+```
+
+**Error responses:**
+- `400` — `user_jwt` not provided
+- `401` — invalid or expired JWT
+
+---
+
+### 5. `GET /agent-wishlist` _(authenticated)_
+
+Returns the authenticated user's wishlist with full product details.
+
+**Authentication:** `user_jwt` query parameter required (Supabase access token).
+
+**Query Parameters:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `user_jwt` | string | **Required.** The user's Supabase `access_token` |
+
+**Example:**
+```
+GET https://<your-vercel-app>.vercel.app/api/agent-wishlist?user_jwt=<access_token>
+```
+
+**Response:**
+```json
+{
+  "user_id": "uuid",
+  "count": 2,
+  "items": [
+    {
+      "product_id": "uuid",
+      "added_at": "2026-03-14T09:00:00Z",
+      "product": {
+        "id": "uuid",
+        "name": "Organic Milk",
+        "price": 28.50,
+        "image_url": "...",
+        "main_category": "Food",
+        "sub_category": "Dairy",
+        "suppliers": { "business_name": "Fresh Farm", "location": "Johannesburg" }
+      }
+    }
+  ]
+}
+```
+
+**Error responses:**
+- `400` — `user_jwt` not provided
+- `401` — invalid or expired JWT
 
 **Response:**
 ```json

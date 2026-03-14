@@ -17,9 +17,9 @@ const Wishlist = () => {
 
   if (loading) {
     return (
-      <div className="h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex-1 px-4 sm:px-6 py-4 sm:py-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Wishlist</h1>
             <div className="flex items-center justify-center py-8 sm:py-10">
@@ -27,6 +27,7 @@ const Wishlist = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -62,9 +63,9 @@ const Wishlist = () => {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex-1 px-4 sm:px-6 py-4 sm:py-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Your Wishlist</h1>
             
@@ -111,14 +112,15 @@ const Wishlist = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="flex-1 overflow-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="flex-1 px-4 sm:px-6 py-4 sm:py-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>

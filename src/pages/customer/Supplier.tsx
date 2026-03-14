@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Star, MapPin } from "lucide-react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import ProductCard from "@/components/customer/ProductCard";
 import ServiceCard from "@/components/customer/ServiceCard";
 import GroceryCard from "@/components/customer/GroceryCard";
@@ -146,66 +147,64 @@ const Supplier = () => {
       {/* Supplier Header */}
       <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-b">
         {supplier.banner_url && (
-          <div className="w-full h-40 mb-4 rounded-lg overflow-hidden">
+          <div className="w-full h-40 overflow-hidden">
             <img src={supplier.banner_url} alt="Banner" className="w-full h-full object-cover" />
           </div>
         )}
-        <div className="container py-12">
-          <div className="flex items-start gap-6">
+        <div className="container py-6 sm:py-12">
+          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+            {/* Avatar */}
             {supplier.logo_url ? (
               <img
                 src={supplier.logo_url}
                 alt="Logo"
-                className="h-24 w-24 rounded-full object-cover border-2 border-primary bg-white"
+                className="h-16 w-16 sm:h-24 sm:w-24 rounded-full object-cover border-2 border-primary bg-white shrink-0"
               />
             ) : (
-              <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold text-3xl">
+              <div className="h-16 w-16 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground font-bold text-2xl sm:text-3xl shrink-0">
                 {supplier.business_name?.charAt(0) || "?"}
               </div>
             )}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold">{supplier.business_name}</h1>
-                {/* Provider Type Badge - Prominently Displayed */}
-                <ProviderBadge 
-                  providerType={providerType} 
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                <h1 className="text-2xl sm:text-4xl font-bold break-words">{supplier.business_name}</h1>
+                <ProviderBadge
+                  providerType={providerType}
                   verificationLevel={verificationLevel}
                   showLabel={true}
                   className="text-sm px-3 py-1.5"
                 />
               </div>
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mb-3">
                 <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">{supplier.location}</span>
+                  <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-muted-foreground text-sm">{supplier.location}</span>
                 </div>
                 {supplier.rating && (
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 fill-accent text-accent" />
-                    <span className="font-medium">{supplier.rating}</span>
+                    <span className="font-medium text-sm">{supplier.rating}</span>
                   </div>
                 )}
                 {supplier.totalSales && (
-                  <span className="text-muted-foreground">
-                    {supplier.totalSales} sales
-                  </span>
+                  <span className="text-muted-foreground text-sm">{supplier.totalSales} sales</span>
                 )}
               </div>
-              <p className="text-muted-foreground max-w-2xl">
-                {supplier.description}
-              </p>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-2xl">{supplier.description}</p>
             </div>
-            <ChatWidget supplierId= {supplier.id} />
+
           </div>
         </div>
       </div>
 
       {/* Products */}
-      <div className="container py-12">
-        <h2 className="text-2xl font-bold mb-6">
+      <div className="container py-8 sm:py-12">
+        <h2 className="text-xl sm:text-2xl font-bold mb-6">
           Products from {supplier.business_name}
         </h2>
-  <div className="grid gap-2 sm:gap-6" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', display: 'grid' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {supplierProducts.map((product) => {
             // Determine which card component to use based on mainCategory
             if (product.mainCategory === "Services") {
@@ -221,6 +220,8 @@ const Supplier = () => {
           })}
         </div>
       </div>
+      <Footer />
+      <ChatWidget supplierId={supplier.id} />
     </div>
   );
 };

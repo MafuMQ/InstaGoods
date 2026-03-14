@@ -261,7 +261,7 @@ export default function ChatWidget({supplierId}: {supplierId: string}) {
       )}
 
       {!open && (
-      <button onClick={handleOpen} className="fixed bottom-4 text-white right-8 w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50 relative">
+      <button onClick={handleOpen} className="fixed bottom-4 text-white right-8 w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50">
         <MessageSquare />
         {hasUnread && <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />}
       </button>
