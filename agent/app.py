@@ -64,6 +64,7 @@ def get_categories() -> str:
 
 def search_products(
     category: str | None = None,
+    sub_category: str | None = None,
     search: str | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
@@ -72,13 +73,23 @@ def search_products(
     radius_km: float | None = None,
 ) -> str:
     """Search and filter products on the InstaGoods marketplace. All parameters are optional.
-    Use 'category' for a category filter (e.g. 'Food'), 'search' for keyword search (e.g. 'bread'),
-    'min_price'/'max_price' for price range, and 'lat'/'lng'/'radius_km' to find products near a location.
-    When lat/lng are provided, results are sorted by distance and annotated with delivery info."""
-    log.info(f"\n[BACKEND EXECUTING] Searching products: category={category}, search={search}, "
-          f"min_price={min_price}, max_price={max_price}, lat={lat}, lng={lng}, radius_km={radius_km}")
+
+    IMPORTANT — category hierarchy:
+      - 'category' filters by MAIN category (e.g. 'Groceries', 'Physical Goods').
+      - 'sub_category' filters by SUB-CATEGORY (e.g. 'Pantry Essentials', 'Jewelry').
+    Always use get_categories() first to find valid category/sub_category names.
+    If the user mentions a subcategory (like 'Pantry Essentials'), pass it as 'sub_category', NOT as 'category'.
+
+    Other params:
+      - 'search': keyword search across product name/description (e.g. 'bread', 'rice')
+      - 'min_price'/'max_price': price range filter in ZAR
+      - 'lat'/'lng'/'radius_km': sort by distance and filter to nearby products
+    """
+    log.info(f"\n[BACKEND EXECUTING] Searching products: category={category}, sub_category={sub_category}, "
+          f"search={search}, min_price={min_price}, max_price={max_price}, lat={lat}, lng={lng}, radius_km={radius_km}")
     params = {
         "category": category,
+        "sub_category": sub_category,
         "search": search,
         "min_price": min_price,
         "max_price": max_price,

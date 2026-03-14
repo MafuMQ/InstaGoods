@@ -1,6 +1,6 @@
 // api/agent-products.js
 // Vercel API route — proxies to the Supabase agent-products Edge Function
-// Forwards all query params: lat, lng, radius_km, category, search, min_price, max_price
+// Forwards all query params: lat, lng, radius_km, category, sub_category, search, min_price, max_price
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   }
 
   // Forward only known, safe query parameters
-  const allowed = ['lat', 'lng', 'radius_km', 'category', 'search', 'min_price', 'max_price'];
+  const allowed = ['lat', 'lng', 'radius_km', 'category', 'sub_category', 'search', 'min_price', 'max_price'];
   const params = new URLSearchParams();
   for (const key of allowed) {
     if (req.query[key] !== undefined) {

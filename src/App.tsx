@@ -10,6 +10,7 @@ import { useEffect, Suspense, lazy } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
 import { SupplierLayout } from "@/layouts/SupplierLayout";
+import AgentChatWidget from "@/components/customer/AgentChatWidget";
 
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/customer/Index"));
@@ -91,6 +92,7 @@ const App = () => {
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <AgentChatWidget />
                 <Suspense fallback={<PageLoader />}>
                   <Routes>
                     <Route path="/" element={<Index />} />

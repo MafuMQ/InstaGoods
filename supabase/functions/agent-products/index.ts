@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
 
     // Filter params (all optional)
     const category = url.searchParams.get('category')
+    const subCategory = url.searchParams.get('sub_category')
     const search = url.searchParams.get('search')
     const maxPrice = url.searchParams.get('max_price')
     const minPrice = url.searchParams.get('min_price')
@@ -57,6 +58,9 @@ Deno.serve(async (req) => {
 
     if (category) {
       query = query.ilike('main_category', `%${category}%`)
+    }
+    if (subCategory) {
+      query = query.ilike('sub_category', `%${subCategory}%`)
     }
     if (search) {
       query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`)
