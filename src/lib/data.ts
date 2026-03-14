@@ -117,9 +117,9 @@ export const mainCategories = [
 ];
 
 export const subCategories: Record<string, string[]> = {
-  "Groceries": ["All", "Dairy Products", "Meat", "Fruits & Vegies", "Frozen Food" , "Self Care", "Baby Care"],
-  "Physical Goods": ["All", "Home & Living", "Kitchen & Dining", "Jewelry", "Stationery", "Baby"],
-  "Services": ["All", "Electrical", "Plumbing", "Road Side","Home Repairs", "Moving", "Cleaning"],
+  "Groceries": ["All", "Dairy Products", "Meat", "Fruits & Veggies", "Bakery & Bread", "Frozen Food", "Beverages", "Snacks & Treats", "Pantry Essentials"],
+  "Physical Goods": ["All", "Home & Living", "Kitchen & Dining", "Jewelry", "Stationery", "Health & Beauty", "Baby Products"],
+  "Services": ["All", "Electrical", "Plumbing", "Road Side", "Home Repairs", "Moving", "Cleaning"],
   "Freelancing": ["All", "Creative", "Technical", "Consulting", "Administrative"],
   "Shop by Business": ["All", "Pick n' Pay", "Spar", "DisChem", "Clicks", "Woolworths"],
 };

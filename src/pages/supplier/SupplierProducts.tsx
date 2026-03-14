@@ -386,7 +386,10 @@ const SupplierProducts = () => {
                     <Label htmlFor="main_category">Main Category</Label>
                     <Select
                       value={formData.main_category}
-                      onValueChange={(value) => setFormData({ ...formData, main_category: value })}
+                      onValueChange={(value) => {
+                        const firstSub = subCategories[value]?.find(c => c !== "All") ?? "";
+                        setFormData({ ...formData, main_category: value, sub_category: firstSub });
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue />
