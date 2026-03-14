@@ -25,18 +25,14 @@ load_dotenv()
 # Initialize the new Gemini client
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-# ============================================================
-# SET YOUR VERCEL DEPLOYMENT URL HERE (no trailing slash)
-# Example: "https://<your-vercel-app>.vercel.app"
-VERCEL_URL = "https://insta-goods-v2.vercel.app"
-# ============================================================
+INSTAGOODS_ROOT_URL = os.environ.get("INSTAGOODS_ROOT_URL")
 
-if not VERCEL_URL:
+if not INSTAGOODS_ROOT_URL:
     raise RuntimeError(
-        "VERCEL_URL is not set. Open agent/app.py and set VERCEL_URL to your deployment URL."
+        "INSTAGOODS_ROOT_URL is not set. Add it to your .env file."
     )
 
-API_BASE = f"{VERCEL_URL}/api"
+API_BASE = f"{INSTAGOODS_ROOT_URL}/api"
 
 def _agent_api_get(endpoint: str, params: dict | None = None) -> dict:
     """Helper to call the InstaGoods Vercel proxy API."""

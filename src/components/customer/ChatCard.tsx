@@ -194,7 +194,7 @@ export default function ChatWidget({supplierId}: {supplierId: string}) {
     return (
         <div>
       {open && (
-        <div className="fixed bottom-12 right-6 w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
+        <div className="fixed bottom-12 left-6 w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
           <div className="bg-gray-900 px-4 py-3 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-blue-900 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">S</div>
             <div className="flex-1">
@@ -261,7 +261,7 @@ export default function ChatWidget({supplierId}: {supplierId: string}) {
       )}
 
       {!open && (
-      <button onClick={handleOpen} className="fixed bottom-4 text-white right-8 w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50">
+      <button onClick={handleOpen} className="fixed bottom-4 text-white left-8 w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50">
         <MessageSquare />
         {hasUnread && <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />}
       </button>

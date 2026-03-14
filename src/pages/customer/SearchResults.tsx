@@ -8,6 +8,7 @@ import ServiceCard from "@/components/customer/ServiceCard";
 import FreelanceCard from "@/components/customer/FreelanceCard";
 import { products, services, groceries, freelance } from "@/lib/data";
 import { Product, Service, Grocery, Freelance } from "@/lib/data";
+import { useMarketplaceProducts, MarketplaceProduct } from "@/hooks/useMarketplaceProducts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -30,7 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type SearchItem = Product | Service | Grocery | Freelance;
+type SearchItem = Product | Service | Grocery | Freelance | MarketplaceProduct;
 
 type CategoryFilter = "all" | "products" | "services" | "groceries" | "freelance";
 type SortOption = "relevance" | "price-low" | "price-high" | "name";
@@ -43,13 +44,23 @@ const SearchResults = () => {
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [showFilters, setShowFilters] = useState(false);
 
+  const { products: marketplaceProducts, loading: marketplaceLoading } = useMarketplaceProducts();
+
   // Combine all items
   const allItems: SearchItem[] = useMemo(() => {
-    return [...products, ...services, ...groceries, ...freelance];
-  }, []);
+    return [...products, ...services, ...groceries, ...freelance, ...marketplaceProducts];
+  }, [marketplaceProducts]);
 
   // Get category for an item
   const getItemCategory = (item: SearchItem): CategoryFilter => {
+    // MarketplaceProduct uses main_category (snake_case)
+    if ('supplier_id' in item) {
+      const cat = (item as MarketplaceProduct).main_category;
+      if (cat === 'Groceries') return 'groceries';
+      if (cat === 'Services') return 'services';
+      if (cat === 'Freelancing') return 'freelance';
+      return 'products';
+    }
     if ("mainCategory" in item) {
       if (item.mainCategory === "Groceries") return "groceries";
       if (item.mainCategory === "Physical Goods") return "products";
@@ -63,7 +74,7 @@ const SearchResults = () => {
   const filteredItems = useMemo(() => {
     let results = allItems.filter((item) =>
       item.name.toLowerCase().includes(query.toLowerCase()) ||
-      item.description.toLowerCase().includes(query.toLowerCase())
+      (item.description ?? "").toLowerCase().includes(query.toLowerCase())
     );
 
     // Apply category filter
@@ -108,7 +119,7 @@ const SearchResults = () => {
   const categoryCounts = useMemo(() => {
     const results = allItems.filter((item) =>
       item.name.toLowerCase().includes(query.toLowerCase()) ||
-      item.description.toLowerCase().includes(query.toLowerCase())
+      (item.description ?? "").toLowerCase().includes(query.toLowerCase())
     );
 
     return {
@@ -261,7 +272,11 @@ const SearchResults = () => {
         )}
 
         {/* Results */}
-        {query ? (
+        {marketplaceLoading ? (
+          <div className="flex justify-center py-16">
+            <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : query ? (
           filteredItems.length > 0 ? (
             <>
               <p className="text-sm text-muted-foreground mb-4">
@@ -269,7 +284,11 @@ const SearchResults = () => {
                 {categoryFilter !== "all" && ` in ${categoryFilter}`}
               </p>
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredItems.map((item, index) => {
+                {filteredItems.map((item) => {
+                  // MarketplaceProduct (from Supabase) — ProductCard handles both types
+                  if ('supplier_id' in item) {
+                    return <ProductCard key={item.id} product={item as MarketplaceProduct} />;
+                  }
                   if (getItemCategory(item) === "groceries") {
                     return <GroceryCard key={item.id} grocery={item as Grocery} />;
                   } else if (getItemCategory(item) === "products") {

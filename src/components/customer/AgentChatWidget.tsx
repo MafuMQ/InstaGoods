@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot } from "lucide-react";
+import { Bot, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL || "http://localhost:5000";
 
@@ -21,15 +21,107 @@ export default function AgentChatWidget() {
   const [sending, setSending] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
-  const sendMessage = async () => {
-    const text = input.trim();
-    if (!text || sending) return;
+  const speakFromServer = async (text: string) => {
+    try {
+      const res = await fetch(`${AGENT_URL}/tts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) return;
+      const blob = await res.blob();
+      if (currentAudioRef.current) currentAudioRef.current.pause();
+      const audio = new Audio(URL.createObjectURL(blob));
+      currentAudioRef.current = audio;
+      audio.play();
+    } catch { /* TTS failure is non-critical */ }
+  };
+
+  const toggleTTS = () => {
+    setTtsEnabled((prev) => {
+      if (prev && currentAudioRef.current) {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      }
+      return !prev;
+    });
+  };
+
+  const startRecording = async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError("Microphone access is not supported in this browser.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunksRef.current = [];
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        setIsRecording(false);
+        const audioBlob = new Blob(audioChunksRef.current, { type: recorder.mimeType });
+        await transcribeAudio(audioBlob, recorder.mimeType);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      setError("Microphone access denied or unavailable.");
+    }
+  };
+
+  const toggleVoice = () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+    } else {
+      startRecording();
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob, mimeType: string) => {
+    setTranscribing(true);
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "recording");
+    // Send the MIME type so the backend knows the format
+    const url = `${AGENT_URL}/transcribe`;
+    try {
+      const res = await fetch(url, { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.transcript) {
+        // Auto-send the transcribed text
+        setInput(data.transcript);
+        // Use a callback pattern so sendMessage picks up the new value
+        await sendMessageText(data.transcript);
+      } else {
+        setError("Could not understand the audio. Please try again.");
+      }
+    } catch {
+      setError("Error transcribing audio.");
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
+  const sendMessageText = async (text: string) => {
+    if (!text.trim() || sending) return;
 
     setInput("");
     setError(null);
@@ -50,19 +142,23 @@ export default function AgentChatWidget() {
       const data = await res.json();
       if (data.session_id) setSessionId(data.session_id);
 
+      const reply = data.reply as string;
       setMessages((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), role: "agent", text: data.reply, ts: getTime() },
+        { id: crypto.randomUUID(), role: "agent", text: reply, ts: getTime() },
       ]);
+
+      if (ttsEnabled) speakFromServer(reply);
     } catch (err) {
       setError("Could not reach the AI assistant. Make sure the agent server is running.");
-      // Remove the optimistic user message on failure
       setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
       setInput(text);
     } finally {
       setSending(false);
     }
   };
+
+  const sendMessage = () => sendMessageText(input.trim());
 
   const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -75,6 +171,10 @@ export default function AgentChatWidget() {
     if (sessionId) {
       fetch(`${AGENT_URL}/session/${sessionId}`, { method: "DELETE" }).catch(() => {});
     }
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause();
+      currentAudioRef.current = null;
+    }
     setSessionId(null);
     setMessages([]);
     setError(null);
@@ -83,7 +183,7 @@ export default function AgentChatWidget() {
   return (
     <div>
       {open && (
-        <div className="fixed bottom-12 left-6 w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
+        <div className="fixed bottom-12 right-6 w-80 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
           {/* Header */}
           <div className="bg-orange-600 px-4 py-3 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-orange-800 flex items-center justify-center text-white flex-shrink-0">
@@ -97,6 +197,13 @@ export default function AgentChatWidget() {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={toggleTTS}
+                title={ttsEnabled ? "Mute voice responses" : "Unmute voice responses"}
+                className="text-white/60 hover:text-white p-1 rounded transition-colors"
+              >
+                {ttsEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              </button>
               <button
                 onClick={handleReset}
                 title="Clear conversation"
@@ -152,17 +259,21 @@ export default function AgentChatWidget() {
                 </div>
               </div>
             ))}
-            {sending && (
+            {(sending || transcribing) && (
               <div className="flex items-end gap-2">
                 <div className="w-7 h-7 rounded-full bg-orange-600 flex items-center justify-center text-white flex-shrink-0">
                   <Bot className="w-4 h-4" />
                 </div>
                 <div className="bg-white rounded-2xl rounded-bl-sm px-3 py-2 shadow-sm">
-                  <span className="flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
-                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
-                  </span>
+                  {transcribing ? (
+                    <span className="text-xs text-gray-400">Transcribing…</span>
+                  ) : (
+                    <span className="flex gap-1">
+                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -171,17 +282,34 @@ export default function AgentChatWidget() {
 
           {/* Input */}
           <div className="p-3 bg-white border-t border-gray-100 flex gap-2 items-end">
+            <button
+              onClick={toggleVoice}
+              disabled={sending || transcribing}
+              title={isRecording ? "Stop recording" : "Voice input"}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all disabled:cursor-not-allowed ${
+                isRecording
+                  ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-500"
+              }`}
+            >
+              {isRecording ? (
+                <MicOff className="w-4 h-4 text-white" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </button>
             <textarea
               className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none outline-none bg-gray-50 focus:border-orange-500 focus:bg-white transition-colors max-h-24"
-              placeholder="e.g. Show me bread under R50…"
+              placeholder={transcribing ? "Transcribing…" : isRecording ? "Recording… tap mic to stop" : "e.g. What is available?"}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKey}
               rows={1}
+              disabled={isRecording || transcribing}
             />
             <button
               onClick={sendMessage}
-              disabled={!input.trim() || sending}
+              disabled={!input.trim() || sending || isRecording || transcribing}
               className="w-9 h-9 bg-orange-600 rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-orange-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               {sending ? (
@@ -206,7 +334,7 @@ export default function AgentChatWidget() {
         <button
           onClick={() => setOpen(true)}
           title="Chat with AI shopping assistant"
-          className="fixed bottom-4 left-8 w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-orange-700 transition-all z-50"
+          className="fixed bottom-4 right-8 w-14 h-14 bg-orange-600 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:bg-orange-700 transition-all z-50"
         >
           <Bot className="w-6 h-6 text-white" />
         </button>
