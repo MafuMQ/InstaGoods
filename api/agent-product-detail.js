@@ -33,6 +33,13 @@ export default async function handler(req, res) {
     );
 
     const data = await response.json();
+
+    // Inject a direct product page URL so AI and API consumers can link to the product
+    if (response.ok && data.product) {
+      const rootUrl = (process.env.INSTAGOODS_ROOT_URL || '').replace(/\/$/, '');
+      data.product.product_url = `${rootUrl}/product/${id}`;
+    }
+
     res.status(response.status).json(data);
   } catch (error) {
     res.status(500).json({ error: 'Proxy request failed', details: error.message });

@@ -99,7 +99,8 @@ def search_products(
 
 def get_product_detail(product_id: str) -> str:
     """Get full details for a single product by its ID. Use this when the user wants more information
-    about a specific product, such as stock, supplier info, delivery options, and pricing."""
+    about a specific product, such as stock, supplier info, delivery options, and pricing.
+    The response includes a 'product_url' field — always share this link with the user so they can view and purchase the product."""
     log.info(f"\n[BACKEND EXECUTING] Fetching product detail for: {product_id}")
     data = _agent_api_get("agent-product-detail", {"id": product_id})
     return json.dumps(data)
