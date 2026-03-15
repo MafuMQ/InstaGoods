@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ServiceRequestProvider } from "@/context/ServiceRequestContext";
 import { useEffect, Suspense, lazy } from "react";
+import { App as CapApp } from "@capacitor/app";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PerformanceMonitor from "@/components/ui/PerformanceMonitor";
 import { SupplierLayout } from "@/layouts/SupplierLayout";
@@ -80,6 +81,22 @@ const App = () => {
     if (initialLoader) {
       initialLoader.style.display = 'none';
     }
+
+    // Handle Android hardware back button
+    let listenerHandle: { remove: () => void } | null = null;
+    CapApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        CapApp.exitApp();
+      }
+    }).then(handle => {
+      listenerHandle = handle;
+    });
+
+    return () => {
+      listenerHandle?.remove();
+    };
   }, []);
 
   return (
