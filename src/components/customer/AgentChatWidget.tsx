@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL || "http://localhost:5000";
 
@@ -24,6 +25,7 @@ export default function AgentChatWidget() {
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  const [userJwt, setUserJwt] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -32,6 +34,17 @@ export default function AgentChatWidget() {
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
+
+  // Track the Supabase JWT so the agent can access cart/wishlist for logged-in users
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserJwt(session?.access_token ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserJwt(session?.access_token ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const speakFromServer = async (text: string) => {
     try {
@@ -134,7 +147,7 @@ export default function AgentChatWidget() {
       const res = await fetch(`${AGENT_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, session_id: sessionId }),
+        body: JSON.stringify({ message: text, session_id: sessionId, user_jwt: userJwt }),
       });
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);

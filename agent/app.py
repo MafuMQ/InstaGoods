@@ -4,6 +4,7 @@ import json
 import logging
 import uuid
 import requests
+from contextvars import ContextVar
 from urllib.parse import urlencode
 from flask import Flask, render_template, request, jsonify, send_file
 from flask_cors import CORS
@@ -33,6 +34,10 @@ if not INSTAGOODS_ROOT_URL:
     )
 
 API_BASE = f"{INSTAGOODS_ROOT_URL}/api"
+
+# Thread-safe JWT store: set before every chat.send_message() call so tool
+# functions can read the current user's JWT without it being a Gemini parameter.
+_current_jwt: ContextVar[str | None] = ContextVar("current_jwt", default=None)
 
 def _agent_api_get(endpoint: str, params: dict | None = None) -> dict:
     """Helper to call the InstaGoods Vercel proxy API."""
@@ -106,25 +111,52 @@ def get_product_detail(product_id: str) -> str:
     return json.dumps(data)
 
 
+def get_cart() -> str:
+    """Get the current user's shopping cart including all items, quantities, and cart total.
+    Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their cart."""
+    jwt = _current_jwt.get()
+    if not jwt:
+        return json.dumps({"error": "not_authenticated", "message": "The user is not logged in. Ask them to sign in to view their cart."})
+    log.info("\n[BACKEND EXECUTING] Fetching cart")
+    data = _agent_api_get("agent-cart", {"user_jwt": jwt})
+    return json.dumps(data)
+
+
+def get_wishlist() -> str:
+    """Get the current user's wishlist — products they have saved for later.
+    Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their wishlist."""
+    jwt = _current_jwt.get()
+    if not jwt:
+        return json.dumps({"error": "not_authenticated", "message": "The user is not logged in. Ask them to sign in to view their wishlist."})
+    log.info("\n[BACKEND EXECUTING] Fetching wishlist")
+    data = _agent_api_get("agent-wishlist", {"user_jwt": jwt})
+    return json.dumps(data)
+
+
 CHAT_CONFIG = types.GenerateContentConfig(
     system_instruction="You are a helpful shopping assistant for the InstaGoods marketplace. "
-        "You help users browse categories, search for products, and get product details. "
+        "You help users browse categories, search for products, get product details, "
+        "and view their cart or wishlist. "
         "Use the available tools to fetch real-time data from the marketplace. "
-        "Present results in a friendly, concise way. Include prices in ZAR (R).",
-    tools=[get_categories, search_products, get_product_detail],
+        "Present results in a friendly, concise way. Include prices in ZAR (R). "
+        "If a user asks about their cart or wishlist and is not logged in, "
+        "let them know they need to sign in on the InstaGoods website first.",
+    tools=[get_categories, search_products, get_product_detail, get_cart, get_wishlist],
 )
 
-# Session store: maps session_id (str) -> Gemini chat object
-# Each session maintains its own conversation history with Gemini.
+# Session store: maps session_id (str) -> {"chat": ChatSession, "user_jwt": str | None}
 # Sessions persist in memory until explicitly deleted or the server restarts.
 chat_sessions: dict = {}
 
 def _get_or_create_session(session_id: str | None) -> tuple:
-    """Return (session_id, chat). Creates a new session if session_id is None or unknown."""
+    """Return (session_id, session_record). Creates a new session if session_id is None or unknown."""
     if session_id and session_id in chat_sessions:
         return session_id, chat_sessions[session_id]
     new_id = str(uuid.uuid4())
-    chat_sessions[new_id] = client.chats.create(model="gemini-2.5-flash", config=CHAT_CONFIG)
+    chat_sessions[new_id] = {
+        "chat": client.chats.create(model="gemini-2.5-flash", config=CHAT_CONFIG),
+        "user_jwt": None,
+    }
     log.info(f"[SESSION NEW] {new_id}")
     return new_id, chat_sessions[new_id]
 
@@ -147,7 +179,7 @@ def transcribe():
             model="gemini-2.5-flash",
             contents=[audio_part, types.Part(text="Transcribe the speech in this audio. Return only the transcribed words, nothing else.")]
         )
-        return jsonify({"transcript": response.text.strip()})
+        return jsonify({"transcript": (response.text or "").strip()})
     except Exception as e:
         print(f"Transcription error: {e}")
         return jsonify({"error": "Transcription failed"}), 500
@@ -158,19 +190,30 @@ def chat_route():
     body = request.json or {}
     user_message = body.get("message")
     session_id = body.get("session_id")  # optional; omit to auto-create a new session
+    user_jwt = body.get("user_jwt")       # optional; the user's Supabase access token
 
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
-    session_id, chat = _get_or_create_session(session_id)
-    log.info(f"[CHAT] session={session_id} message={user_message!r}")
+    session_id, record = _get_or_create_session(session_id)
 
+    # Update the stored JWT if a fresh one was supplied (handles token refresh and login/logout)
+    if user_jwt is not None:
+        record["user_jwt"] = user_jwt
+
+    chat = record["chat"]
+    log.info(f"[CHAT] session={session_id} authenticated={record['user_jwt'] is not None} message={user_message!r}")
+
+    # Inject JWT into the context var so tool functions can read it
+    token = _current_jwt.set(record["user_jwt"])
     try:
         response = chat.send_message(user_message)
         return jsonify({"reply": response.text, "session_id": session_id})
     except Exception as e:
         log.error(f"[CHAT ERROR] {type(e).__name__}: {e}")
         return jsonify({"reply": f"Sorry, I ran into an error: {e}", "session_id": session_id})
+    finally:
+        _current_jwt.reset(token)
 
 
 @app.route("/session/new", methods=["POST"])
@@ -195,7 +238,7 @@ def get_history(session_id):
     """Return the conversation history for a session as a list of {role, text} objects."""
     if session_id not in chat_sessions:
         return jsonify({"error": "Session not found"}), 404
-    chat = chat_sessions[session_id]
+    chat = chat_sessions[session_id]["chat"]
     history = []
     for message in chat.get_history():
         # Each message can have multiple parts; join text parts into one string
