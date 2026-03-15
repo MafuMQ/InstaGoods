@@ -115,6 +115,7 @@ def get_cart() -> str:
     """Get the current user's shopping cart including all items, quantities, and cart total.
     Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their cart."""
     jwt = _current_jwt.get()
+    log.info(f"[TOOL get_cart] _current_jwt.get() = {'<' + jwt[:20] + '...>' if jwt else 'None'}")
     if not jwt:
         return json.dumps({"error": "not_authenticated", "message": "The user is not logged in. Ask them to sign in to view their cart."})
     log.info("\n[BACKEND EXECUTING] Fetching cart")
@@ -126,6 +127,7 @@ def get_wishlist() -> str:
     """Get the current user's wishlist — products they have saved for later.
     Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their wishlist."""
     jwt = _current_jwt.get()
+    log.info(f"[TOOL get_wishlist] _current_jwt.get() = {'<' + jwt[:20] + '...>' if jwt else 'None'}")
     if not jwt:
         return json.dumps({"error": "not_authenticated", "message": "The user is not logged in. Ask them to sign in to view their wishlist."})
     log.info("\n[BACKEND EXECUTING] Fetching wishlist")
@@ -202,10 +204,11 @@ def chat_route():
         record["user_jwt"] = user_jwt
 
     chat = record["chat"]
-    log.info(f"[CHAT] session={session_id} authenticated={record['user_jwt'] is not None} message={user_message!r}")
+    log.info(f"[CHAT] session={session_id} jwt_in_request={user_jwt is not None} jwt_preview={'<' + user_jwt[:20] + '...>' if user_jwt else 'None'} jwt_stored={record['user_jwt'] is not None} message={user_message!r}")
 
     # Inject JWT into the context var so tool functions can read it
     token = _current_jwt.set(record["user_jwt"])
+    log.info(f"[CONTEXTVAR SET] _current_jwt = {'set' if record['user_jwt'] else 'None'}")
     try:
         response = chat.send_message(user_message)
         return jsonify({"reply": response.text, "session_id": session_id})
