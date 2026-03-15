@@ -112,8 +112,8 @@ def get_product_detail(product_id: str) -> str:
 
 
 def get_cart() -> str:
-    """Get the current user's shopping cart including all items, quantities, and cart total.
-    Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their cart."""
+    """ALWAYS call this tool when the user asks about their cart or what they have added to their cart.
+    Do NOT assume the user is logged in or not — always invoke this tool and let the result determine what to tell the user."""
     jwt = _current_jwt.get()
     log.info(f"[TOOL get_cart] _current_jwt.get() = {'<' + jwt[:20] + '...>' if jwt else 'None'}")
     if not jwt:
@@ -124,8 +124,8 @@ def get_cart() -> str:
 
 
 def get_wishlist() -> str:
-    """Get the current user's wishlist — products they have saved for later.
-    Only works for logged-in users. If the user is not logged in, tell them they need to sign in to view their wishlist."""
+    """ALWAYS call this tool when the user asks about their wishlist or saved products.
+    Do NOT assume the user is logged in or not — always invoke this tool and let the result determine what to tell the user."""
     jwt = _current_jwt.get()
     log.info(f"[TOOL get_wishlist] _current_jwt.get() = {'<' + jwt[:20] + '...>' if jwt else 'None'}")
     if not jwt:
@@ -139,10 +139,9 @@ CHAT_CONFIG = types.GenerateContentConfig(
     system_instruction="You are a helpful shopping assistant for the InstaGoods marketplace. "
         "You help users browse categories, search for products, get product details, "
         "and view their cart or wishlist. "
-        "Use the available tools to fetch real-time data from the marketplace. "
-        "Present results in a friendly, concise way. Include prices in ZAR (R). "
-        "If a user asks about their cart or wishlist and is not logged in, "
-        "let them know they need to sign in on the InstaGoods website first.",
+        "IMPORTANT: Always use the available tools to fetch real-time data — never guess or answer from memory. "
+        "For cart and wishlist requests, always call the tool; the tool itself will handle auth and return the appropriate response. "
+        "Present results in a friendly, concise way. Include prices in ZAR (R).",
     tools=[get_categories, search_products, get_product_detail, get_cart, get_wishlist],
 )
 
