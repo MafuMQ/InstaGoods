@@ -24,8 +24,17 @@ export default async function handler(req, res) {
         : undefined,
     });
 
-    const data = await upstreamRes.json();
-    res.status(upstreamRes.status).json(data);
+    const contentType = upstreamRes.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const data = await upstreamRes.json();
+      res.status(upstreamRes.status).json(data);
+    } else {
+      // Binary response (e.g. audio/mpeg from /tts)
+      const buffer = await upstreamRes.arrayBuffer();
+      res.status(upstreamRes.status)
+        .setHeader('Content-Type', contentType)
+        .send(Buffer.from(buffer));
+    }
   } catch (error) {
     res.status(500).json({ error: 'Agent proxy failed', details: error.message });
   }
