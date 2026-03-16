@@ -27,7 +27,7 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import CarouselWithDots from "./CarouselWithDots";
 // Banner images hosted in Supabase Storage (product-images/banners/)
-const STORAGE_BASE = "https://tkixhgkaseiyshhgjgkp.supabase.co/storage/v1/object/public/product-images/banners";
+const STORAGE_BASE = " https://instagoods.obs.ap-southeast-3.myhuaweicloud.com/banners";
 const product1  = `${STORAGE_BASE}/hero-banner.webp`;
 const service1  = `${STORAGE_BASE}/Plumber-bg.webp`;
 const grocery1  = `${STORAGE_BASE}/Grocery-bg.webp`;
