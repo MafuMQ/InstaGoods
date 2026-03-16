@@ -35,9 +35,10 @@ if not INSTAGOODS_ROOT_URL:
 
 API_BASE = f"{INSTAGOODS_ROOT_URL}/api"
 
-# Thread-safe JWT store: set before every chat.send_message() call so tool
-# functions can read the current user's JWT without it being a Gemini parameter.
+# Thread-safe store for JWT and location: set before every chat.send_message() call
+# so tool functions can read them without being Gemini parameters.
 _current_jwt: ContextVar[str | None] = ContextVar("current_jwt", default=None)
+_current_location: ContextVar[tuple[float, float] | None] = ContextVar("current_location", default=None)
 
 def _agent_api_get(endpoint: str, params: dict | None = None) -> dict:
     """Helper to call the InstaGoods Vercel proxy API."""
@@ -63,6 +64,24 @@ def get_categories() -> str:
     return json.dumps(data)
 
 
+def geocode_address(address: str) -> str:
+    """Convert a place name or street address to GPS coordinates (latitude and longitude).
+    Use this when the user mentions a specific location by name (e.g. 'near Sandton',
+    'in Cape Town', '123 Main St Johannesburg') so you can then pass the coordinates
+    to search_products for distance-filtered results."""
+    log.info(f"\n[BACKEND EXECUTING] Geocoding address: {address}")
+    try:
+        resp = requests.post(
+            f"{API_BASE}/geocode-proxy",
+            json={"address": address},
+            timeout=10,
+        )
+        return json.dumps(resp.json())
+    except Exception as e:
+        log.error(f"[GEOCODE ERROR] {e}")
+        return json.dumps({"error": str(e)})
+
+
 def search_products(
     category: str | None = None,
     sub_category: str | None = None,
@@ -86,6 +105,12 @@ def search_products(
       - 'min_price'/'max_price': price range filter in ZAR
       - 'lat'/'lng'/'radius_km': sort by distance and filter to nearby products
     """
+    # Fall back to the session's stored location if the caller omitted lat/lng
+    if lat is None and lng is None:
+        stored = _current_location.get()
+        if stored:
+            lat, lng = stored
+
     log.info(f"\n[BACKEND EXECUTING] Searching products: category={category}, sub_category={sub_category}, "
           f"search={search}, min_price={min_price}, max_price={max_price}, lat={lat}, lng={lng}, radius_km={radius_km}")
     params = {
@@ -141,8 +166,10 @@ CHAT_CONFIG = types.GenerateContentConfig(
         "and view their cart or wishlist. "
         "IMPORTANT: Always use the available tools to fetch real-time data — never guess or answer from memory. "
         "For cart and wishlist requests, always call the tool; the tool itself will handle auth and return the appropriate response. "
+        "When the user's GPS coordinates are provided in the message context, use them automatically for product searches. "
+        "When the user mentions a place by name, call geocode_address first to obtain coordinates, then pass them to search_products. "
         "Present results in a friendly, concise way. Include prices in ZAR (R).",
-    tools=[get_categories, search_products, get_product_detail, get_cart, get_wishlist],
+    tools=[get_categories, search_products, get_product_detail, get_cart, get_wishlist, geocode_address],
 )
 
 # Session store: maps session_id (str) -> {"chat": ChatSession, "user_jwt": str | None}
@@ -157,6 +184,8 @@ def _get_or_create_session(session_id: str | None) -> tuple:
     chat_sessions[new_id] = {
         "chat": client.chats.create(model="gemini-2.5-flash", config=CHAT_CONFIG),
         "user_jwt": None,
+        "user_lat": None,
+        "user_lng": None,
     }
     log.info(f"[SESSION NEW] {new_id}")
     return new_id, chat_sessions[new_id]
@@ -192,6 +221,8 @@ def chat_route():
     user_message = body.get("message")
     session_id = body.get("session_id")  # optional; omit to auto-create a new session
     user_jwt = body.get("user_jwt")       # optional; the user's Supabase access token
+    user_lat = body.get("user_lat")       # optional; GPS latitude from the frontend
+    user_lng = body.get("user_lng")       # optional; GPS longitude from the frontend
 
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
@@ -202,20 +233,45 @@ def chat_route():
     if user_jwt is not None:
         record["user_jwt"] = user_jwt
 
-    chat = record["chat"]
-    log.info(f"[CHAT] session={session_id} jwt_in_request={user_jwt is not None} jwt_preview={'<' + user_jwt[:20] + '...>' if user_jwt else 'None'} jwt_stored={record['user_jwt'] is not None} message={user_message!r}")
+    # Update stored coordinates whenever the frontend sends a fresh position
+    if user_lat is not None and user_lng is not None:
+        record["user_lat"] = float(user_lat)
+        record["user_lng"] = float(user_lng)
 
-    # Inject JWT into the context var so tool functions can read it
-    token = _current_jwt.set(record["user_jwt"])
-    log.info(f"[CONTEXTVAR SET] _current_jwt = {'set' if record['user_jwt'] else 'None'}")
+    chat = record["chat"]
+    log.info(
+        f"[CHAT] session={session_id} "
+        f"jwt_stored={record['user_jwt'] is not None} "
+        f"location=({record['user_lat']}, {record['user_lng']}) "
+        f"message={user_message!r}"
+    )
+
+    # Build the message Gemini receives — prepend a location hint if coordinates are available
+    lat_stored = record["user_lat"]
+    lng_stored = record["user_lng"]
+    if lat_stored is not None and lng_stored is not None:
+        gemini_message = (
+            f"[Context: User's current GPS location is lat={lat_stored}, lng={lng_stored}. "
+            f"Use these coordinates for any location-based product searches unless the user "
+            f"explicitly asks to search near a different place.]\n{user_message}"
+        )
+    else:
+        gemini_message = user_message
+
+    # Inject JWT and location into context vars so tool functions can read them
+    token_jwt = _current_jwt.set(record["user_jwt"])
+    location_tuple = (lat_stored, lng_stored) if lat_stored is not None and lng_stored is not None else None
+    token_loc = _current_location.set(location_tuple)
+    log.info(f"[CONTEXTVAR SET] jwt={'set' if record['user_jwt'] else 'None'} location={location_tuple}")
     try:
-        response = chat.send_message(user_message)
+        response = chat.send_message(gemini_message)
         return jsonify({"reply": response.text, "session_id": session_id})
     except Exception as e:
         log.error(f"[CHAT ERROR] {type(e).__name__}: {e}")
         return jsonify({"reply": f"Sorry, I ran into an error: {e}", "session_id": session_id})
     finally:
-        _current_jwt.reset(token)
+        _current_jwt.reset(token_jwt)
+        _current_location.reset(token_loc)
 
 
 @app.route("/session/new", methods=["POST"])

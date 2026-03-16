@@ -1,6 +1,10 @@
 import { useSearchParams, Link } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "@/components/customer/Header";
+import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
+import { useLocation } from "@/context/LocationContext";
+import { haversineDistance } from "@/lib/distance";
+import { geocodeAddress } from "@/lib/geocode";
 import Footer from "@/components/customer/Footer";
 import GroceryCard from "@/components/customer/GroceryCard";
 import ProductCard from "@/components/customer/ProductCard";
@@ -43,6 +47,17 @@ const SearchResults = () => {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  const { address: userAddress } = useLocation();
+  const { onlyAvailable, deliveryOnly } = useDeliveryAndAvailable();
+  const [userLatLng, setUserLatLng] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (userAddress) {
+      geocodeAddress(userAddress).then(setUserLatLng);
+    } else {
+      setUserLatLng(null);
+    }
+  }, [userAddress]);
 
   const { products: marketplaceProducts, loading: marketplaceLoading } = useMarketplaceProducts();
 
@@ -77,6 +92,22 @@ const SearchResults = () => {
       (item.description ?? "").toLowerCase().includes(query.toLowerCase())
     );
 
+    // Apply delivery/availability filters to marketplace products only
+    results = results.filter((item) => {
+      if (!('supplier_id' in item)) return true; // static data — no delivery metadata
+      const p = item as MarketplaceProduct;
+      if (deliveryOnly && p.no_delivery) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.available_everywhere) return true;
+        if (p.delivery_lat && p.delivery_lng && typeof p.delivery_radius_km === "number") {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
+          return dist <= p.delivery_radius_km;
+        }
+        return false;
+      }
+      return true;
+    });
+
     // Apply category filter
     if (categoryFilter !== "all") {
       results = results.filter(item => getItemCategory(item) === categoryFilter);
@@ -99,7 +130,7 @@ const SearchResults = () => {
     }
 
     return results;
-  }, [allItems, query, categoryFilter, sortBy]);
+  }, [allItems, query, categoryFilter, sortBy, deliveryOnly, onlyAvailable, userLatLng]);
 
   // Handle search submit
   const handleSearch = (e: React.FormEvent) => {

@@ -1,8 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Capacitor } from "@capacitor/core";
+import { useLocation } from "@/context/LocationContext";
 
-const AGENT_URL = import.meta.env.VITE_AGENT_URL || "http://localhost:5000";
+// On native (Android/iOS) the proxy is unreachable — use the direct backend URL.
+const AGENT_URL = Capacitor.isNativePlatform()
+  ? (import.meta.env.VITE_AGENT_DIRECT_URL)
+  : (import.meta.env.VITE_AGENT_URL);
 
 interface Message {
   id: string;
@@ -26,6 +31,7 @@ export default function AgentChatWidget() {
   const [isRecording, setIsRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
   const [userJwt, setUserJwt] = useState<string | null>(null);
+  const { lat: userLat, lng: userLng } = useLocation();
   const bottomRef = useRef<HTMLDivElement>(null);
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -147,7 +153,13 @@ export default function AgentChatWidget() {
       const res = await fetch(`${AGENT_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, session_id: sessionId, user_jwt: userJwt }),
+        body: JSON.stringify({
+          message: text,
+          session_id: sessionId,
+          user_jwt: userJwt,
+          user_lat: userLat ?? undefined,
+          user_lng: userLng ?? undefined,
+        }),
       });
 
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
