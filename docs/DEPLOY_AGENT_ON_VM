@@ -1,0 +1,129 @@
+# Server Setup Guide: Deploying a Flask App on Debian
+
+## 1. Understanding the Directory Structure (The "Root" Conundrum)
+
+When you log in as the root user, it is easy to get lost. There are two "roots" you need to know about:
+
+* **The System Root (`/`):** The absolute bottom of the server. Every single file on the machine lives inside here.
+* **The Root User's Home (`/root` or `~`):** A specific folder *inside* the system root. This is your personal workspace as the administrator. Always clone your projects here to keep things organized.
+
+**To get to your workspace:**
+
+```bash
+cd ~
+
+```
+
+## 2. System Preparation
+
+Debian usually comes with Python pre-installed, but it is always best practice to update your package manager and ensure you have Git and `pip` ready to go.
+
+```bash
+apt update
+apt install git python3 python3-pip -y
+
+```
+
+## 3. Cloning Your Code
+
+Pull your application code down from Git and move into the newly created project folder.
+
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+
+```
+
+## 4. Installing Dependencies (Handling Debian's Restrictions)
+
+Modern Debian locks down global Python installations to protect system files. You have two options for installing your `requirements.txt`.
+
+### Option A: The Virtual Environment (Recommended)
+
+This creates an isolated bubble for your project's dependencies.
+
+```bash
+# 1. Install the venv package
+apt install python3-venv -y
+
+# 2. Create the virtual environment inside your project folder
+python3 -m venv venv
+
+# 3. Activate it (You must do this every time you log in to work on the app)
+source venv/bin/activate
+
+# 4. Install requirements safely
+pip install -r requirements.txt
+
+```
+
+### Option B: The Global Override (Quick & Dirty)
+
+If you want to bypass Debian's safety rails and install everything system-wide:
+
+```bash
+pip install -r requirements.txt --break-system-packages
+
+```
+
+## 5. Configuring the Cloud Firewall
+
+By default, Huawei Cloud blocks incoming traffic. You must open port `5000` so the internet can talk to your app.
+
+1. Log into the **Huawei Cloud Console**.
+2. Navigate to your VM's **Security Groups**.
+3. Add an **Inbound Rule** (Ingress):
+* **Protocol:** TCP
+* **Port Range:** `5000`
+* **Source/IP:** `0.0.0.0/0`
+
+
+
+## 6. Finding Your Public Link
+
+You will need your VM's public IP address to access the app from your browser. Run this in your terminal to find it:
+
+```bash
+curl ifconfig.me
+
+```
+
+*Your live link will be: `http://YOUR_PUBLIC_IP:5000*`
+
+## 7. Running the App in the Background
+
+To ensure your agentic AI keeps running, listening for Gemini API requests or querying weather data even after you close your terminal, use `tmux`.
+
+**Step 1: Install tmux**
+
+```bash
+apt install tmux -y
+
+```
+
+**Step 2: Start a persistent session**
+Give it a memorable name, like `agent_app`.
+
+```bash
+tmux new -s agent_app
+
+```
+
+**Step 3: Run the app**
+Make sure you are in your project folder (and activate your `venv` if you used one), then start Flask, telling it to listen to the open web on port 5000:
+
+```bash
+flask run --host=0.0.0.0 --port=5000
+
+```
+
+**Step 4: Detach and Exit**
+To leave the app running and safely close your connection:
+
+1. Press **`Ctrl + B`**, then let go.
+2. Press **`D`**.
+
+You can now close your terminal tab. Your app is live!
+
+**To check on your app later:**
+Log back into the server and type `tmux attach -t agent_app`.

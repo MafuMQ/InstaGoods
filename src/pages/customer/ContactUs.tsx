@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 
 const ContactUs = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -76,6 +77,7 @@ const ContactUs = () => {
           )}
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

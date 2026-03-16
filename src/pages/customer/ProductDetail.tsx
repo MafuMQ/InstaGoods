@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import { Loading } from "@/components/ui/loading-spinner";
 import { useProduct } from "@/hooks/useProduct";
 import { useLocation } from "@/context/LocationContext";
@@ -124,6 +125,7 @@ const ProductDetail = () => {
               src={product.image_url || '/placeholder-product.jpg'}
               alt={product.name}
               className="h-full w-full object-cover"
+              decoding="async"
             />
           </div>
 
@@ -237,6 +239,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

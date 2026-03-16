@@ -65,12 +65,12 @@ SELECT
     42.00, 95.00, 120.00, 38.00, 165.00
   ]) as price,
   unnest(ARRAY[
-    'groceries', 'groceries', 'groceries', 'products', 'groceries',
-    'groceries', 'products', 'groceries', 'groceries', 'products'
+    'Groceries', 'Groceries', 'Groceries', 'Groceries', 'Groceries',
+    'Groceries', 'Groceries', 'Groceries', 'Groceries', 'Groceries'
   ]) as main_category,
   unnest(ARRAY[
-    'vegetables', 'dairy', 'bakery', 'pantry', 'vegetables',
-    'dairy', 'snacks', 'meat', 'vegetables', 'dairy'
+    'Fruits & Veggies', 'Dairy Products', 'Bakery & Bread', 'Pantry Essentials', 'Fruits & Veggies',
+    'Dairy Products', 'Snacks & Treats', 'Meat', 'Fruits & Veggies', 'Dairy Products'
   ]) as sub_category,
   unnest(ARRAY[50, 100, 25, 30, 45, 40, 20, 35, 60, 15]) as stock_quantity,
   true as is_active,

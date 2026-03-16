@@ -5,6 +5,7 @@ import SupplierNav from "@/components/supplier/SupplierNav";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useSupplierNav } from "@/contexts/SupplierNavContext";
 
 const initialState = {
 	business_name: "",
@@ -16,6 +17,7 @@ const initialState = {
 
 const SupplierShopSettings = () => {
 	const { supplierId, signOut } = useSupplierAuth();
+	const { collapsed } = useSupplierNav();
 	const [form, setForm] = useState(initialState);
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
@@ -86,8 +88,8 @@ const SupplierShopSettings = () => {
 
 	return (
 		<div className="min-h-screen bg-background overflow-x-hidden">
-			<SupplierNav onSignOut={signOut} />
-			<div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10 max-w-xl lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
+			<SupplierNav onSignOut={signOut} supplierId={supplierId} />
+			<div className={`mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-10 max-w-xl transition-all duration-300 ${collapsed ? "lg:ml-16" : "lg:ml-64"} lg:max-w-[calc(100vw-16rem)]`}>
 				<h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Shop Settings</h1>
 				<form onSubmit={handleSubmit} className="space-y-5">
 					<div>

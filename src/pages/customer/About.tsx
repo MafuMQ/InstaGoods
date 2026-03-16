@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 
 const About = () => {
   return (
@@ -33,7 +34,7 @@ const About = () => {
             </ul>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <img src="/assets/hero-banner.jpg" alt="Local marketplace" className="rounded-xl shadow-lg w-full max-w-md mb-6" />
+            <img src="https://tkixhgkaseiyshhgjgkp.supabase.co/storage/v1/object/public/product-images/banners/hero-banner.webp" alt="Local marketplace" className="rounded-xl shadow-lg w-full max-w-md mb-6" />
             <div className="text-center">
               <span className="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-full font-semibold text-lg">Shop Local. Make an Impact.</span>
             </div>
@@ -78,6 +79,7 @@ const About = () => {
           </button>
         </Link>
       </section>
+      <Footer />
     </div>
   );
 };

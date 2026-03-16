@@ -49,6 +49,8 @@ const FreelanceCard = ({ freelance }: FreelanceCardProps) => {
             src={freelance.image}
             alt={freelance.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
           />
           <Button
             variant="ghost"

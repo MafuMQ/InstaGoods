@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
-import { products as staticProducts, groceries, services, freelance, suppliers } from '@/lib/data';
+import { products, groceries, services, freelance, suppliers } from '@/lib/data';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Supplier = Database['public']['Tables']['suppliers']['Row'];
@@ -55,7 +55,7 @@ export const useProduct = (id: string | undefined) => {
           if (productError.code === 'PGRST116' || productError.code === '22P02') {
             // No rows found in database or invalid UUID, try static data
             console.log('Product not found in database, searching static data for ID:', id);
-            const allStaticItems = [...staticProducts, ...groceries, ...services, ...freelance];
+            const allStaticItems = [...products, ...groceries, ...services, ...freelance];
             console.log('Total static items:', allStaticItems.length);
             const staticItem = allStaticItems.find(item => item.id === id);
             console.log('Found static item:', staticItem);

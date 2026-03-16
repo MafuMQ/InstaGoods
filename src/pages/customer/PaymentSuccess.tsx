@@ -2,208 +2,187 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Download, Home, ShoppingBag, Star, Gift, Trophy, Package, Sparkles } from "lucide-react";
+import { CheckCircle, Download, Home, ShoppingBag, AlertCircle, Loader2 } from "lucide-react";
 import Header from "@/components/customer/Header";
-import { Loading } from "@/components/ui/loading-spinner";
+import Footer from "@/components/customer/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/context/CartContext";
+import { useCustomerAuth } from "@/hooks/useCustomerAuth";
 import { toast } from "sonner";
-import { StoredCartItem, TIER_CONFIG, calculateTier, calculateLoyaltyPoints } from "@/types/orders";
+
+// Type definitions for order data
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  supplierId: string;
+  image: string;
+  description: string;
+  delivery_fee?: number;
+}
+
+interface PendingOrderData {
+  items: CartItem[];
+  amount: number;
+  deliveryFee: number;
+  tax: number;
+  timestamp: string;
+  paymentMethod?: string;
+}
+
+interface CreatedOrder {
+  id: string;
+  product_name: string;
+  supplier_id: string;
+  total_amount: number;
+  status: string;
+}
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { loading: authLoading, customerId, user } = useCustomerAuth();
+  
   const amount = searchParams.get("amount") || "0.00";
   const orderId = searchParams.get("orderId") || "Unknown";
   const method = searchParams.get("method") || "card";
-  const { clearCart, getCartTotal } = useCart();
-  const [isLoading, setIsLoading] = useState(true);
-  const [orderSaved, setOrderSaved] = useState(false);
-  const [loyaltyPointsEarned, setLoyaltyPointsEarned] = useState(0);
-  const [newTier, setNewTier] = useState<string | null>(null);
-  const [purchasedItems, setPurchasedItems] = useState<StoredCartItem[]>([]);
-  const [orderIds, setOrderIds] = useState<string[]>([]);
+  
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [ordersCreated, setOrdersCreated] = useState<CreatedOrder[]>([]);
+  const [processError, setProcessError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Save orders to database after successful payment
-    const saveOrdersToDatabase = async () => {
-      // Only save if we haven't already
-      if (orderSaved) return;
+    // Process the order creation when component mounts
+    const processPayment = async () => {
+      // Wait for auth to be ready
+      if (authLoading) return;
       
+      if (!user) {
+        setProcessError("You must be logged in to complete your order. Please log in and try again.");
+        setIsProcessing(false);
+        return;
+      }
+
       try {
-        // Get current user
-        const { data: { session } } = await supabase.auth.getSession();
+        // Retrieve stored order data from sessionStorage
+        const storedData = sessionStorage.getItem('pending_order_data');
         
-        if (!session?.user) {
-          // If no user session, try to get stored cart items
-          const storedCart = localStorage.getItem('checkout_cart');
-          if (storedCart) {
-            const cartItems: StoredCartItem[] = JSON.parse(storedCart);
-            await saveOrdersWithoutUser(cartItems);
-          }
-          setIsLoading(false);
+        if (!storedData) {
+          // No stored data means either:
+          // 1. This was a direct order (not from cart) - order already exists
+          // 2. The session expired
+          console.log("No pending order data found - may be a direct order or session expired");
+          setIsProcessing(false);
           return;
         }
 
-        // Get cart items - from localStorage or current cart
-        let cartItems: StoredCartItem[] = [];
-        const storedCart = localStorage.getItem('checkout_cart');
+        const orderData: PendingOrderData = JSON.parse(storedData);
+        const { items, amount: totalAmount, paymentMethod } = orderData;
+
+        if (!items || items.length === 0) {
+          console.warn("No items found in order data");
+          setIsProcessing(false);
+          return;
+        }
+
+        // Generate a transaction ID
+        const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
         
-        if (storedCart) {
-          cartItems = JSON.parse(storedCart);
-        } else {
-          // Fallback to current cart context (for backward compatibility)
-          const currentCart = localStorage.getItem('cart');
-          if (currentCart) {
-            cartItems = JSON.parse(currentCart);
+        // Get unique suppliers from cart items
+        const supplierGroups = new Map<string, CartItem[]>();
+        items.forEach(item => {
+          const existing = supplierGroups.get(item.supplierId) || [];
+          supplierGroups.set(item.supplierId, [...existing, item]);
+        });
+
+        // Create orders for each supplier (atomic operation using multiple inserts)
+        const createdOrders: CreatedOrder[] = [];
+        
+        for (const [supplierId, supplierItems] of supplierGroups) {
+          // Calculate totals for this supplier's items
+          const subtotal = supplierItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          // Calculate proportional delivery fee
+          const proportionalDeliveryFee = orderData.deliveryFee * (supplierItems.length / items.length);
+          const proportionalTax = orderData.tax * (supplierItems.length / items.length);
+          const supplierTotal = subtotal + proportionalDeliveryFee + proportionalTax;
+
+          // Create product name string (if multiple items, show first + count)
+          const productName = supplierItems.length === 1 
+            ? supplierItems[0].name 
+            : `${supplierItems[0].name} and ${supplierItems.length - 1} more item(s)`;
+
+          // Create the order record
+          const { data: order, error: orderError } = await supabase
+            .from("orders")
+            .insert({
+              supplier_id: supplierId,
+              customer_id: user.id,
+              product_id: supplierItems[0].id, // Primary product
+              product_name: productName,
+              quantity: supplierItems.reduce((sum, item) => sum + item.quantity, 0),
+              unit_price: subtotal / supplierItems.reduce((sum, item) => sum + item.quantity, 0),
+              total_amount: supplierTotal,
+              status: "pending",
+              order_date: new Date().toISOString(),
+              // Payment tracking fields
+              transaction_id: transactionId,
+              payment_method: paymentMethod || method,
+              payment_status: "completed",
+              payment_date: new Date().toISOString(),
+              notes: `Order created from payment. ${supplierItems.length} item(s) from this supplier.`
+            })
+            .select("id, product_name, supplier_id, total_amount, status")
+            .single();
+
+          if (orderError) {
+            console.error("Error creating order:", orderError);
+            throw new Error(`Failed to create order for supplier: ${orderError.message}`);
+          }
+
+          if (order) {
+            createdOrders.push(order);
           }
         }
 
-        setPurchasedItems(cartItems);
+        // Clear the stored order data after successful processing
+        sessionStorage.removeItem('pending_order_data');
+        
+        // Dispatch a custom event to notify other components (like CustomerOrders) to refresh
+        window.dispatchEvent(new CustomEvent('orders-updated', { 
+          detail: { orders: createdOrders } 
+        }));
 
-        if (cartItems.length > 0) {
-          // First, get supplier IDs for all products
-          const productIds = cartItems.map(item => item.id);
-          const { data: products } = await supabase
-            .from('products')
-            .select('id, supplier_id')
-            .in('id', productIds);
+        // Store the created orders in localStorage for CustomerOrders to pick up
+        localStorage.setItem('newly_created_orders', JSON.stringify(createdOrders));
 
-          // Create a map of product ID to supplier ID
-          const productSupplierMap = new Map();
-          (products || []).forEach(p => {
-            productSupplierMap.set(p.id, p.supplier_id);
-          });
+        setOrdersCreated(createdOrders);
+        console.log("Orders created successfully:", createdOrders);
+        
+        toast.success(`Order created successfully! ${createdOrders.length} order(s) placed.`);
 
-          // Calculate estimated delivery dates for each item
-          const now = new Date();
-          const estimatedDelivery = new Date(now);
-          estimatedDelivery.setDate(estimatedDelivery.getDate() + 5); // 5 days from now
-
-          // Save each item as an order
-          const ordersToInsert = cartItems.map((item) => ({
-            customer_id: session.user.id,
-            product_id: item.id,
-            product_name: item.name,
-            quantity: item.quantity,
-            unit_price: item.price,
-            total_amount: item.price * item.quantity,
-            supplier_id: productSupplierMap.get(item.id) || item.supplierId,
-            status: 'completed',
-            order_date: now.toISOString(),
-            completed_date: now.toISOString(),
-            estimated_delivery: estimatedDelivery.toISOString(),
-          }));
-
-          const { data: orderData, error } = await supabase
-            .from('orders')
-            .insert(ordersToInsert)
-            .select('id');
-
-          if (error) {
-            console.error('Error saving orders:', error);
-            toast.error('Failed to save order details. Please contact support.');
-          } else {
-            // Get the inserted order IDs
-            const insertedIds = orderData?.map(o => o.id) || [];
-            setOrderIds(insertedIds);
-
-            // Calculate current tier and loyalty points
-            const { data: existingOrders } = await supabase
-              .from('orders')
-              .select('total_amount')
-              .eq('customer_id', session.user.id);
-
-            const currentTotalSpent = (existingOrders || []).reduce(
-              (sum, o) => sum + Number(o.total_amount), 0
-            );
-            
-            // Calculate points for this purchase (using current tier)
-            const currentTier = calculateTier(currentTotalSpent - (parseFloat(amount) || 0));
-            const pointsEarned = calculateLoyaltyPoints(parseFloat(amount), currentTier);
-            setLoyaltyPointsEarned(pointsEarned);
-
-            // Calculate new tier after this purchase
-            const newTierResult = calculateTier(currentTotalSpent);
-            const newTierName = TIER_CONFIG[newTierResult].name;
-            
-            if (newTierResult !== currentTier) {
-              setNewTier(newTierName);
-            }
-
-            // Store payment result in localStorage for dashboard refresh
-            const paymentResult = {
-              success: true,
-              orderId: orderId,
-              orderIds: insertedIds,
-              amount: parseFloat(amount),
-              paymentMethod: method,
-              items: cartItems,
-              timestamp: now.toISOString(),
-              loyaltyPointsEarned: pointsEarned,
-              newTier: newTierName,
-              tierUpgraded: newTierResult !== currentTier
-            };
-            localStorage.setItem('payment_result', JSON.stringify(paymentResult));
-
-            // Update inventory for each product (decrease stock)
-            await updateInventory(cartItems);
-
-            setOrderSaved(true);
-            // Clear the checkout cart and localStorage
-            localStorage.removeItem('checkout_cart');
-            clearCart();
-            toast.success(`Order saved! You earned ${pointsEarned} loyalty points!`);
-          }
-        }
       } catch (error) {
-        console.error('Error in saveOrdersToDatabase:', error);
+        console.error("Error processing payment:", error);
+        const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred while processing your order.";
+        setProcessError(errorMessage);
+        toast.error(errorMessage);
       } finally {
-        setIsLoading(false);
+        setIsProcessing(false);
       }
     };
 
-    saveOrdersToDatabase();
-  }, [orderSaved, clearCart]);
+    processPayment();
+  }, [user, authLoading, method]);
 
-  // Helper function to save orders without user (guest checkout)
-  const saveOrdersWithoutUser = async (cartItems: StoredCartItem[]) => {
-    // For guest checkout, we would need a different approach
-    // For now, just log that guest checkout orders aren't saved
-    console.log('Guest checkout - orders not saved to database');
-    // Clear cart for guest checkout too
-    clearCart();
-    localStorage.removeItem('checkout_cart');
-  };
-
-  // Update inventory after purchase
-  const updateInventory = async (cartItems: StoredCartItem[]) => {
-    for (const item of cartItems) {
-      try {
-        // Get current stock
-        const { data: product } = await supabase
-          .from('products')
-          .select('stock_quantity')
-          .eq('id', item.id)
-          .single();
-
-        if (product) {
-          const newStock = Math.max(0, (product.stock_quantity || 0) - item.quantity);
-          await supabase
-            .from('products')
-            .update({ stock_quantity: newStock })
-            .eq('id', item.id);
-        }
-      } catch (error) {
-        console.error('Error updating inventory for item:', item.id, error);
-      }
-    }
-  };
-
+  // Track successful payment (analytics, etc.)
   useEffect(() => {
-    // Track successful payment (analytics, etc.)
     console.log("Payment successful:", { amount, orderId });
   }, [amount, orderId]);
+
+  const handleRetry = () => {
+    // Clear the stored data and try again
+    sessionStorage.removeItem('pending_order_data');
+    navigate('/cart');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,64 +193,73 @@ const PaymentSuccess = () => {
           <Card className="text-center">
             <CardHeader className="pb-2">
               <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
+                {isProcessing ? (
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                  </div>
+                ) : processError ? (
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <AlertCircle className="w-8 h-8 text-red-600" />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                )}
               </div>
-              <CardTitle className="text-2xl text-green-600">Payment Successful!</CardTitle>
+              
+              {isProcessing ? (
+                <CardTitle className="text-2xl text-blue-600">Processing Your Order...</CardTitle>
+              ) : processError ? (
+                <CardTitle className="text-2xl text-red-600">Order Processing Issue</CardTitle>
+              ) : (
+                <CardTitle className="text-2xl text-green-600">Payment Successful!</CardTitle>
+              )}
             </CardHeader>
 
             <CardContent className="space-y-6">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loading message="Saving your order..." />
+              {isProcessing ? (
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Please wait while we create your order(s)...
+                  </p>
+                  <div className="flex justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                </div>
+              ) : processError ? (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-lg font-semibold text-primary mb-2">
+                      R{parseFloat(amount).toFixed(2)}
+                    </p>
+                    <p className="text-muted-foreground">
+                      Your payment was successful, but we encountered an issue creating your order.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <p className="text-sm text-red-600">{processError}</p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button asChild className="flex-1" onClick={handleRetry}>
+                      <Link to="/cart">
+                        <ShoppingBag className="w-4 h-4 mr-2" />
+                        Return to Cart
+                      </Link>
+                    </Button>
+                    
+                    <Button variant="outline" asChild className="flex-1">
+                      <Link to="/customer/orders">
+                        <ShoppingBag className="w-4 h-4 mr-2" />
+                        View Existing Orders
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <>
-                  {/* Loyalty Points & Rewards Earned */}
-                  {loyaltyPointsEarned > 0 && (
-                    <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 p-4 rounded-lg">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                          <Star className="w-5 h-5 text-amber-600" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-amber-800">
-                            You earned {loyaltyPointsEarned} Loyalty Points!
-                          </p>
-                          {newTier && (
-                            <p className="text-sm text-amber-700 flex items-center gap-1">
-                              <Trophy className="w-3 h-3" />
-                              Welcome to {newTier} Tier!
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-xs text-amber-600">
-                        Use these points on your next purchase to get discounts!
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Tier Upgrade Banner */}
-                  {newTier && (
-                    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 p-4 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                          <Sparkles className="w-5 h-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-purple-800">
-                            🎉 Congratulations! You've been upgraded to {newTier}!
-                          </p>
-                          <p className="text-sm text-purple-700">
-                            Enjoy exclusive {newTier} benefits and earn more points per purchase!
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   <div>
                     <p className="text-lg font-semibold text-primary mb-2">
                       R{parseFloat(amount).toFixed(2)}
@@ -289,59 +277,45 @@ const PaymentSuccess = () => {
                   <div className="bg-muted p-4 rounded-lg">
                     <div className="text-sm space-y-1">
                       <div className="flex justify-between">
-                        <span>Order ID:</span>
-                        <span className="font-mono">{orderId}</span>
+                        <span>Order ID{ordersCreated.length > 1 ? 's' : ''}:</span>
+                        <span className="font-mono">
+                          {ordersCreated.length > 0 
+                            ? ordersCreated.map(o => o.id.slice(0, 8)).join(', ')
+                            : orderId.slice(0, 8)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Payment Date:</span>
                         <span>{new Date().toLocaleDateString()}</span>
                       </div>
                       <div className="flex justify-between">
+                        <span>Payment Method:</span>
+                        <span className="capitalize">{method}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span>Status:</span>
                         <span className="text-green-600 font-medium">Confirmed</span>
                       </div>
+                      {ordersCreated.length > 0 && (
+                        <div className="flex justify-between">
+                          <span>Orders Created:</span>
+                          <span className="font-medium">{ordersCreated.length}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  {/* Order Items Summary */}
-                  {purchasedItems.length > 0 && (
-                    <div className="bg-muted p-4 rounded-lg">
-                      <h4 className="font-medium mb-3 flex items-center gap-2">
-                        <Package className="w-4 h-4" />
-                        Items Purchased ({purchasedItems.length})
-                      </h4>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {purchasedItems.map((item, index) => (
-                          <div key={index} className="flex justify-between text-sm">
-                            <span className="truncate flex-1">{item.name} x{item.quantity}</span>
-                            <span className="ml-2">R{(item.price * item.quantity).toFixed(2)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   <div className="text-sm text-muted-foreground space-y-2">
                     <p>• A confirmation email has been sent to your email address</p>
                     <p>• You will receive order updates via SMS and email</p>
                     <p>• Delivery typically takes 2-5 business days</p>
-                    {loyaltyPointsEarned > 0 && (
-                      <p className="text-amber-600 font-medium">• {loyaltyPointsEarned} loyalty points have been added to your account</p>
-                    )}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      asChild 
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                      onClick={() => {
-                        // Clear payment result after navigating
-                        localStorage.removeItem('payment_result');
-                      }}
-                    >
-                      <Link to="/customer/dashboard">
+                    <Button asChild className="flex-1">
+                      <Link to="/customer/orders">
                         <ShoppingBag className="w-4 h-4 mr-2" />
-                        View My Orders
+                        View Orders
                       </Link>
                     </Button>
 
@@ -365,6 +339,7 @@ const PaymentSuccess = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

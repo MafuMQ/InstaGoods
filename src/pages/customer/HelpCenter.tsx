@@ -1,4 +1,5 @@
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 
 const HelpCenter = () => (
   <div className="min-h-screen bg-background">
@@ -29,6 +30,7 @@ const HelpCenter = () => (
         </div>
       </div>
     </section>
+    <Footer />
   </div>
 );
 

@@ -100,6 +100,41 @@ CREATE TABLE public.expenses (
 
 ALTER TABLE public.expenses ENABLE ROW LEVEL SECURITY;
 
+-- Create messages table for chat
+CREATE TABLE public.messages (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  consumer_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  supplier_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  sender TEXT NOT NULL, --'customer' or 'supplier'
+  text TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for messages
+CREATE POLICY "Customers can insert their own messages"
+  ON public.messages
+  FOR INSERT
+  WITH CHECK (auth.uid() = consumer_id AND sender = 'customer');
+
+CREATE POLICY "Supplier can insert replies"
+  ON public.messages
+  FOR INSERT
+  WITH CHECK (auth.uid() = supplier_id AND sender = 'supplier');
+
+CREATE POLICY "Customers can read their own messages"
+  ON public.messages
+  FOR SELECT
+  USING (auth.uid() = consumer_id);
+
+  CREATE POLICY "Suppliers can read their on messages"
+    ON public.messages
+    FOR SELECT
+    USING (auth.uid() = supplier_id);
+
+ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+
 -- RLS Policies for profiles
 CREATE POLICY "Users can view their own profile"
   ON public.profiles FOR SELECT
@@ -113,6 +148,16 @@ CREATE POLICY "Users can update their own profile"
 CREATE POLICY "Users can view their own roles"
   ON public.user_roles FOR SELECT
   USING (auth.uid() = user_id);
+
+-- Allow users to insert their own role during signup (for customer role)
+CREATE POLICY "Users can insert customer role during signup"
+  ON public.user_roles FOR INSERT
+  WITH CHECK (auth.uid() = user_id AND role = 'customer');
+
+-- Allow service role functions to insert any role (for trigger-based inserts)
+CREATE POLICY "Service role can insert roles"
+  ON public.user_roles FOR INSERT
+  WITH CHECK (true);
 
 -- RLS Policies for suppliers
 CREATE POLICY "Suppliers can view their own data"

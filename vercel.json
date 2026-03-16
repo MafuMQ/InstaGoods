@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/agent-proxy/:path*",
+      "destination": "/api/agent-proxy"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

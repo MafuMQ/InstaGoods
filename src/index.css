@@ -87,4 +87,429 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focus ring utility */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Improve tap highlight on mobile */
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+
+  /* Better text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Responsive font sizes using clamp for fluid typography */
+  html {
+    font-size: clamp(14px, 2vw, 16px);
+  }
+
+  /* Disable pull-to-refresh on mobile to prevent unwanted scrolling */
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  /* Responsive container for main content */
+  .main-content {
+    @apply w-full max-w-7xl mx-auto px-3 md:px-4 lg:px-6;
+  }
+}
+
+/* Enhanced touch interactions */
+@layer components {
+  /* Touch-friendly button hover effect */
+  .btn-touch {
+    @apply transition-transform active:scale-95;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Card with better touch response */
+  .card-touch {
+    @apply transition-all duration-200 active:scale-[0.98];
+    transform: translateZ(0);
+  }
+
+  /* Enhanced link/button tap highlight */
+  .tap-highlight {
+    @apply relative;
+  }
+  
+  .tap-highlight::after {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity;
+    background: currentColor;
+  }
+  
+  .tap-highlight:active::after {
+    @apply opacity-5;
+  }
+
+  /* Swipeable list item hint */
+  .swipeable {
+    @apply touch-pan-y;
+  }
+}
+
+@layer components {
+  /* Enhanced scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-background/80 backdrop-blur-md;
+  }
+
+  /* Section spacing */
+  .section-py {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+}
+
+@layer utilities {
+  /* Animation delays */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Touch target size for mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Safe area padding for mobile */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Responsive text utilities */
+  .text-responsive-xs {
+    @apply text-xs md:text-sm;
+  }
+  .text-responsive-sm {
+    @apply text-sm md:text-base;
+  }
+  .text-responsive-base {
+    @apply text-base md:text-lg;
+  }
+  .text-responsive-lg {
+    @apply text-lg md:text-xl;
+  }
+  .text-responsive-xl {
+    @apply text-xl md:text-2xl;
+  }
+  .text-responsive-2xl {
+    @apply text-2xl md:text-3xl;
+  }
+  .text-responsive-3xl {
+    @apply text-3xl md:text-4xl;
+  }
+
+  /* Responsive spacing utilities */
+  .gap-responsive-sm {
+    @apply gap-2 md:gap-3;
+  }
+  .gap-responsive-md {
+    @apply gap-3 md:gap-4;
+  }
+  .gap-responsive-lg {
+    @apply gap-4 md:gap-6;
+  }
+
+  /* Responsive padding utilities */
+  .p-responsive-sm {
+    @apply p-3 md:p-4;
+  }
+  .p-responsive-md {
+    @apply p-4 md:p-6;
+  }
+  .p-responsive-lg {
+    @apply p-6 md:p-8;
+  }
+
+  /* Hide on specific breakpoints */
+  .hide-on-mobile {
+    @apply md:hidden;
+  }
+  .hide-on-tablet {
+    @apply lg:hidden;
+  }
+  .hide-on-desktop {
+    @apply xl:hidden;
+  }
+
+  /* Show on specific breakpoints */
+  .show-on-mobile {
+    @apply md:hidden;
+  }
+  .show-on-tablet {
+    @apply hidden md:block lg:hidden;
+  }
+  .show-on-desktop {
+    @apply hidden lg:block;
+  }
+
+  /* Aspect ratio utilities for responsive images */
+  .aspect-portrait {
+    aspect-ratio: 3/4;
+  }
+  .aspect-landscape {
+    aspect-ratio: 4/3;
+  }
+  .aspect-video {
+    aspect-ratio: 16/9;
+  }
+
+  /* Grid auto-fit utilities */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 md:grid-cols-2;
+  }
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+  }
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  /* Prevent text selection on mobile (useful for UI elements) */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Enable momentum scrolling on iOS */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+  }
+
+  /* Responsive max-width utilities */
+  .max-w-responsive-sm {
+    @apply max-w-sm md:max-w-md;
+  }
+  .max-w-responsive-md {
+    @apply max-w-md lg:max-w-lg;
+  }
+  .max-w-responsive-lg {
+    @apply max-w-lg xl:max-w-xl;
+  }
+
+  /* Full viewport height utilities */
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+  .min-h-screen-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Stagger animation delays */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+}
+
+/* Custom animations */
+@keyframes slide-in-from-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in-95 {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation utility classes */
+.animate-in {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  animation-fill-mode: forwards;
+}
+
+.fade-in {
+  animation-name: fade-in;
+}
+
+.slide-in-from-bottom-2 {
+  animation-name: slide-in-from-bottom;
+}
+
+.slide-in-from-top-2 {
+  animation-name: slide-in-from-top;
+}
+
+.slide-in-from-left-2 {
+  animation-name: slide-in-from-left;
+}
+
+.zoom-in-95 {
+  animation-name: zoom-in-95;
+}
+
+/* Enhanced skeleton pulse */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Gradient animation */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
 }

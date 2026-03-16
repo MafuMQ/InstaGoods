@@ -8,9 +8,20 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const emailSchema = z.string().email("Invalid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+
+const businessTypes = [
+  { value: "sole_trader", label: "Sole Trader" },
+  { value: "registered_business", label: "Registered Business" },
+  { value: "partnership", label: "Partnership" },
+  { value: "close_corporation", label: "Close Corporation" },
+  { value: "non_profit", label: "Non-Profit Organization" },
+  { value: "freelancer", label: "Freelancer" },
+  { value: "informal_business", label: "Informal Business" },
+];
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -18,6 +29,11 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  // New fields for supplier signup
+  const [businessName, setBusinessName] = useState("");
+  const [businessType, setBusinessType] = useState("sole_trader");
+  const [location, setLocation] = useState("");
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -55,12 +71,25 @@ const Auth = () => {
       return;
     }
 
+    if (!businessName.trim()) {
+      toast.error("Business name is required");
+      return;
+    }
+
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    
+    // Sign up the user with additional metadata
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { 
+          full_name: fullName,
+          business_name: businessName,
+          business_type: businessType,
+          location: location,
+          phone: phone
+        },
       },
     });
 
@@ -72,8 +101,10 @@ const Auth = () => {
       } else {
         toast.error(error.message);
       }
-    } else {
+    } else if (signUpData.user) {
+      // Supplier record is automatically created by the handle_new_user trigger
       toast.success("Account created successfully! You are now logged in.");
+      navigate("/supplier/dashboard");
     }
   };
 
@@ -147,33 +178,85 @@ const Auth = () => {
           <TabsContent value="signup">
             <form onSubmit={handleSignUp} className="space-y-4">
               <div>
-                <Label htmlFor="signup-name">Full Name</Label>
+                <Label htmlFor="signup-name">Full Name *</Label>
                 <Input
                   id="signup-name"
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email">Email *</Label>
                 <Input
                   id="signup-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
                   required
                 />
               </div>
               <div>
-                <Label htmlFor="signup-password">Password</Label>
+                <Label htmlFor="signup-password">Password *</Label>
                 <Input
                   id="signup-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
                   required
+                />
+              </div>
+              <div className="border-t pt-4 mt-4">
+                <h3 className="font-medium text-sm text-muted-foreground mb-3">Business Information</h3>
+              </div>
+              <div>
+                <Label htmlFor="signup-business-name">Business Name *</Label>
+                <Input
+                  id="signup-business-name"
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Joe's Plumbing Services"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="signup-business-type">Business Type *</Label>
+                <Select value={businessType} onValueChange={setBusinessType} required>
+                  <SelectTrigger id="signup-business-type">
+                    <SelectValue placeholder="Select business type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {businessTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="signup-location">Location</Label>
+                <Input
+                  id="signup-location"
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Johannesburg, South Africa"
+                />
+              </div>
+              <div>
+                <Label htmlFor="signup-phone">Phone Number</Label>
+                <Input
+                  id="signup-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+27 82 123 4567"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={loading}>

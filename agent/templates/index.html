@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaGoods Shopping Assistant</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        .chat-header {
+            background: #e85d04;
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+        .user-msg {
+            background: #e85d04;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .ai-msg {
+            background: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        .input-area {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            gap: 6px;
+            border-top: 1px solid #ddd;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+        button {
+            flex-shrink: 0;
+            padding: 8px 14px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #mic-btn, #tts-btn, #history-btn {
+            padding: 8px;
+            width: 36px;
+            text-align: center;
+            background: #6c757d;
+        }
+        #mic-btn:hover, #tts-btn:hover, #history-btn:hover {
+            background: #5a6268;
+        }
+        #mic-btn.recording {
+            background: #dc3545;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        #tts-btn {
+            background: #17a2b8;
+        }
+        #tts-btn.muted {
+            background: #6c757d;
+        }
+        #history-panel {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 10px 10px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        #history-panel h4 {
+            margin: 0 0 10px;
+            font-size: 13px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .history-entry {
+            font-size: 13px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .history-entry .role {
+            font-weight: bold;
+            text-transform: capitalize;
+            color: #e85d04;
+        }
+        .history-entry .role.model {
+            color: #555;
+        }
+        .loading {
+            font-size: 12px;
+            color: #888;
+            align-self: flex-start;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="position: relative; width: 100%; max-width: 500px;">
+    <div id="history-panel"><h4>Conversation History</h4><div id="history-content"></div></div>
+    <div class="chat-container">
+        <div class="chat-header">InstaGoods Shopping Assistant</div>
+        
+        <div class="chat-history" id="chat-history">
+            <div class="message ai-msg">Hello! I'm your InstaGoods shopping assistant. I can help you browse categories, search for products, and get product details. What are you looking for?</div>
+            <div class="loading" id="loading">Agent is thinking...</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="e.g., What is available?" autocomplete="off">
+            <button id="mic-btn" onclick="toggleVoice()" title="Voice input">🎤</button>
+            <button id="tts-btn" onclick="toggleTTS()" title="TTS on">🔊</button>
+            <button id="history-btn" onclick="toggleHistory()" title="Chat history">📋</button>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const chatHistory = document.getElementById("chat-history");
+        const userInput = document.getElementById("user-input");
+        const loadingIndicator = document.getElementById("loading");
+
+        // Persists for this browser tab; cleared on page refresh (starts a new Gemini context)
+        let sessionId = null;
+
+        // --- History Panel ---
+        const historyPanel = document.getElementById("history-panel");
+        const historyContent = document.getElementById("history-content");
+
+        async function toggleHistory() {
+            if (historyPanel.style.display === "block") {
+                historyPanel.style.display = "none";
+                return;
+            }
+            if (!sessionId) {
+                historyContent.innerHTML = "<em>No conversation started yet.</em>";
+                historyPanel.style.display = "block";
+                return;
+            }
+            historyContent.innerHTML = "<em>Loading...</em>";
+            historyPanel.style.display = "block";
+            try {
+                const res = await fetch(`/session/${sessionId}/history`);
+                const data = await res.json();
+                if (!data.history || data.history.length === 0) {
+                    historyContent.innerHTML = "<em>No history yet.</em>";
+                    return;
+                }
+                historyContent.innerHTML = data.history.map(entry =>
+                    `<div class="history-entry"><span class="role ${entry.role}">${entry.role}:</span> ${entry.text}</div>`
+                ).join("");
+            } catch (e) {
+                historyContent.innerHTML = "<em>Failed to load history.</em>";
+            }
+        }
+
+        // Allow sending message with Enter key
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // 1. Add user message to UI
+            appendMessage(text, "user-msg");
+            userInput.value = "";
+            
+            // Show loading indicator
+            loadingIndicator.style.display = "block";
+            chatHistory.appendChild(loadingIndicator); // Move loading to bottom
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            try {
+                // 2. Send message to Flask backend
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: text, session_id: sessionId })
+                });
+                
+                const data = await response.json();
+                if (data.session_id) sessionId = data.session_id;
+
+                // 3. Add AI response to UI
+                loadingIndicator.style.display = "none";
+                appendMessage(data.reply, "ai-msg");
+                if (!ttsМuted) speakFromServer(data.reply);
+
+            } catch (error) {
+                loadingIndicator.style.display = "none";
+                appendMessage("Error: Could not connect to the server.", "ai-msg");
+            }
+        }
+
+        // --- TTS Output ---
+        let ttsМuted = false;
+        let currentAudio = null;
+        const ttsBtn = document.getElementById("tts-btn");
+
+        function toggleTTS() {
+            ttsМuted = !ttsМuted;
+            ttsBtn.classList.toggle("muted", ttsМuted);
+            ttsBtn.title = ttsМuted ? "TTS off" : "TTS on";
+            ttsBtn.textContent = ttsМuted ? "🔇" : "🔊";
+            if (ttsМuted && currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+        }
+
+        async function speakFromServer(text) {
+            try {
+                const res = await fetch("/tts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                });
+                const blob = await res.blob();
+                if (currentAudio) currentAudio.pause();
+                currentAudio = new Audio(URL.createObjectURL(blob));
+                currentAudio.play();
+            } catch (err) {
+                console.error("TTS error:", err);
+            }
+        }
+
+        // --- Voice Input (MediaRecorder — works on all browsers) ---
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        const micBtn = document.getElementById("mic-btn");
+
+        function toggleVoice() {
+            if (isRecording) {
+                mediaRecorder.stop();
+            } else {
+                startRecording();
+            }
+        }
+
+        async function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Your browser does not support microphone access.");
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    stream.getTracks().forEach(t => t.stop());
+                    isRecording = false;
+                    micBtn.classList.remove("recording");
+                    micBtn.title = "Voice input";
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
+                    await transcribeAudio(audioBlob, mediaRecorder.mimeType);
+                };
+
+                isRecording = true;
+                micBtn.classList.add("recording");
+                micBtn.title = "Recording... click to stop";
+                mediaRecorder.start();
+            } catch (err) {
+                alert("Microphone access denied or unavailable.");
+            }
+        }
+
+        async function transcribeAudio(audioBlob, mimeType) {
+            const originalText = loadingIndicator.textContent;
+            loadingIndicator.textContent = "Transcribing voice...";
+            loadingIndicator.style.display = "block";
+            chatHistory.appendChild(loadingIndicator);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            const formData = new FormData();
+            formData.append("audio", audioBlob, "recording");
+
+            try {
+                const response = await fetch("/transcribe", { method: "POST", body: formData });
+                const data = await response.json();
+                loadingIndicator.style.display = "none";
+                loadingIndicator.textContent = originalText;
+
+                if (data.transcript) {
+                    userInput.value = data.transcript;
+                    sendMessage();
+                } else {
+                    appendMessage("Could not understand the audio. Please try again.", "ai-msg");
+                }
+            } catch (err) {
+                loadingIndicator.style.display = "none";
+                loadingIndicator.textContent = originalText;
+                appendMessage("Error transcribing audio.", "ai-msg");
+            }
+        }
+
+        function appendMessage(text, className) {
+            const div = document.createElement("div");
+            div.className = `message ${className}`;
+            div.textContent = text;
+            chatHistory.insertBefore(div, loadingIndicator);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>

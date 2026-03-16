@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Star, Heart, ShoppingBag, Store } from "lucide-react";
 import Header from "@/components/customer/Header";
+import Footer from "@/components/customer/Footer";
 import { services, suppliers } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -139,6 +140,7 @@ const ServiceDetail = () => {
           supplierName={supplier.name}
         />
       )}
+      <Footer />
     </div>
   );
 };

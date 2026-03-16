@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { useSupplierNav } from "@/contexts/SupplierNavContext";
 
 interface Expense {
   id: string;
@@ -24,6 +25,7 @@ interface Expense {
 
 const SupplierExpenses = () => {
   const { loading, supplierId, signOut } = useSupplierAuth();
+  const { collapsed } = useSupplierNav();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -107,7 +109,7 @@ const SupplierExpenses = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <SupplierNav onSignOut={signOut} />
+        <SupplierNav onSignOut={signOut} supplierId={supplierId} />
         <div className="min-h-screen flex items-center justify-center">
           <Loading />
         </div>
@@ -117,9 +119,9 @@ const SupplierExpenses = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <SupplierNav onSignOut={signOut} />
+      <SupplierNav onSignOut={signOut} supplierId={supplierId} />
       
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 lg:ml-64 lg:max-w-[calc(100vw-16rem)]">
+      <div className={`mx-auto max-w-7xl px-4 sm:px-6 py-4 sm:py-8 transition-all duration-300 ${collapsed ? "lg:ml-16" : "lg:ml-64"} lg:max-w-[calc(100vw-16rem)]`}>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
             <h1 className="text-2xl sm:text-4xl font-bold mb-2">Expenses</h1>
