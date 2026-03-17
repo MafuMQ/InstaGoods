@@ -69,9 +69,15 @@ const CustomerAuth = () => {
 
   // Check if user was redirected from cart with items (return-to-cart scenario)
   const returnToCart = searchParams.get("returnToCart") === "true";
+  // Check if user came from checkout flow - should go to payment after sign in
+  const fromCheckout = searchParams.get("fromCheckout") === "true";
 
   // Determine redirect based on cart status - waits for cart to be loaded
   const getRedirectPath = useCallback((): string => {
+    // If user came from checkout flow, go to payment
+    if (fromCheckout && getCartCount() > 0) {
+      return "/payment";
+    }
     // If returnToCart is set and cart has items, go back to cart
     if (returnToCart && getCartCount() > 0) {
       return "/cart";
@@ -82,7 +88,7 @@ const CustomerAuth = () => {
     }
     // Empty cart - go to dashboard with empty cart indicator
     return "/customer/dashboard?emptyCart=true";
-  }, [getCartCount, returnToCart]);
+  }, [getCartCount, returnToCart, fromCheckout]);
 
   // Handle post-login/authentication redirect with cart check
   const handlePostAuthRedirect = useCallback(() => {

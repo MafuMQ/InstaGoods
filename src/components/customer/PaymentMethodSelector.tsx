@@ -26,7 +26,7 @@ const PaymentMethodSelector = ({ selectedMethod, onMethodChange }: PaymentMethod
       name: "Mobile Money",
       description: "MTN Mobile Money, Airtel Money",
       icon: Smartphone,
-      available: true,
+      available: false,
       recommended: false,
       processingTime: "Instant",
     },
