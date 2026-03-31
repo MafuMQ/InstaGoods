@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "@/components/customer/Header";
 import Footer from "@/components/customer/Footer";
 import ProductCard from "@/components/customer/ProductCard";
@@ -7,12 +8,32 @@ import { Loading } from "@/components/ui/loading-spinner";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { useDeliveryAndAvailable } from "@/context/OnlyAvailableContext";
+import { useLocation } from "@/context/LocationContext";
+import { haversineDistance } from "@/lib/distance";
+import { geocodeAddress } from "@/lib/geocode";
 
 const AllProducts = () => {
+  const [searchParams] = useSearchParams();
   const { products, loading, error } = useMarketplaceProducts();
-  const [selectedMainCategory, setSelectedMainCategory] = useState("All");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("All");
+  const [selectedMainCategory, setSelectedMainCategory] = useState(
+    searchParams.get("category") || "All"
+  );
+  const [selectedSubCategory, setSelectedSubCategory] = useState(
+    searchParams.get("sub") || "All"
+  );
   const [search, setSearch] = useState("");
+  const { address: userAddress } = useLocation();
+  const { onlyAvailable, deliveryOnly } = useDeliveryAndAvailable();
+  const [userLatLng, setUserLatLng] = useState<{ lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (userAddress) {
+      geocodeAddress(userAddress).then(setUserLatLng);
+    } else {
+      setUserLatLng(null);
+    }
+  }, [userAddress]);
 
   const handleMainCategoryChange = (cat: string) => {
     setSelectedMainCategory(cat);
@@ -25,14 +46,20 @@ const AllProducts = () => {
       if (selectedSubCategory !== "All" && p.sub_category !== selectedSubCategory) return false;
       if (search.trim()) {
         const q = search.toLowerCase();
-        return (
-          p.name.toLowerCase().includes(q) ||
-          (p.description ?? "").toLowerCase().includes(q)
-        );
+        if (!p.name.toLowerCase().includes(q) && !(p.description ?? "").toLowerCase().includes(q)) return false;
+      }
+      if (deliveryOnly && p.no_delivery) return false;
+      if (onlyAvailable && userLatLng) {
+        if (p.available_everywhere) return true;
+        if (p.delivery_lat && p.delivery_lng && typeof p.delivery_radius_km === "number") {
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
+          return dist <= p.delivery_radius_km;
+        }
+        return false;
       }
       return true;
     });
-  }, [products, selectedMainCategory, selectedSubCategory, search]);
+  }, [products, selectedMainCategory, selectedSubCategory, search, deliveryOnly, onlyAvailable, userLatLng]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -85,7 +112,7 @@ const AllProducts = () => {
                 No products match your filters.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
                 {filtered.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

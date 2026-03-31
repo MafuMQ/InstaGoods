@@ -8,7 +8,7 @@ interface AutoLocationResult {
 }
 
 export const useAutoLocation = () => {
-  const { setAddress } = useLocation();
+  const { setAddress, setCoords } = useLocation();
   const [isDetecting, setIsDetecting] = useState(false);
 
   const detectLocation = async (): Promise<AutoLocationResult> => {
@@ -38,6 +38,9 @@ export const useAutoLocation = () => {
 
       const { latitude, longitude } = position.coords;
 
+      // Store raw coordinates for use by other features (e.g. agent location context)
+      setCoords(latitude, longitude);
+
       // Reverse geocode to get address
       const address = await reverseGeocode(latitude, longitude);
 
@@ -45,6 +48,7 @@ export const useAutoLocation = () => {
         setAddress(address);
         return { success: true };
       } else {
+        // Coordinates stored but address lookup failed — still a partial success
         return {
           success: false,
           error: "Unable to determine address from location"

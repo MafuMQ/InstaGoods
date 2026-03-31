@@ -117,13 +117,10 @@ const Header = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-80 flex flex-col">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center mb-6">
                 <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   InstaGoods
                 </span>
-                <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
-                  <X className="h-5 w-5" />
-                </Button>
               </div>
               
               {/* Mobile Search */}

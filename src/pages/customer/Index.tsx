@@ -45,6 +45,7 @@ import {
   Instagram,
   Facebook,
   Mail,
+  ArrowRight,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -182,6 +183,29 @@ const Index = () => {
 
   // Combine static and database suppliers
   const allSuppliers = [...suppliers, ...dbSuppliers];
+
+  // IDs of suppliers who have at least one product reachable/deliverable to the user
+  const reachableSupplierIds = useMemo(() => {
+    if (!onlyAvailable && !deliveryOnly) return null;
+    const ids = new Set<string>();
+    products.forEach((p) => {
+      if (deliveryOnly && p.no_delivery) return;
+      if (onlyAvailable && userLatLng) {
+        if (!p.available_everywhere) {
+          if (!p.delivery_lat || !p.delivery_lng || typeof p.delivery_radius_km !== "number") return;
+          const dist = haversineDistance(userLatLng.lat, userLatLng.lng, p.delivery_lat, p.delivery_lng);
+          if (dist > p.delivery_radius_km) return;
+        }
+      }
+      ids.add(p.supplier_id);
+    });
+    return ids;
+  }, [products, deliveryOnly, onlyAvailable, userLatLng]);
+
+  const filteredSuppliers = useMemo(() => {
+    if (!reachableSupplierIds) return allSuppliers;
+    return allSuppliers.filter((s) => reachableSupplierIds.has(s.id));
+  }, [allSuppliers, reachableSupplierIds]);
 
   // Memoized filtering functions to prevent unnecessary recalculations
   const filteredProducts = useMemo(() => {
@@ -456,8 +480,8 @@ const Index = () => {
                 <Loading message="Loading businesses..." />
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
-                {allSuppliers.map((supplier) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
+                {filteredSuppliers.map((supplier) => (
                   <SupplierCard key={supplier.id} supplier={supplier} />
                 ))}
               </div>
@@ -480,9 +504,15 @@ const Index = () => {
                   filteredFreelance.length > 0) &&
                   selectedProviderType === "all" && (
                     <div className="mb-12">
-                      <h2 className="text-2xl font-bold mb-6">
-                        Products & More
-                      </h2>
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold">Top Products</h2>
+                        <Link
+                          to={`/products${selectedMainCategory !== "All" ? `?category=${encodeURIComponent(selectedMainCategory)}${selectedSubCategory !== "All" ? `&sub=${encodeURIComponent(selectedSubCategory)}` : ""}` : ""}`}
+                          className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
+                        >
+                          Show all <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      </div>
                       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
                         {/* Products */}
                         {filteredProducts.slice(0, 8).map((product) => (

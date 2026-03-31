@@ -81,8 +81,8 @@ const Cart = () => {
     if (isCustomer) {
       navigate("/payment");
     } else {
-      // Pass returnToCart=true so that after login, user is redirected back to cart if they have items
-      navigate("/customer-auth?returnToCart=true");
+      // Pass fromCheckout=true so that after login, user is redirected to payment instead of cart
+      navigate("/customer-auth?fromCheckout=true");
     }
   };
 
